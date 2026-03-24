@@ -1,0 +1,5 @@
+{
+  "name": "HailZA Web",
+  "description": "South African e-hailing app with OpenStreetMap and Supabase",
+  "requestFramePermissions": ["geolocation"]
+}
