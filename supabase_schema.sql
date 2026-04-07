@@ -63,21 +63,27 @@ alter table public.profiles enable row level security;
 alter table public.drivers enable row level security;
 alter table public.rides enable row level security;
 
+-- HELPER: Check if user is admin (Security Definer to avoid recursion)
+create or replace function public.is_admin()
+returns boolean as $$
+begin
+  return exists (
+    select 1 from public.profiles
+    where id = auth.uid()
+    and role = 'admin'
+  );
+end;
+$$ language plpgsql security definer;
+
 -- Admin Policy (Global access)
 drop policy if exists "Admins can do everything on profiles" on public.profiles;
-create policy "Admins can do everything on profiles" on public.profiles for all using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
+create policy "Admins can do everything on profiles" on public.profiles for all using (public.is_admin());
 
 drop policy if exists "Admins can do everything on drivers" on public.drivers;
-create policy "Admins can do everything on drivers" on public.drivers for all using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
+create policy "Admins can do everything on drivers" on public.drivers for all using (public.is_admin());
 
 drop policy if exists "Admins can do everything on rides" on public.rides;
-create policy "Admins can do everything on rides" on public.rides for all using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
+create policy "Admins can do everything on rides" on public.rides for all using (public.is_admin());
 
 -- Profiles Policies
 drop policy if exists "Public profiles are viewable by everyone" on public.profiles;
