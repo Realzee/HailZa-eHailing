@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
-import { supabase, type Ride } from '@/lib/supabase';
+import { supabase, type Ride, type Profile } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
-import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2 } from 'lucide-react';
+import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert } from 'lucide-react';
 
 interface DriverViewProps {
   user: any;
@@ -12,34 +12,39 @@ export default function DriverView({ user }: DriverViewProps) {
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
+  const [onboardingStatus, setOnboardingStatus] = useState<'pending' | 'approved' | 'declined' | null>(null);
   const [incomingRide, setIncomingRide] = useState<Ride | null>(null);
-  const [activeRide, setActiveRide] = useState<Ride | null>(null);
+  const [activeRide, setActiveRide] = useState<(Ride & { rider?: Profile }) | null>(null);
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
+  const [geoError, setGeoError] = useState<string | null>(null);
 
   // 0. Check Approval Status
   useEffect(() => {
     const checkApproval = async () => {
       const { data, error } = await supabase
         .from('drivers')
-        .select('is_approved')
+        .select('is_approved, onboarding_status')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) {
+        console.error('Error checking approval:', error);
+      } else if (!data) {
         // If driver record doesn't exist, create it
-        if (error.code === 'PGRST116') {
-          await supabase.from('drivers').insert({
-            id: user.id,
-            vehicle_make: 'Toyota',
-            vehicle_model: 'Corolla',
-            vehicle_plate: 'GP 123 ZA',
-            vehicle_color: 'White',
-            is_approved: false
-          });
-          setIsApproved(false);
-        }
+        await supabase.from('drivers').insert({
+          id: user.id,
+          vehicle_make: 'Toyota',
+          vehicle_model: 'Corolla',
+          vehicle_plate: 'GP 123 ZA',
+          vehicle_color: 'White',
+          is_approved: false,
+          onboarding_status: 'pending'
+        });
+        setIsApproved(false);
+        setOnboardingStatus('pending');
       } else {
         setIsApproved(data.is_approved);
+        setOnboardingStatus(data.onboarding_status);
       }
     };
 
@@ -53,6 +58,7 @@ export default function DriverView({ user }: DriverViewProps) {
         { event: 'UPDATE', schema: 'public', table: 'drivers', filter: `id=eq.${user.id}` },
         (payload) => {
           setIsApproved(payload.new.is_approved);
+          setOnboardingStatus(payload.new.onboarding_status);
         }
       )
       .subscribe();
@@ -84,7 +90,10 @@ export default function DriverView({ user }: DriverViewProps) {
             .eq('id', user.id);
         }
       },
-      (err) => console.error(err),
+      (err) => {
+        console.error('Geolocation error:', err);
+        setGeoError(err.message);
+      },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 
@@ -99,11 +108,18 @@ export default function DriverView({ user }: DriverViewProps) {
     const checkActive = async () => {
       const { data } = await supabase
         .from('rides')
-        .select('*')
+        .select('*, rider:rider_id(*)')
         .eq('driver_id', user.id)
         .in('status', ['accepted', 'in_progress'])
-        .single();
-      if (data) setActiveRide(data);
+        .maybeSingle();
+      if (data) {
+        setActiveRide(data as any);
+        // Calculate route based on current status
+        const targetLat = data.status === 'accepted' ? data.pickup_lat : data.dropoff_lat;
+        const targetLng = data.status === 'accepted' ? data.pickup_lng : data.dropoff_lng;
+        const routeData = await getRoute(location, [targetLat, targetLng]);
+        if (routeData) setRoute(routeData.coordinates);
+      }
     };
     checkActive();
 
@@ -131,13 +147,20 @@ export default function DriverView({ user }: DriverViewProps) {
   const acceptRide = async () => {
     if (!incomingRide || !isApproved) return;
     
+    // Fetch rider details too
+    const { data: riderData } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', incomingRide.rider_id)
+      .single();
+
     const { error } = await supabase
       .from('rides')
       .update({ status: 'accepted', driver_id: user.id })
       .eq('id', incomingRide.id);
 
     if (!error) {
-      setActiveRide({ ...incomingRide, status: 'accepted', driver_id: user.id });
+      setActiveRide({ ...incomingRide, status: 'accepted', driver_id: user.id, rider: riderData as any });
       setIncomingRide(null);
       // Calculate route to pickup
       const routeData = await getRoute(location, [incomingRide.pickup_lat, incomingRide.pickup_lng]);
@@ -170,10 +193,35 @@ export default function DriverView({ user }: DriverViewProps) {
     window.location.reload();
   };
 
+  const openNavigation = (lat: number, lng: number) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+  };
+
   if (isApproved === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
         <Loader2 className="animate-spin text-hail-green" size={48} />
+      </div>
+    );
+  }
+
+  if (onboardingStatus === 'declined') {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
+        <div className="bg-red-100 p-6 rounded-full mb-6">
+          <ShieldAlert size={64} className="text-red-600" />
+        </div>
+        <h1 className="text-2xl font-bold mb-2 text-red-600">Account Suspended</h1>
+        <p className="text-gray-500 mb-8 max-w-xs">
+          Your driver account has been declined or suspended. Please contact support for more information.
+        </p>
+        <button 
+          onClick={handleSignOut}
+          className="flex items-center gap-2 text-gray-600 font-semibold hover:text-red-600 transition-colors"
+        >
+          <LogOut size={20} />
+          Sign Out
+        </button>
       </div>
     );
   }
@@ -218,24 +266,33 @@ export default function DriverView({ user }: DriverViewProps) {
       </div>
 
       {/* Top Status Bar */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none">
-        <div className="flex-1" />
-        <button
-          onClick={() => setIsOnline(!isOnline)}
-          className={`px-6 py-2 rounded-full font-bold shadow-lg transition-colors pointer-events-auto ${
-            isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 text-gray-300'
-          }`}
-        >
-          {isOnline ? 'YOU ARE ONLINE' : 'OFFLINE'}
-        </button>
-        <div className="flex-1 flex justify-end">
-          <button 
-            onClick={handleSignOut}
-            className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
-            title="Sign Out"
+      <div className="absolute top-4 left-4 right-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
+            {geoError && (
+              <div className="bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-lg pointer-events-auto flex items-center gap-1 w-fit">
+                <ShieldAlert size={12} />
+                GPS ERROR: {geoError}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setIsOnline(!isOnline)}
+            className={`px-6 py-2 rounded-full font-bold shadow-lg transition-colors pointer-events-auto ${
+              isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 text-gray-300'
+            }`}
           >
-            <LogOut size={20} />
+            {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
           </button>
+          <div className="flex-1 flex justify-end">
+            <button 
+              onClick={handleSignOut}
+              className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut size={20} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -286,18 +343,68 @@ export default function DriverView({ user }: DriverViewProps) {
       {/* Active Ride Controls */}
       {activeRide && (
         <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-          <div className="bg-white rounded-2xl shadow-2xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg">Current Trip</h3>
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase">
-                {activeRide.status}
-              </span>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 space-y-6">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-600 text-xl">
+                  {activeRide.rider?.full_name?.charAt(0) || 'R'}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{activeRide.rider?.full_name || 'Rider'}</h3>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <MapPin size={12} />
+                    {activeRide.status === 'accepted' ? 'Heading to Pickup' : 'Heading to Dropoff'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-1">
+                  {activeRide.status.replace('_', ' ')}
+                </span>
+                <p className="font-bold text-hail-green">{formatZAR(activeRide.fare_amount)}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 bg-gray-50 p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'accepted' ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'}`} />
+                <div>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold">Pickup</p>
+                  <p className="text-sm font-medium line-clamp-1">{activeRide.pickup_address}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'in_progress' ? 'bg-red-500 ring-4 ring-red-100' : 'bg-gray-300'}`} />
+                <div>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold">Dropoff</p>
+                  <p className="text-sm font-medium line-clamp-1">{activeRide.dropoff_address}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => openNavigation(
+                  activeRide.status === 'accepted' ? activeRide.pickup_lat : activeRide.dropoff_lat,
+                  activeRide.status === 'accepted' ? activeRide.pickup_lng : activeRide.dropoff_lng
+                )}
+                className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+              >
+                <ExternalLink size={18} />
+                Navigate
+              </button>
+              <button
+                className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+              >
+                <Phone size={18} />
+                Call Rider
+              </button>
             </div>
 
             {activeRide.status === 'accepted' && (
               <button
                 onClick={() => updateRideStatus('in_progress')}
-                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20"
               >
                 <Navigation size={20} />
                 Start Trip
@@ -307,7 +414,7 @@ export default function DriverView({ user }: DriverViewProps) {
             {activeRide.status === 'in_progress' && (
               <button
                 onClick={() => updateRideStatus('completed')}
-                className="w-full bg-red-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+                className="w-full bg-red-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
               >
                 <CheckCircle size={20} />
                 Complete Trip
