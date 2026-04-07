@@ -43,6 +43,23 @@ export default function AdminView({ user }: { user: any }) {
     window.location.reload();
   };
 
+  const promoteToAdmin = async (profileId: string) => {
+    if (!window.confirm('Are you sure you want to promote this user to Admin?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', profileId);
+      
+      if (error) throw error;
+      fetchAllData();
+    } catch (error) {
+      console.error('Error promoting user:', error);
+      alert('Failed to promote user. Check console for details.');
+    }
+  };
+
   const filteredProfiles = profiles.filter(p => 
     p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -190,9 +207,20 @@ export default function AdminView({ user }: { user: any }) {
                         {new Date(profile.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
-                        <button className="text-gray-400 hover:text-red-600 transition-colors">
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {profile.role !== 'admin' && (
+                            <button 
+                              onClick={() => promoteToAdmin(profile.id)}
+                              className="text-purple-600 hover:text-purple-800 transition-colors p-1"
+                              title="Promote to Admin"
+                            >
+                              <Shield size={18} />
+                            </button>
+                          )}
+                          <button className="text-gray-400 hover:text-red-600 transition-colors p-1">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

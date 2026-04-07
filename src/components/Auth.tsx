@@ -267,19 +267,6 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 >
                   Owner
                 </button>
-                {isAdminEmail && (
-                  <button
-                    type="button"
-                    onClick={() => setRole('admin')}
-                    className={`py-3 rounded-lg border font-medium transition-all text-sm ${
-                      role === 'admin' 
-                        ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    Admin
-                  </button>
-                )}
               </div>
             </div>
 
