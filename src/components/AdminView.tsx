@@ -20,7 +20,7 @@ export default function AdminView({ user }: { user: any }) {
     try {
       const [profilesRes, driversRes, ridesRes] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-        supabase.from('drivers').select('*, profiles!id(*)'),
+        supabase.from('drivers').select('*, profiles:drivers_id_fkey(*)'),
         supabase.from('rides').select('*, rider:rider_id(*), driver:driver_id(*)').order('created_at', { ascending: false })
       ]);
 
