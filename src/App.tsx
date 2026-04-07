@@ -5,7 +5,6 @@ import RiderView from '@/components/RiderView';
 import DriverView from '@/components/DriverView';
 import OwnerView from '@/components/OwnerView';
 import AdminView from '@/components/AdminView';
-import Setup from '@/components/Setup';
 import { Loader2 } from 'lucide-react';
 
 export default function App() {
@@ -15,7 +14,25 @@ export default function App() {
 
   // 1. Check Configuration First
   if (!isSupabaseConfigured) {
-    return <Setup />;
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md">
+          <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Loader2 className="text-orange-600" size={32} />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">App Configuration Missing</h1>
+          <p className="text-gray-500 text-sm mb-6">
+            The Supabase connection details are not set. If you are the developer, please add 
+            <code className="bg-gray-100 px-1 rounded mx-1">VITE_SUPABASE_URL</code> and 
+            <code className="bg-gray-100 px-1 rounded mx-1">VITE_SUPABASE_ANON_KEY</code> 
+            to the project settings.
+          </p>
+          <div className="text-xs text-gray-400 border-t pt-4">
+            End users should not see this. Please ensure environment variables are configured in the platform settings.
+          </div>
+        </div>
+      </div>
+    );
   }
 
   useEffect(() => {

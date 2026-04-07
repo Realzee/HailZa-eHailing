@@ -98,18 +98,8 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
       if (error) throw error;
 
       if (data.session) {
-        // Check if profile exists
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', data.session.user.id)
-          .single();
-
-        if (profile) {
-          onAuthSuccess();
-        } else {
-          setStep('profile');
-        }
+        // Trigger should have created the profile, so we can just succeed
+        onAuthSuccess();
       }
     } catch (err: any) {
       setError(err.message);
@@ -130,11 +120,15 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
           password,
         });
         if (error) throw error;
-        if (data.user) {
-          // For email signup, we can create profile immediately if we want, 
-          // or let the profile step handle it. 
-          // Let's go to profile step to be consistent.
-          setStep('profile');
+        
+        if (data.user && !data.session) {
+          setError('Registration successful! Please check your email to confirm your account.');
+          return;
+        }
+
+        if (data.session) {
+          // Profile is created by DB trigger, so we can just succeed
+          onAuthSuccess();
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -142,13 +136,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
           password,
         });
         if (error) throw error;
-        // Check profile
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-           const { data: profile } = await supabase.from('profiles').select('id').eq('id', session.user.id).single();
-           if (profile) onAuthSuccess();
-           else setStep('profile');
-        }
+        onAuthSuccess();
       }
     } catch (err: any) {
       setError(err.message);

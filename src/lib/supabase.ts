@@ -1,14 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Try to get config from Environment or LocalStorage
-const envUrl = import.meta.env.VITE_SUPABASE_URL;
-const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const storedUrl = typeof window !== 'undefined' ? localStorage.getItem('hailza_supabase_url') : null;
-const storedKey = typeof window !== 'undefined' ? localStorage.getItem('hailza_supabase_key') : null;
-
-const supabaseUrl = envUrl || storedUrl;
-const supabaseAnonKey = envKey || storedKey;
+// Try to get config from Environment
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 

@@ -135,6 +135,29 @@ alter publication supabase_realtime add table public.drivers;
 alter publication supabase_realtime add table public.rides;
 
 -- 7. HELPER FUNCTION: Find nearest drivers
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, email, full_name, role)
+  values (
+    new.id, 
+    new.email, 
+    split_part(new.email, '@', 1), 
+    case 
+      when new.email = 'mzwelisto@gmail.com' then 'admin'
+      else 'rider'
+    end
+  );
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Drop if exists to avoid errors on re-run
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
 create or replace function find_nearest_drivers(
   lat float,
   lng float,
