@@ -73,20 +73,29 @@ export default function AdminView({ user }: { user: any }) {
     }
   };
 
-  const updateDriverApproval = async (driverId: string, approved: boolean) => {
-    const action = approved ? 'approve' : 'decline/suspend';
-    if (!window.confirm(`Are you sure you want to ${action} this driver?`)) return;
+  const updateDriverStatus = async (driverId: string, status: 'pending' | 'approved' | 'declined') => {
+    if (!window.confirm(`Are you sure you want to mark this driver as ${status}?`)) return;
 
     try {
       const { error } = await supabase
         .from('drivers')
-        .update({ is_approved: approved })
+        .update({ 
+          onboarding_status: status,
+          is_approved: status === 'approved' 
+        })
         .eq('id', driverId);
       
       if (error) throw error;
       fetchAllData();
+      if (selectedDriver && selectedDriver.id === driverId) {
+        setSelectedDriver({
+          ...selectedDriver,
+          onboarding_status: status,
+          is_approved: status === 'approved'
+        });
+      }
     } catch (error) {
-      console.error('Error updating driver approval:', error);
+      console.error('Error updating driver status:', error);
       alert('Failed to update driver status.');
     }
   };
@@ -318,32 +327,40 @@ export default function AdminView({ user }: { user: any }) {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {driver.is_approved ? (
-                            <div className="flex items-center gap-1 text-green-600 text-xs font-bold uppercase">
-                              <CheckCircle size={14} /> Approved
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-orange-600 text-xs font-bold uppercase">
-                              <XCircle size={14} /> Pending
-                            </div>
-                          )}
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                            driver.onboarding_status === 'approved' ? 'bg-green-100 text-green-700' :
+                            driver.onboarding_status === 'declined' ? 'bg-red-100 text-red-700' :
+                            'bg-orange-100 text-orange-700'
+                          }`}>
+                            {driver.onboarding_status || 'pending'}
+                          </span>
                           
-                          <div className="flex items-center gap-1 ml-auto">
-                            {!driver.is_approved ? (
+                          <div className="flex items-center gap-1 ml-auto" onClick={(e) => e.stopPropagation()}>
+                            {driver.onboarding_status !== 'approved' && (
                               <button 
-                                onClick={() => updateDriverApproval(driver.id, true)}
+                                onClick={() => updateDriverStatus(driver.id, 'approved')}
                                 className="p-1 text-green-600 hover:bg-green-50 rounded-md transition-colors"
                                 title="Approve Driver"
                               >
                                 <CheckCircle size={18} />
                               </button>
-                            ) : (
+                            )}
+                            {driver.onboarding_status !== 'declined' && (
                               <button 
-                                onClick={() => updateDriverApproval(driver.id, false)}
+                                onClick={() => updateDriverStatus(driver.id, 'declined')}
                                 className="p-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                title="Decline/Suspend Driver"
+                                title="Decline Driver"
                               >
                                 <XCircle size={18} />
+                              </button>
+                            )}
+                            {driver.onboarding_status !== 'pending' && (
+                              <button 
+                                onClick={() => updateDriverStatus(driver.id, 'pending')}
+                                className="p-1 text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
+                                title="Set to Pending"
+                              >
+                                <Filter size={18} />
                               </button>
                             )}
                           </div>
@@ -479,17 +496,15 @@ export default function AdminView({ user }: { user: any }) {
                         <p className="font-bold">{selectedDriver.vehicle_color}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Approval Status</p>
+                        <p className="text-xs text-gray-500 mb-1">Onboarding Status</p>
                         <div className="flex items-center gap-2 mt-1">
-                          {selectedDriver.is_approved ? (
-                            <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
-                              <CheckCircle size={12} /> APPROVED
-                            </span>
-                          ) : (
-                            <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
-                              <XCircle size={12} /> PENDING
-                            </span>
-                          )}
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                            selectedDriver.onboarding_status === 'approved' ? 'bg-green-100 text-green-700' :
+                            selectedDriver.onboarding_status === 'declined' ? 'bg-red-100 text-red-700' :
+                            'bg-orange-100 text-orange-700'
+                          }`}>
+                            {selectedDriver.onboarding_status || 'pending'}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -499,19 +514,28 @@ export default function AdminView({ user }: { user: any }) {
                   <div>
                     <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h4>
                     <div className="flex flex-wrap gap-3">
-                      {!selectedDriver.is_approved ? (
+                      {selectedDriver.onboarding_status !== 'approved' && (
                         <button 
-                          onClick={() => updateDriverApproval(selectedDriver.id, true)}
+                          onClick={() => updateDriverStatus(selectedDriver.id, 'approved')}
                           className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                         >
                           <CheckCircle size={18} /> Approve Driver
                         </button>
-                      ) : (
+                      )}
+                      {selectedDriver.onboarding_status !== 'declined' && (
                         <button 
-                          onClick={() => updateDriverApproval(selectedDriver.id, false)}
+                          onClick={() => updateDriverStatus(selectedDriver.id, 'declined')}
+                          className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <XCircle size={18} /> Decline Driver
+                        </button>
+                      )}
+                      {selectedDriver.onboarding_status !== 'pending' && (
+                        <button 
+                          onClick={() => updateDriverStatus(selectedDriver.id, 'pending')}
                           className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
                         >
-                          <XCircle size={18} /> Suspend Driver
+                          <Filter size={18} /> Reset to Pending
                         </button>
                       )}
                       <button className="flex-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">

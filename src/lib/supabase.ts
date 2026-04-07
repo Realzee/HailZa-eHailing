@@ -34,6 +34,7 @@ export type Driver = {
   vehicle_color: string;
   is_online: boolean;
   is_approved: boolean;
+  onboarding_status: 'pending' | 'approved' | 'declined';
   owner_id?: string;
   current_location?: any;
 };

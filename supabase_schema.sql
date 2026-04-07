@@ -25,6 +25,7 @@ create table if not exists public.drivers (
   vehicle_color text,
   is_online boolean default false,
   is_approved boolean default false, -- Owner must approve
+  onboarding_status text check (onboarding_status in ('pending', 'approved', 'declined')) default 'pending',
   owner_id uuid references public.profiles(id), -- Linked owner
   current_location geography(POINT), -- PostGIS point
   updated_at timestamp with time zone default timezone('utc'::text, now())
@@ -35,6 +36,9 @@ do $$
 begin 
   if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='is_approved') then
     alter table public.drivers add column is_approved boolean default false;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='onboarding_status') then
+    alter table public.drivers add column onboarding_status text check (onboarding_status in ('pending', 'approved', 'declined')) default 'pending';
   end if;
   if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='owner_id') then
     alter table public.drivers add column owner_id uuid references public.profiles(id);
