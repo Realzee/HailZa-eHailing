@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
 import { supabase, type Ride } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
-import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut } from 'lucide-react';
+import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2 } from 'lucide-react';
 
 interface DriverViewProps {
   user: any;
@@ -11,13 +11,60 @@ interface DriverViewProps {
 export default function DriverView({ user }: DriverViewProps) {
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
+  const [isApproved, setIsApproved] = useState<boolean | null>(null);
   const [incomingRide, setIncomingRide] = useState<Ride | null>(null);
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
 
+  // 0. Check Approval Status
+  useEffect(() => {
+    const checkApproval = async () => {
+      const { data, error } = await supabase
+        .from('drivers')
+        .select('is_approved')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        // If driver record doesn't exist, create it
+        if (error.code === 'PGRST116') {
+          await supabase.from('drivers').insert({
+            id: user.id,
+            vehicle_make: 'Toyota',
+            vehicle_model: 'Corolla',
+            vehicle_plate: 'GP 123 ZA',
+            vehicle_color: 'White',
+            is_approved: false
+          });
+          setIsApproved(false);
+        }
+      } else {
+        setIsApproved(data.is_approved);
+      }
+    };
+
+    checkApproval();
+
+    // Subscribe to approval changes
+    const channel = supabase
+      .channel('driver_approval')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'drivers', filter: `id=eq.${user.id}` },
+        (payload) => {
+          setIsApproved(payload.new.is_approved);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user.id]);
+
   // 1. Location Tracking & Status Update
   useEffect(() => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation || !isApproved) return;
 
     const watchId = navigator.geolocation.watchPosition(
       async (pos) => {
@@ -42,11 +89,11 @@ export default function DriverView({ user }: DriverViewProps) {
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [isOnline, user.id]);
+  }, [isOnline, user.id, isApproved]);
 
   // 2. Listen for Ride Requests
   useEffect(() => {
-    if (!isOnline) return;
+    if (!isOnline || !isApproved) return;
 
     // Check for existing active ride first
     const checkActive = async () => {
@@ -78,11 +125,11 @@ export default function DriverView({ user }: DriverViewProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isOnline, activeRide, incomingRide, user.id]);
+  }, [isOnline, activeRide, incomingRide, user.id, isApproved]);
 
   // 3. Accept Ride
   const acceptRide = async () => {
-    if (!incomingRide) return;
+    if (!incomingRide || !isApproved) return;
     
     const { error } = await supabase
       .from('rides')
@@ -118,6 +165,41 @@ export default function DriverView({ user }: DriverViewProps) {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  if (isApproved === null) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="animate-spin text-hail-green" size={48} />
+      </div>
+    );
+  }
+
+  if (isApproved === false) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
+        <div className="bg-orange-100 p-6 rounded-full mb-6">
+          <Car size={64} className="text-orange-600" />
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Waiting for Approval</h1>
+        <p className="text-gray-500 mb-8 max-w-xs">
+          Your driver account is currently pending review by a fleet owner. 
+          You'll be able to go online once approved.
+        </p>
+        <button 
+          onClick={handleSignOut}
+          className="flex items-center gap-2 text-gray-600 font-semibold hover:text-red-600 transition-colors"
+        >
+          <LogOut size={20} />
+          Sign Out
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen flex flex-col">
       {/* Map */}
@@ -148,7 +230,7 @@ export default function DriverView({ user }: DriverViewProps) {
         </button>
         <div className="flex-1 flex justify-end">
           <button 
-            onClick={() => supabase.auth.signOut()}
+            onClick={handleSignOut}
             className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
             title="Sign Out"
           >

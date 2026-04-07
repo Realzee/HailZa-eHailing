@@ -17,7 +17,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
   // Profile State (Shared)
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<'rider' | 'driver'>('rider');
+  const [role, setRole] = useState<'rider' | 'driver' | 'owner'>('rider');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -228,11 +228,11 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">I am a</label>
-              <div className="flex gap-4">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setRole('rider')}
-                  className={`flex-1 py-3 rounded-lg border font-medium transition-all ${
+                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
                     role === 'rider' 
                       ? 'bg-hail-green text-white border-hail-green shadow-md' 
                       : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -243,13 +243,24 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 <button
                   type="button"
                   onClick={() => setRole('driver')}
-                  className={`flex-1 py-3 rounded-lg border font-medium transition-all ${
+                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
                     role === 'driver' 
                       ? 'bg-hail-green text-white border-hail-green shadow-md' 
                       : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   Driver
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('owner')}
+                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
+                    role === 'owner' 
+                      ? 'bg-hail-green text-white border-hail-green shadow-md' 
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Owner
                 </button>
               </div>
             </div>

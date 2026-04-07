@@ -22,8 +22,20 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string;
-  role: 'rider' | 'driver';
+  role: 'rider' | 'driver' | 'owner';
   phone?: string;
+};
+
+export type Driver = {
+  id: string;
+  vehicle_make: string;
+  vehicle_model: string;
+  vehicle_plate: string;
+  vehicle_color: string;
+  is_online: boolean;
+  is_approved: boolean;
+  owner_id?: string;
+  current_location?: any;
 };
 
 export type Ride = {

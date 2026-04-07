@@ -6,7 +6,7 @@ create table public.profiles (
   id uuid references auth.users not null primary key,
   email text,
   full_name text,
-  role text check (role in ('rider', 'driver')) default 'rider',
+  role text check (role in ('rider', 'driver', 'owner')) default 'rider',
   phone text,
   avatar_url text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -20,6 +20,8 @@ create table public.drivers (
   vehicle_plate text,
   vehicle_color text,
   is_online boolean default false,
+  is_approved boolean default false, -- Owner must approve
+  owner_id uuid references public.profiles(id), -- Linked owner
   current_location geography(POINT), -- PostGIS point
   updated_at timestamp with time zone default timezone('utc'::text, now())
 );
