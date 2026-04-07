@@ -22,7 +22,7 @@ export default function AdminView({ user }: { user: any }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides'>('users');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDriverForMap, setSelectedDriverForMap] = useState<(Driver & { profiles: Profile }) | null>(null);
+  const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -293,7 +293,7 @@ export default function AdminView({ user }: { user: any }) {
                     <tr 
                       key={driver.id} 
                       className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => setSelectedDriverForMap(driver)}
+                      onClick={() => setSelectedDriver(driver)}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -409,71 +409,161 @@ export default function AdminView({ user }: { user: any }) {
         </div>
       </main>
 
-      {/* Driver Map Modal */}
-      {selectedDriverForMap && (
+      {/* Driver Details Modal */}
+      {selectedDriver && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[95vh]">
             <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-900 text-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-hail-green rounded-full flex items-center justify-center font-bold">
-                  {selectedDriverForMap.profiles.full_name?.charAt(0)}
+                  {selectedDriver.profiles.full_name?.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="font-bold">{selectedDriverForMap.profiles.full_name}</h3>
-                  <p className="text-xs text-gray-400">{selectedDriverForMap.vehicle_make} {selectedDriverForMap.vehicle_model} • {selectedDriverForMap.vehicle_plate}</p>
+                  <h3 className="font-bold">{selectedDriver.profiles.full_name}</h3>
+                  <p className="text-xs text-gray-400">Driver ID: {selectedDriver.id.substring(0, 8)}...</p>
                 </div>
               </div>
               <button 
-                onClick={() => setSelectedDriverForMap(null)}
+                onClick={() => setSelectedDriver(null)}
                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
               >
                 <X size={24} />
               </button>
             </div>
             
-            <div className="flex-1 relative min-h-[400px]">
-              {getDriverLocation(selectedDriverForMap) ? (
-                <MapContainer 
-                  center={[getDriverLocation(selectedDriverForMap)!.lat, getDriverLocation(selectedDriverForMap)!.lng]} 
-                  zoom={15} 
-                  style={{ height: '100%', width: '100%' }}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker position={[getDriverLocation(selectedDriverForMap)!.lat, getDriverLocation(selectedDriverForMap)!.lng]}>
-                    <Popup>
-                      <div className="text-sm">
-                        <p className="font-bold">{selectedDriverForMap.profiles.full_name}</p>
-                        <p className="text-gray-500">{selectedDriverForMap.is_online ? 'Online' : 'Offline'}</p>
+            <div className="flex-1 overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                {/* Left Column: Details */}
+                <div className="p-6 space-y-8 border-r border-gray-100">
+                  {/* Profile Section */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Users size={16} /> Profile Information
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Full Name</p>
+                        <p className="font-bold">{selectedDriver.profiles.full_name}</p>
                       </div>
-                    </Popup>
-                  </Marker>
-                </MapContainer>
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500">
-                  <MapPin size={48} className="mb-4 opacity-20" />
-                  <p className="font-medium">No location data available for this driver</p>
-                  <p className="text-xs">The driver needs to be online to share their location</p>
-                </div>
-              )}
-            </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Email Address</p>
+                        <p className="font-bold">{selectedDriver.profiles.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Phone Number</p>
+                        <p className="font-bold">{selectedDriver.profiles.phone || 'Not provided'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Joined Date</p>
+                        <p className="font-bold">{new Date(selectedDriver.profiles.created_at).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${selectedDriverForMap.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                  <span className="text-sm font-medium">{selectedDriverForMap.is_online ? 'Online' : 'Offline'}</span>
+                  {/* Vehicle Section */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Car size={16} /> Vehicle Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-xl">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Make & Model</p>
+                        <p className="font-bold">{selectedDriver.vehicle_make} {selectedDriver.vehicle_model}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">License Plate</p>
+                        <p className="font-bold uppercase">{selectedDriver.vehicle_plate}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Color</p>
+                        <p className="font-bold">{selectedDriver.vehicle_color}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Approval Status</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {selectedDriver.is_approved ? (
+                            <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
+                              <CheckCircle size={12} /> APPROVED
+                            </span>
+                          ) : (
+                            <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
+                              <XCircle size={12} /> PENDING
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {!selectedDriver.is_approved ? (
+                        <button 
+                          onClick={() => updateDriverApproval(selectedDriver.id, true)}
+                          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <CheckCircle size={18} /> Approve Driver
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => updateDriverApproval(selectedDriver.id, false)}
+                          className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <XCircle size={18} /> Suspend Driver
+                        </button>
+                      )}
+                      <button className="flex-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                        <Trash2 size={18} /> Delete Account
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Shield size={16} className={selectedDriverForMap.is_approved ? 'text-green-600' : 'text-orange-600'} />
-                  <span className="text-sm font-medium">{selectedDriverForMap.is_approved ? 'Approved' : 'Pending Approval'}</span>
+
+                {/* Right Column: Map */}
+                <div className="relative min-h-[400px] lg:min-h-0 bg-gray-100">
+                  <div className="absolute top-4 left-4 z-[1000] bg-white px-3 py-1.5 rounded-lg shadow-md border flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${selectedDriver.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                    <span className="text-xs font-bold uppercase tracking-wide">
+                      {selectedDriver.is_online ? 'Live Tracking' : 'Last Known Location'}
+                    </span>
+                  </div>
+
+                  {getDriverLocation(selectedDriver) ? (
+                    <MapContainer 
+                      center={[getDriverLocation(selectedDriver)!.lat, getDriverLocation(selectedDriver)!.lng]} 
+                      zoom={15} 
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[getDriverLocation(selectedDriver)!.lat, getDriverLocation(selectedDriver)!.lng]}>
+                        <Popup>
+                          <div className="text-sm">
+                            <p className="font-bold">{selectedDriver.profiles.full_name}</p>
+                            <p className="text-gray-500">{selectedDriver.is_online ? 'Online' : 'Offline'}</p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-8 text-center">
+                      <MapPin size={48} className="mb-4 opacity-20" />
+                      <p className="font-bold text-gray-900">No Location Data</p>
+                      <p className="text-sm max-w-xs mx-auto mt-1">This driver hasn't shared their location yet. They must be online to be tracked.</p>
+                    </div>
+                  )}
                 </div>
               </div>
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end">
               <button 
-                onClick={() => setSelectedDriverForMap(null)}
-                className="px-6 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
+                onClick={() => setSelectedDriver(null)}
+                className="px-8 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
               >
                 Close
               </button>
