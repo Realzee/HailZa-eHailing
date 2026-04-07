@@ -22,7 +22,7 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string;
-  role: 'rider' | 'driver' | 'owner';
+  role: 'rider' | 'driver' | 'owner' | 'admin';
   phone?: string;
 };
 

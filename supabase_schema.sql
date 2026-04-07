@@ -6,15 +6,15 @@ create table if not exists public.profiles (
   id uuid references auth.users not null primary key,
   email text,
   full_name text,
-  role text check (role in ('rider', 'driver', 'owner')) default 'rider',
+  role text check (role in ('rider', 'driver', 'owner', 'admin')) default 'rider',
   phone text,
   avatar_url text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Ensure 'owner' role is allowed in existing profiles table
+-- Ensure 'admin' role is allowed in existing profiles table
 alter table public.profiles drop constraint if exists profiles_role_check;
-alter table public.profiles add constraint profiles_role_check check (role in ('rider', 'driver', 'owner'));
+alter table public.profiles add constraint profiles_role_check check (role in ('rider', 'driver', 'owner', 'admin'));
 
 -- 3. DRIVERS (Extended profile for drivers)
 create table if not exists public.drivers (
@@ -24,6 +24,8 @@ create table if not exists public.drivers (
   vehicle_plate text,
   vehicle_color text,
   is_online boolean default false,
+  is_approved boolean default false, -- Owner must approve
+  owner_id uuid references public.profiles(id), -- Linked owner
   current_location geography(POINT), -- PostGIS point
   updated_at timestamp with time zone default timezone('utc'::text, now())
 );
@@ -60,6 +62,22 @@ create table if not exists public.rides (
 alter table public.profiles enable row level security;
 alter table public.drivers enable row level security;
 alter table public.rides enable row level security;
+
+-- Admin Policy (Global access)
+drop policy if exists "Admins can do everything on profiles" on public.profiles;
+create policy "Admins can do everything on profiles" on public.profiles for all using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+
+drop policy if exists "Admins can do everything on drivers" on public.drivers;
+create policy "Admins can do everything on drivers" on public.drivers for all using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+
+drop policy if exists "Admins can do everything on rides" on public.rides;
+create policy "Admins can do everything on rides" on public.rides for all using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
 
 -- Profiles Policies
 drop policy if exists "Public profiles are viewable by everyone" on public.profiles;

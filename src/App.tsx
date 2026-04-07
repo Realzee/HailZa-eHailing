@@ -4,6 +4,7 @@ import Auth from '@/components/Auth';
 import RiderView from '@/components/RiderView';
 import DriverView from '@/components/DriverView';
 import OwnerView from '@/components/OwnerView';
+import AdminView from '@/components/AdminView';
 import Setup from '@/components/Setup';
 import { Loader2 } from 'lucide-react';
 
@@ -48,8 +49,12 @@ export default function App() {
         .eq('id', userId)
         .single();
       
-      if (error) throw error;
-      setProfile(data);
+      if (error) {
+        // If profile doesn't exist, it will be handled by Auth component
+        setProfile(null);
+      } else {
+        setProfile(data);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -71,7 +76,9 @@ export default function App() {
 
   return (
     <main className="w-full h-screen overflow-hidden bg-gray-100">
-      {profile.role === 'driver' ? (
+      {profile.role === 'admin' ? (
+        <AdminView user={session.user} />
+      ) : profile.role === 'driver' ? (
         <DriverView user={session.user} />
       ) : profile.role === 'owner' ? (
         <OwnerView user={session.user} />

@@ -17,10 +17,12 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
   // Profile State (Shared)
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<'rider' | 'driver' | 'owner'>('rider');
+  const [role, setRole] = useState<'rider' | 'driver' | 'owner' | 'admin'>('rider');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isAdminEmail = email === 'mzwelisto@gmail.com';
 
   // Check if user is already logged in but missing profile
   useEffect(() => {
@@ -31,6 +33,9 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         const { data } = await supabase.from('profiles').select('id').eq('id', session.user.id).single();
         if (!data) {
           setStep('profile');
+          if (session.user.email === 'mzwelisto@gmail.com') {
+            setRole('admin');
+          }
         }
       }
     };
@@ -262,6 +267,19 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 >
                   Owner
                 </button>
+                {isAdminEmail && (
+                  <button
+                    type="button"
+                    onClick={() => setRole('admin')}
+                    className={`py-3 rounded-lg border font-medium transition-all text-sm ${
+                      role === 'admin' 
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Admin
+                  </button>
+                )}
               </div>
             </div>
 
