@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
-import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix Leaflet marker icon issue
+// @ts-ignore
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 export default function AdminView({ user }: { user: any }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -10,6 +22,7 @@ export default function AdminView({ user }: { user: any }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides'>('users');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDriverForMap, setSelectedDriverForMap] = useState<(Driver & { profiles: Profile }) | null>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -60,6 +73,24 @@ export default function AdminView({ user }: { user: any }) {
     }
   };
 
+  const updateDriverApproval = async (driverId: string, approved: boolean) => {
+    const action = approved ? 'approve' : 'decline/suspend';
+    if (!window.confirm(`Are you sure you want to ${action} this driver?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('drivers')
+        .update({ is_approved: approved })
+        .eq('id', driverId);
+      
+      if (error) throw error;
+      fetchAllData();
+    } catch (error) {
+      console.error('Error updating driver approval:', error);
+      alert('Failed to update driver status.');
+    }
+  };
+
   const filteredProfiles = profiles.filter(p => 
     p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,6 +107,23 @@ export default function AdminView({ user }: { user: any }) {
     r.dropoff_address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     r.status?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getDriverLocation = (driver: Driver) => {
+    if (!driver.current_location) return null;
+    // PostGIS geography(POINT) is usually returned as a string or GeoJSON object
+    // If it's a string like "POINT(lng lat)", we parse it
+    if (typeof driver.current_location === 'string') {
+      const match = driver.current_location.match(/POINT\(([-\d.]+) ([-\d.]+)\)/);
+      if (match) {
+        return { lng: parseFloat(match[1]), lat: parseFloat(match[2]) };
+      }
+    }
+    // If it's a GeoJSON object
+    if (driver.current_location.coordinates) {
+      return { lng: driver.current_location.coordinates[0], lat: driver.current_location.coordinates[1] };
+    }
+    return null;
+  };
 
   if (loading) {
     return (
@@ -242,7 +290,11 @@ export default function AdminView({ user }: { user: any }) {
                 </thead>
                 <tbody className="divide-y">
                   {filteredDrivers.map((driver) => (
-                    <tr key={driver.id} className="hover:bg-gray-50 transition-colors">
+                    <tr 
+                      key={driver.id} 
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedDriverForMap(driver)}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center font-bold text-green-600">
@@ -265,15 +317,37 @@ export default function AdminView({ user }: { user: any }) {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {driver.is_approved ? (
-                          <div className="flex items-center gap-1 text-green-600 text-xs font-bold uppercase">
-                            <CheckCircle size={14} /> Approved
+                        <div className="flex items-center gap-3">
+                          {driver.is_approved ? (
+                            <div className="flex items-center gap-1 text-green-600 text-xs font-bold uppercase">
+                              <CheckCircle size={14} /> Approved
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 text-orange-600 text-xs font-bold uppercase">
+                              <XCircle size={14} /> Pending
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center gap-1 ml-auto">
+                            {!driver.is_approved ? (
+                              <button 
+                                onClick={() => updateDriverApproval(driver.id, true)}
+                                className="p-1 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                title="Approve Driver"
+                              >
+                                <CheckCircle size={18} />
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={() => updateDriverApproval(driver.id, false)}
+                                className="p-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                title="Decline/Suspend Driver"
+                              >
+                                <XCircle size={18} />
+                              </button>
+                            )}
                           </div>
-                        ) : (
-                          <div className="flex items-center gap-1 text-orange-600 text-xs font-bold uppercase">
-                            <XCircle size={14} /> Pending
-                          </div>
-                        )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -334,6 +408,79 @@ export default function AdminView({ user }: { user: any }) {
           )}
         </div>
       </main>
+
+      {/* Driver Map Modal */}
+      {selectedDriverForMap && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-900 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-hail-green rounded-full flex items-center justify-center font-bold">
+                  {selectedDriverForMap.profiles.full_name?.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-bold">{selectedDriverForMap.profiles.full_name}</h3>
+                  <p className="text-xs text-gray-400">{selectedDriverForMap.vehicle_make} {selectedDriverForMap.vehicle_model} • {selectedDriverForMap.vehicle_plate}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedDriverForMap(null)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 relative min-h-[400px]">
+              {getDriverLocation(selectedDriverForMap) ? (
+                <MapContainer 
+                  center={[getDriverLocation(selectedDriverForMap)!.lat, getDriverLocation(selectedDriverForMap)!.lng]} 
+                  zoom={15} 
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[getDriverLocation(selectedDriverForMap)!.lat, getDriverLocation(selectedDriverForMap)!.lng]}>
+                    <Popup>
+                      <div className="text-sm">
+                        <p className="font-bold">{selectedDriverForMap.profiles.full_name}</p>
+                        <p className="text-gray-500">{selectedDriverForMap.is_online ? 'Online' : 'Offline'}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500">
+                  <MapPin size={48} className="mb-4 opacity-20" />
+                  <p className="font-medium">No location data available for this driver</p>
+                  <p className="text-xs">The driver needs to be online to share their location</p>
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${selectedDriverForMap.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                  <span className="text-sm font-medium">{selectedDriverForMap.is_online ? 'Online' : 'Offline'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield size={16} className={selectedDriverForMap.is_approved ? 'text-green-600' : 'text-orange-600'} />
+                  <span className="text-sm font-medium">{selectedDriverForMap.is_approved ? 'Approved' : 'Pending Approval'}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedDriverForMap(null)}
+                className="px-6 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
