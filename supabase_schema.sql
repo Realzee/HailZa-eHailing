@@ -1,8 +1,8 @@
--- Enable PostGIS for location support
+-- 1. Enable PostGIS for location support
 create extension if not exists postgis;
 
--- PROFILES (Users)
-create table public.profiles (
+-- 2. PROFILES (Users)
+create table if not exists public.profiles (
   id uuid references auth.users not null primary key,
   email text,
   full_name text,
@@ -12,63 +12,101 @@ create table public.profiles (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- DRIVERS (Extended profile for drivers)
-create table public.drivers (
+-- Ensure 'owner' role is allowed in existing profiles table
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check check (role in ('rider', 'driver', 'owner'));
+
+-- 3. DRIVERS (Extended profile for drivers)
+create table if not exists public.drivers (
   id uuid references public.profiles(id) not null primary key,
   vehicle_make text,
   vehicle_model text,
   vehicle_plate text,
   vehicle_color text,
   is_online boolean default false,
-  is_approved boolean default false, -- Owner must approve
-  owner_id uuid references public.profiles(id), -- Linked owner
   current_location geography(POINT), -- PostGIS point
   updated_at timestamp with time zone default timezone('utc'::text, now())
 );
 
--- RIDES
-create table public.rides (
+-- Add missing columns to drivers if they don't exist (for existing tables)
+do $$ 
+begin 
+  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='is_approved') then
+    alter table public.drivers add column is_approved boolean default false;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='owner_id') then
+    alter table public.drivers add column owner_id uuid references public.profiles(id);
+  end if;
+end $$;
+
+-- 4. RIDES (Ride requests and history)
+create table if not exists public.rides (
   id uuid default gen_random_uuid() primary key,
   rider_id uuid references public.profiles(id) not null,
-  driver_id uuid references public.drivers(id),
-  pickup_lat float not null,
-  pickup_lng float not null,
-  dropoff_lat float not null,
-  dropoff_lng float not null,
-  pickup_address text,
-  dropoff_address text,
-  status text check (status in ('requested', 'accepted', 'arrived', 'in_progress', 'completed', 'cancelled')) default 'requested',
-  fare_amount decimal,
-  distance_km decimal,
+  driver_id uuid references public.profiles(id),
+  pickup_address text not null,
+  pickup_lat double precision not null,
+  pickup_lng double precision not null,
+  dropoff_address text not null,
+  dropoff_lat double precision not null,
+  dropoff_lng double precision not null,
+  status text check (status in ('requested', 'accepted', 'in_progress', 'completed', 'cancelled')) default 'requested',
+  fare_amount numeric not null,
+  distance_km numeric not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- RLS POLICIES
+-- 5. RLS POLICIES (Row Level Security)
 alter table public.profiles enable row level security;
 alter table public.drivers enable row level security;
 alter table public.rides enable row level security;
 
--- Enable Realtime for the rides table
-alter publication supabase_realtime add table public.rides;
+-- Profiles Policies
+drop policy if exists "Public profiles are viewable by everyone" on public.profiles;
+drop policy if exists "Users can insert their own profile" on public.profiles;
+drop policy if exists "Users can update own profile" on public.profiles;
 
--- Profiles: Everyone can read, User can update own
 create policy "Public profiles are viewable by everyone" on public.profiles for select using (true);
 create policy "Users can insert their own profile" on public.profiles for insert with check (auth.uid() = id);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
--- Drivers: Public read (for map), Driver update own
+-- Drivers Policies
+drop policy if exists "Drivers viewable by everyone" on public.drivers;
+drop policy if exists "Drivers can update own status" on public.drivers;
+drop policy if exists "Drivers can insert own record" on public.drivers;
+drop policy if exists "Owners can update drivers" on public.drivers;
+
 create policy "Drivers viewable by everyone" on public.drivers for select using (true);
 create policy "Drivers can update own status" on public.drivers for update using (auth.uid() = id);
 create policy "Drivers can insert own record" on public.drivers for insert with check (auth.uid() = id);
+create policy "Owners can update drivers" on public.drivers for update using (
+  exists (
+    select 1 from public.profiles 
+    where id = auth.uid() and role = 'owner'
+  )
+);
 
--- Rides: Riders see own, Drivers see available or assigned
+-- Rides Policies
+drop policy if exists "Riders can see own rides" on public.rides;
+drop policy if exists "Drivers can see requested rides" on public.rides;
+drop policy if exists "Riders can create rides" on public.rides;
+drop policy if exists "Drivers can update assigned rides" on public.rides;
+
 create policy "Riders can see own rides" on public.rides for select using (auth.uid() = rider_id);
 create policy "Drivers can see requested rides" on public.rides for select using (status = 'requested' or driver_id = auth.uid());
 create policy "Riders can create rides" on public.rides for insert with check (auth.uid() = rider_id);
 create policy "Drivers can update assigned rides" on public.rides for update using (driver_id = auth.uid() or (driver_id is null and status = 'requested'));
 
--- FUNCTION: Find nearest drivers
--- Returns drivers within radius_km, ordered by distance
+-- 6. REALTIME (Enable Realtime for these tables)
+begin;
+  drop publication if exists supabase_realtime;
+  create publication supabase_realtime;
+commit;
+alter publication supabase_realtime add table public.profiles;
+alter publication supabase_realtime add table public.drivers;
+alter publication supabase_realtime add table public.rides;
+
+-- 7. HELPER FUNCTION: Find nearest drivers
 create or replace function find_nearest_drivers(
   lat float,
   lng float,
@@ -95,6 +133,7 @@ as $$
     public.drivers d
   where
     d.is_online = true
+    and d.is_approved = true
     and st_dwithin(d.current_location, st_point(lng, lat)::geography, radius_km * 1000)
   order by
     d.current_location <-> st_point(lng, lat)::geography
