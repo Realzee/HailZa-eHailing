@@ -32,6 +32,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [cancelReason, setCancelReason] = useState('');
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [isSheetMinimized, setIsSheetMinimized] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedRideType, setSelectedRideType] = useState('standard');
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
@@ -395,6 +396,13 @@ export default function RiderView({ user }: RiderViewProps) {
             >
               <Home size={20} />
             </button>
+            <button 
+              onClick={() => setShowHistoryModal(true)}
+              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              title="Trip History"
+            >
+              <History size={20} />
+            </button>
             <ThemeToggle />
             <button 
               onClick={() => supabase.auth.signOut()}
@@ -596,7 +604,7 @@ export default function RiderView({ user }: RiderViewProps) {
             )}
 
             {/* Ride Selection */}
-            {destination && rideStats ? (
+            {destination && rideStats && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -678,36 +686,6 @@ export default function RiderView({ user }: RiderViewProps) {
                   </button>
                 </div>
               </motion.div>
-            ) : (
-              <div className="space-y-6 pb-20">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                    <History size={16} className="text-gray-400" /> Recent Trips
-                  </h3>
-                </div>
-                {rideHistory.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {rideHistory.slice(0, 4).map((ride) => (
-                      <div key={ride.id} className="p-3 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{new Date(ride.created_at).toLocaleDateString()}</span>
-                          <span className="font-black text-hail-green text-sm">{formatZAR(ride.fare_amount)}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs font-bold text-gray-800 line-clamp-1 flex items-center gap-2">
-                            <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                            {ride.dropoff_address}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
-                    <p className="text-gray-400 font-medium italic">No past rides found</p>
-                  </div>
-                )}
-              </div>
             )}
           </div>
         ) : (
@@ -812,6 +790,65 @@ export default function RiderView({ user }: RiderViewProps) {
         )}
       </div>
     </motion.div>
+
+      {/* All Routes Modal */}
+      <AnimatePresence>
+        {showHistoryModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 pointer-events-auto"
+          >
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="bg-white w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl"
+            >
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Trip History</h2>
+                  <p className="text-sm text-gray-500 font-medium">Your recent rides</p>
+                </div>
+                <button 
+                  onClick={() => setShowHistoryModal(false)} 
+                  className="p-3 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-all active:scale-95"
+                >
+                  <X size={24} className="text-gray-600" />
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-hide">
+                {rideHistory.length > 0 ? (
+                  rideHistory.map((ride) => (
+                    <div key={ride.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(ride.created_at).toLocaleDateString()}</span>
+                        <span className="font-black text-hail-green text-lg">{formatZAR(ride.fare_amount)}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
+                          {ride.dropoff_address}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                          <span className="bg-gray-200 px-2 py-1 rounded-md">{ride.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500 font-medium">
+                    No recent trips found.
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* All Routes Modal */}
       <AnimatePresence>
