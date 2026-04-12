@@ -2,10 +2,10 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  --color-hail-green: #2F4F4F; /* Dark Slate Gray from logo */
-  --color-hail-gold: #87CEEB;  /* Sky Blue from logo */
-  --color-primary: #2F4F4F;
-  --color-secondary: #87CEEB;
+  --color-hail-green: #2596be; /* Primary color */
+  --color-hail-gold: #67bed9;  /* Secondary color */
+  --color-primary: #2596be;
+  --color-secondary: #67bed9;
 }
 
 @layer base {

@@ -13,7 +13,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full" />
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} TDN Transport. All rights reserved.</p>
+          <p className="text-sm text-gray-400">© {new Date().getFullYear()} eTaxiDriver. All rights reserved.</p>
         </div>
       </div>
     </footer>
