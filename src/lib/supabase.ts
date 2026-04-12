@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Try to get config from Environment
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fgadudccmhldjlstpszy.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnYWR1ZGNjbWhsZGpsc3Rwc3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzMzg2NTcsImV4cCI6MjA4OTkxNDY1N30.QzMZpyFSqfrZ7eHDQ2b4HMQK7vvHu6ERWPFPjhh6ZMw';
 
 const isRealSupabase = !!(supabaseUrl && supabaseAnonKey && supabaseUrl.includes('.supabase.co'));
 
