@@ -24,6 +24,9 @@ export default function RiderView({ user }: RiderViewProps) {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showPayment, setShowPayment] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   // 1. Get User Location
   useEffect(() => {
@@ -222,12 +225,17 @@ export default function RiderView({ user }: RiderViewProps) {
     }, 2000);
   };
 
-  const cancelRide = async () => {
-    if (!activeRide || !window.confirm('Are you sure you want to cancel this ride?')) return;
+  const cancelRide = () => {
+    if (!activeRide) return;
+    setShowCancelModal(true);
+  };
+
+  const confirmCancel = async () => {
+    if (!activeRide || !cancelReason) return;
     
     const { error } = await supabase
       .from('rides')
-      .update({ status: 'cancelled' })
+      .update({ status: 'cancelled', cancellation_reason: cancelReason })
       .eq('id', activeRide.id);
       
     if (error) {
@@ -238,6 +246,8 @@ export default function RiderView({ user }: RiderViewProps) {
       setDestination(null);
       setRoute(undefined);
       setRideStats(null);
+      setShowCancelModal(false);
+      setCancelReason('');
     }
   };
 
@@ -314,6 +324,43 @@ export default function RiderView({ user }: RiderViewProps) {
             >
               {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Paystack <CreditCard size={20} /></>}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Cancellation Modal */}
+      {showCancelModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white w-full max-w-sm rounded-2xl p-6 animate-in zoom-in-95 duration-200">
+            <h2 className="text-xl font-bold mb-4">Select Cancellation Reason</h2>
+            <div className="space-y-2 mb-6">
+              {cancellationReasons.map((reason) => (
+                <button
+                  key={reason}
+                  onClick={() => setCancelReason(reason)}
+                  className={`w-full p-3 rounded-xl text-left font-medium transition-colors ${
+                    cancelReason === reason ? 'bg-hail-green text-white' : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {reason}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-3 bg-gray-100 rounded-xl font-bold"
+              >
+                Back
+              </button>
+              <button
+                onClick={confirmCancel}
+                disabled={!cancelReason}
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold disabled:opacity-50"
+              >
+                Confirm Cancellation
+              </button>
+            </div>
           </div>
         </div>
       )}
