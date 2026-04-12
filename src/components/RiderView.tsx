@@ -16,6 +16,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
   const [rideStats, setRideStats] = useState<{ distance: number; duration: number; price: number } | null>(null);
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
+  const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -61,6 +62,7 @@ export default function RiderView({ user }: RiderViewProps) {
     };
 
     fetchActiveRide();
+    fetchRideHistory();
 
     const channel = supabase
       .channel('rider_rides')
@@ -81,6 +83,19 @@ export default function RiderView({ user }: RiderViewProps) {
       supabase.removeChannel(channel);
     };
   }, [user.id]);
+
+  const fetchRideHistory = async () => {
+    const { data } = await supabase
+      .from('rides')
+      .select('*')
+      .eq('rider_id', user.id)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setRideHistory(data);
+    }
+  };
 
   // 3. Handle Map Click (Set Destination)
   const handleMapClick = async (lat: number, lng: number) => {
@@ -117,6 +132,18 @@ export default function RiderView({ user }: RiderViewProps) {
     setSearching(true);
     
     try {
+      console.log('Requesting ride:', {
+        rider_id: user.id,
+        pickup_lat: location[0],
+        pickup_lng: location[1],
+        dropoff_lat: destination[0],
+        dropoff_lng: destination[1],
+        pickup_address: pickupAddress,
+        dropoff_address: dropoffAddress,
+        fare_amount: rideStats.price,
+        distance_km: rideStats.distance,
+        status: 'requested'
+      });
       const { error } = await supabase.from('rides').insert({
         rider_id: user.id,
         pickup_lat: location[0],
@@ -301,8 +328,24 @@ export default function RiderView({ user }: RiderViewProps) {
                 </button>
               </div>
             ) : (
-              <div className="text-center text-gray-400 py-8">
-                <p>Tap the map or search to select a destination</p>
+              <div className="space-y-4">
+                <h3 className="font-bold text-lg">Ride History</h3>
+                {rideHistory.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {rideHistory.map((ride) => (
+                      <div key={ride.id} className="p-3 bg-gray-50 rounded-xl text-sm">
+                        <div className="flex justify-between mb-1">
+                          <span className="font-bold">{new Date(ride.created_at).toLocaleDateString()}</span>
+                          <span className="font-bold text-hail-green">{formatZAR(ride.fare_amount)}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">{ride.pickup_address}</p>
+                        <p className="text-xs text-gray-500 truncate">{ride.dropoff_address}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-400 py-4">No past rides found</p>
+                )}
               </div>
             )}
           </>

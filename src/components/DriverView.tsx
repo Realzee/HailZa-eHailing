@@ -34,6 +34,7 @@ export default function DriverView({ user }: DriverViewProps) {
 
   // 0. Check Approval Status
   useEffect(() => {
+    console.log('Driver isApproved status:', isApproved);
     const checkApproval = async () => {
       const { data, error } = await supabase
         .from('drivers')
@@ -84,6 +85,7 @@ export default function DriverView({ user }: DriverViewProps) {
 
   // 1. Location Tracking & Status Update
   useEffect(() => {
+    console.log('Driver isOnline status:', isOnline);
     if (!navigator.geolocation || !isApproved) return;
 
     const watchId = navigator.geolocation.watchPosition(
@@ -142,15 +144,18 @@ export default function DriverView({ user }: DriverViewProps) {
       .channel('driver_rides')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'rides', filter: `status=eq.requested` },
+        { event: 'INSERT', schema: 'public', table: 'rides' },
         (payload) => {
-          // Simple logic: Show any request (In prod, use PostGIS RPC to filter by radius)
-          if (!activeRide && !incomingRide) {
-            setIncomingRide(payload.new as Ride);
+          console.log('New ride payload:', payload);
+          const newRide = payload.new as Ride;
+          if (newRide.status === 'requested' && !activeRide && !incomingRide) {
+            setIncomingRide(newRide);
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
