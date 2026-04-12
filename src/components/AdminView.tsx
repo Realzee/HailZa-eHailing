@@ -20,9 +20,12 @@ export default function AdminView({ user }: { user: any }) {
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
   const [rides, setRides] = useState<(Ride & { rider: Profile; driver?: Profile })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings'>('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
+  const [earningsDriverFilter, setEarningsDriverFilter] = useState<string>('all');
+  const [earningsDateStart, setEarningsDateStart] = useState<string>('');
+  const [earningsDateEnd, setEarningsDateEnd] = useState<string>('');
 
   useEffect(() => {
     fetchAllData();
@@ -209,22 +212,55 @@ export default function AdminView({ user }: { user: any }) {
             >
               Rides
             </button>
+            <button
+              onClick={() => setActiveTab('earnings')}
+              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                activeTab === 'earnings' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Earnings
+            </button>
           </div>
 
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder={`Search ${activeTab}...`}
-              className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-hail-green outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            {activeTab !== 'earnings' && (
+              <>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder={`Search ${activeTab}...`}
+                  className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-hail-green outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </>
+            )}
           </div>
         </div>
 
         {/* Data Tables */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {activeTab === 'earnings' && (
+            <div className="p-4 bg-white border-b flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <Filter size={18} className="text-gray-400" />
+                <select 
+                  className="border rounded-lg px-3 py-2 text-sm"
+                  value={earningsDriverFilter}
+                  onChange={(e) => setEarningsDriverFilter(e.target.value)}
+                >
+                  <option value="all">All Drivers</option>
+                  {drivers.map(d => <option key={d.id} value={d.id}>{d.profiles.full_name}</option>)}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="date" className="border rounded-lg px-3 py-2 text-sm" value={earningsDateStart} onChange={(e) => setEarningsDateStart(e.target.value)} />
+                <span>to</span>
+                <input type="date" className="border rounded-lg px-3 py-2 text-sm" value={earningsDateEnd} onChange={(e) => setEarningsDateEnd(e.target.value)} />
+              </div>
+            </div>
+          )}
+
           {activeTab === 'users' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
@@ -419,6 +455,36 @@ export default function AdminView({ user }: { user: any }) {
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === 'earnings' && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Date</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Driver</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Rider</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Fare</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {rides
+                    .filter(r => r.status === 'completed')
+                    .filter(r => earningsDriverFilter === 'all' || r.driver_id === earningsDriverFilter)
+                    .filter(r => !earningsDateStart || new Date(r.created_at) >= new Date(earningsDateStart))
+                    .filter(r => !earningsDateEnd || new Date(r.created_at) <= new Date(earningsDateEnd))
+                    .map((ride) => (
+                      <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 text-sm">{new Date(ride.created_at).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-sm font-medium">{ride.driver?.full_name || 'N/A'}</td>
+                        <td className="px-6 py-4 text-sm">{ride.rider?.full_name}</td>
+                        <td className="px-6 py-4 text-sm font-bold text-hail-green">{formatZAR(ride.fare_amount)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
