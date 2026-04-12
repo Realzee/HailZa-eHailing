@@ -494,23 +494,24 @@ export default function RiderView({ user }: RiderViewProps) {
           y: isSheetMinimized && activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') ? '70%' : 0 
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] p-6 z-20 max-h-[85vh] overflow-y-auto border-t border-gray-100 relative scrollbar-hide"
+        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] z-20 max-h-[85vh] overflow-y-auto border-t border-gray-100 relative scrollbar-hide flex justify-center"
       >
-        {/* Handle for visual cue / Toggle */}
-        <button 
-          onClick={() => activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && setIsSheetMinimized(!isSheetMinimized)}
-          className="w-full py-2 flex flex-col items-center cursor-pointer group"
-        >
-          <div className="w-12 h-1.5 bg-gray-200 rounded-full group-hover:bg-gray-300 transition-colors" />
-          {(!activeRide || activeRide.status === 'completed') && (
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
-              {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
-            </p>
-          )}
-        </button>
+        <div className="w-full max-w-2xl p-6">
+          {/* Handle for visual cue / Toggle */}
+          <button 
+            onClick={() => activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && setIsSheetMinimized(!isSheetMinimized)}
+            className="w-full py-2 flex flex-col items-center cursor-pointer group mb-4"
+          >
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full group-hover:bg-gray-300 transition-colors" />
+            {(!activeRide || activeRide.status === 'completed') && (
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
+                {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
+              </p>
+            )}
+          </button>
 
-        {!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled' ? (
-          <div className="max-w-2xl mx-auto w-full mt-4">
+          {!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled' ? (
+            <div className="w-full">
 
             {/* Search Destination */}
             <div className="mb-8 relative">
@@ -711,7 +712,7 @@ export default function RiderView({ user }: RiderViewProps) {
           </div>
         ) : (
           /* Active Ride Status */
-          <div className="max-w-2xl mx-auto w-full">
+          <div className="w-full">
             {isSheetMinimized ? (
               <div className="flex items-center justify-between py-4">
                 <div className="flex items-center gap-4">
@@ -809,7 +810,8 @@ export default function RiderView({ user }: RiderViewProps) {
             )}
           </div>
         )}
-      </motion.div>
+      </div>
+    </motion.div>
 
       {/* All Routes Modal */}
       <AnimatePresence>
