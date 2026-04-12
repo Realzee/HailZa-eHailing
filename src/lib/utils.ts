@@ -45,7 +45,7 @@ export const searchAddress = async (query: string) => {
       )}&viewbox=${viewbox}&bounded=1&limit=5`,
       {
         headers: {
-          'User-Agent': 'HailZA-Web-App/1.0',
+          'User-Agent': 'eTaxiDriver-Web-App/1.0',
         },
       }
     );
@@ -62,7 +62,7 @@ export const reverseGeocode = async (lat: number, lng: number) => {
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
       {
         headers: {
-          'User-Agent': 'HailZA-Web-App/1.0',
+          'User-Agent': 'eTaxiDriver-Web-App/1.0',
         },
       }
     );

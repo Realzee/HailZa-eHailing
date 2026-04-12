@@ -542,7 +542,7 @@ export default function RiderView({ user }: RiderViewProps) {
                       <Car size={32} className="text-white" />
                     </div>
                     <div>
-                      <p className="font-black text-xl text-gray-900">HailZA Standard</p>
+                      <p className="font-black text-xl text-gray-900">eTaxiDriver Standard</p>
                       <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
                         <Clock size={14} />
                         <span>4 min away</span>

@@ -209,7 +209,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl font-black text-gray-900 mb-2 tracking-tighter font-display"
             >
-              HailZA
+              eTaxiDriver
             </motion.h1>
           )}
           <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">South Africa's Local Ride App</p>
