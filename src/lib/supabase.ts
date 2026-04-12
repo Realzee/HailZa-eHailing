@@ -82,6 +82,18 @@ export const supabase = isRealSupabase
   ? createClient(supabaseUrl, supabaseAnonKey)
   : createMockClient();
 
+// Connection Test
+if (isRealSupabase) {
+  supabase.from('profiles').select('id', { count: 'exact', head: true })
+    .then(({ error }) => {
+      if (error) {
+        console.warn('Supabase Connection Warning:', error.message);
+      } else {
+        console.log('âœ… Supabase Connected Successfully');
+      }
+    });
+}
+
 export type Profile = {
   id: string;
   email: string;

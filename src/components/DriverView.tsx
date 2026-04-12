@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Profile } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
-import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert } from 'lucide-react';
+import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X } from 'lucide-react';
 
 interface DriverViewProps {
   user: any;
@@ -17,6 +17,20 @@ export default function DriverView({ user }: DriverViewProps) {
   const [activeRide, setActiveRide] = useState<(Ride & { rider?: Profile }) | null>(null);
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
   const [geoError, setGeoError] = useState<string | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  // Sound effect for new requests
+  const playNotificationSound = () => {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.play().catch(e => console.error('Error playing sound:', e));
+  };
+
+  useEffect(() => {
+    if (incomingRide) {
+      playNotificationSound();
+      setShowNotification(true);
+    }
+  }, [incomingRide?.id]);
 
   // 0. Check Approval Status
   useEffect(() => {
@@ -162,6 +176,7 @@ export default function DriverView({ user }: DriverViewProps) {
     if (!error) {
       setActiveRide({ ...incomingRide, status: 'accepted', driver_id: user.id, rider: riderData as any });
       setIncomingRide(null);
+      setShowNotification(false);
       // Calculate route to pickup
       const routeData = await getRoute(location, [incomingRide.pickup_lat, incomingRide.pickup_lng]);
       if (routeData) setRoute(routeData.coordinates);
@@ -250,6 +265,29 @@ export default function DriverView({ user }: DriverViewProps) {
 
   return (
     <div className="relative w-full h-screen flex flex-col">
+      {/* Visual Notification Banner */}
+      {showNotification && incomingRide && !activeRide && (
+        <div className="absolute top-20 left-4 right-4 z-50 animate-in slide-in-from-top duration-300 pointer-events-auto">
+          <div className="bg-hail-green text-white p-4 rounded-xl shadow-2xl flex items-center justify-between gap-3 border border-white/20">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-full">
+                <Bell size={20} className="animate-bounce" />
+              </div>
+              <div>
+                <p className="font-bold text-sm">New Ride Request!</p>
+                <p className="text-[10px] opacity-90 line-clamp-1">{incomingRide.pickup_address}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowNotification(false)}
+              className="p-1 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Map */}
       <div className="flex-1">
         <Map
@@ -324,7 +362,10 @@ export default function DriverView({ user }: DriverViewProps) {
 
             <div className="flex gap-3">
               <button 
-                onClick={() => setIncomingRide(null)}
+                onClick={() => {
+                  setIncomingRide(null);
+                  setShowNotification(false);
+                }}
                 className="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-700"
               >
                 Decline

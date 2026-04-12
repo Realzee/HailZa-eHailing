@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Loader2, AlertCircle, Phone, Mail, ArrowRight, Check } from 'lucide-react';
 
 export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
@@ -194,6 +194,16 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-hail-green mb-2">HailZA</h1>
           <p className="text-gray-500">South Africa's Local Ride App</p>
+          {!isSupabaseConfigured && (
+            <div className="mt-2 inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+              Demo Mode Active
+            </div>
+          )}
+          {isSupabaseConfigured && (
+            <div className="mt-2 inline-block px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+              Live Backend Connected
+            </div>
+          )}
         </div>
 
         {error && (
