@@ -71,7 +71,7 @@ export default function RiderView({ user }: RiderViewProps) {
     fetchRideHistory();
     fetchDrivers();
 
-    const channel = supabase
+    const rideChannel = supabase
       .channel('rider_rides')
       .on(
         'postgres_changes',
@@ -86,8 +86,20 @@ export default function RiderView({ user }: RiderViewProps) {
       )
       .subscribe();
 
+    const driverChannel = supabase
+      .channel('drivers_channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'drivers' },
+        () => {
+          fetchDrivers();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(rideChannel);
+      supabase.removeChannel(driverChannel);
     };
   }, [user.id]);
 
@@ -236,7 +248,7 @@ export default function RiderView({ user }: RiderViewProps) {
     
     const { error } = await supabase
       .from('rides')
-      .update({ status: 'cancelled', cancellation_reason: cancelReason })
+      .update({ status: 'cancelled' })
       .eq('id', activeRide.id);
       
     if (error) {
