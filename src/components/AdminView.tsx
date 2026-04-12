@@ -32,7 +32,8 @@ export default function AdminView({ user }: { user: any }) {
     vehicle_make: '',
     vehicle_model: '',
     vehicle_plate: '',
-    vehicle_color: ''
+    vehicle_color: '',
+    vehicle_capacity: 0
   });
   const [earningsDriverFilter, setEarningsDriverFilter] = useState<string>('all');
   const [earningsDateStart, setEarningsDateStart] = useState<string>('');
@@ -588,7 +589,8 @@ export default function AdminView({ user }: { user: any }) {
                           vehicle_make: selectedDriver.vehicle_make,
                           vehicle_model: selectedDriver.vehicle_model,
                           vehicle_plate: selectedDriver.vehicle_plate,
-                          vehicle_color: selectedDriver.vehicle_color
+                          vehicle_color: selectedDriver.vehicle_color,
+                          vehicle_capacity: selectedDriver.vehicle_capacity || 0
                         });
                         setIsEditingVehicle(true);
                       }}
@@ -724,6 +726,15 @@ export default function AdminView({ user }: { user: any }) {
                   type="text"
                   value={editVehicleForm.vehicle_color}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_color: e.target.value})}
+                  className="w-full border rounded-lg p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Capacity</label>
+                <input
+                  type="number"
+                  value={editVehicleForm.vehicle_capacity}
+                  onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_capacity: parseInt(e.target.value)})}
                   className="w-full border rounded-lg p-2"
                 />
               </div>
