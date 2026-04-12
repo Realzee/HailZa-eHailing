@@ -3,6 +3,7 @@ import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
 import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -20,7 +21,7 @@ export default function AdminView({ user }: { user: any }) {
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
   const [rides, setRides] = useState<(Ride & { rider: Profile; driver?: Profile })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings' | 'map'>('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
   const [earningsDriverFilter, setEarningsDriverFilter] = useState<string>('all');
@@ -220,6 +221,14 @@ export default function AdminView({ user }: { user: any }) {
             >
               Earnings
             </button>
+            <button
+              onClick={() => setActiveTab('map')}
+              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                activeTab === 'map' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Live Map
+            </button>
           </div>
 
           <div className="relative w-full md:w-72">
@@ -258,6 +267,61 @@ export default function AdminView({ user }: { user: any }) {
                 <span>to</span>
                 <input type="date" className="border rounded-lg px-3 py-2 text-sm" value={earningsDateEnd} onChange={(e) => setEarningsDateEnd(e.target.value)} />
               </div>
+            </div>
+          )}
+
+          {activeTab === 'earnings' && (
+            <div className="p-6 bg-white border-b">
+              <h3 className="text-lg font-bold mb-4">Daily Earnings</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={Object.entries(rides
+                    .filter(r => r.status === 'completed')
+                    .filter(r => earningsDriverFilter === 'all' || r.driver_id === earningsDriverFilter)
+                    .filter(r => !earningsDateStart || new Date(r.created_at) >= new Date(earningsDateStart))
+                    .filter(r => !earningsDateEnd || new Date(r.created_at) <= new Date(earningsDateEnd))
+                    .reduce((acc, ride) => {
+                      const date = new Date(ride.created_at).toLocaleDateString();
+                      acc[date] = (acc[date] || 0) + ride.fare_amount;
+                      return acc;
+                    }, {} as Record<string, number>)).map(([date, amount]) => ({ date, amount }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip formatter={(value: number) => formatZAR(value)} />
+                    <Bar dataKey="amount" fill="#10b981" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'map' && (
+            <div className="h-[600px] w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+              <MapContainer center={[-26.2041, 28.0473]} zoom={12} style={{ height: '100%', width: '100%' }}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {drivers.filter(d => d.is_online && d.is_approved).map(driver => {
+                  const loc = getDriverLocation(driver);
+                  if (!loc) return null;
+                  return (
+                    <Marker 
+                      key={driver.id} 
+                      position={[loc.lat, loc.lng]}
+                      eventHandlers={{ click: () => setSelectedDriver(driver) }}
+                    >
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-bold">{driver.profiles.full_name}</p>
+                          <p className="text-gray-500">{driver.vehicle_model} ({driver.vehicle_plate})</p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  );
+                })}
+              </MapContainer>
             </div>
           )}
 
