@@ -27,6 +27,13 @@ export default function AdminView({ user }: { user: any }) {
   const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings' | 'map'>('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
+  const [isEditingVehicle, setIsEditingVehicle] = useState(false);
+  const [editVehicleForm, setEditVehicleForm] = useState({
+    vehicle_make: '',
+    vehicle_model: '',
+    vehicle_plate: '',
+    vehicle_color: ''
+  });
   const [earningsDriverFilter, setEarningsDriverFilter] = useState<string>('all');
   const [earningsDateStart, setEarningsDateStart] = useState<string>('');
   const [earningsDateEnd, setEarningsDateEnd] = useState<string>('');
@@ -104,6 +111,25 @@ export default function AdminView({ user }: { user: any }) {
     } catch (error) {
       console.error('Error updating driver status:', error);
       alert('Failed to update driver status.');
+    }
+  };
+
+  const updateDriverVehicleDetails = async () => {
+    if (!selectedDriver) return;
+    try {
+      const { error } = await supabase
+        .from('drivers')
+        .update(editVehicleForm)
+        .eq('id', selectedDriver.id);
+      
+      if (error) throw error;
+      
+      fetchAllData();
+      setSelectedDriver({ ...selectedDriver, ...editVehicleForm });
+      setIsEditingVehicle(false);
+    } catch (error) {
+      console.error('Error updating vehicle details:', error);
+      alert('Failed to update vehicle details.');
     }
   };
 
@@ -650,6 +676,20 @@ export default function AdminView({ user }: { user: any }) {
                         </div>
                       </div>
                     </div>
+                    <button
+                      onClick={() => {
+                        setEditVehicleForm({
+                          vehicle_make: selectedDriver.vehicle_make,
+                          vehicle_model: selectedDriver.vehicle_model,
+                          vehicle_plate: selectedDriver.vehicle_plate,
+                          vehicle_color: selectedDriver.vehicle_color
+                        });
+                        setIsEditingVehicle(true);
+                      }}
+                      className="mt-4 w-full bg-gray-900 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                    >
+                      Edit Vehicle Details
+                    </button>
                   </div>
 
                   {/* Quick Actions */}
@@ -733,6 +773,57 @@ export default function AdminView({ user }: { user: any }) {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Vehicle Modal */}
+      {isEditingVehicle && selectedDriver && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h3 className="text-xl font-bold mb-4">Edit Vehicle Details</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Make</label>
+                <input
+                  type="text"
+                  value={editVehicleForm.vehicle_make}
+                  onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_make: e.target.value})}
+                  className="w-full border rounded-lg p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Model</label>
+                <input
+                  type="text"
+                  value={editVehicleForm.vehicle_model}
+                  onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_model: e.target.value})}
+                  className="w-full border rounded-lg p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">License Plate</label>
+                <input
+                  type="text"
+                  value={editVehicleForm.vehicle_plate}
+                  onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_plate: e.target.value})}
+                  className="w-full border rounded-lg p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Color</label>
+                <input
+                  type="text"
+                  value={editVehicleForm.vehicle_color}
+                  onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_color: e.target.value})}
+                  className="w-full border rounded-lg p-2"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button onClick={() => setIsEditingVehicle(false)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold">Cancel</button>
+              <button onClick={updateDriverVehicleDetails} className="px-4 py-2 bg-hail-green text-white rounded-lg font-bold">Save</button>
             </div>
           </div>
         </div>
