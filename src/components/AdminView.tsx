@@ -180,12 +180,12 @@ export default function AdminView({ user }: { user: any }) {
       {/* Header */}
       <header className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-20">
         <div className="flex items-center gap-3">
-          <div className="bg-hail-green p-2 rounded-lg">
+          <div className="bg-hail-green p-2 rounded-lg shadow-inner">
             <Shield size={24} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">HaiZa Admin</h1>
-            <p className="text-xs text-gray-400">System Overview & Management</p>
+            <h1 className="text-xl font-bold tracking-tight">eTaxiDriver Admin</h1>
+            <p className="text-xs text-gray-400 uppercase tracking-widest">System Management</p>
           </div>
         </div>
         <button 
