@@ -304,6 +304,8 @@ export default function RiderView({ user }: RiderViewProps) {
     });
   };
 
+  const appLogo = localStorage.getItem('appLogo');
+
   return (
     <div className="relative w-full h-screen flex flex-col">
       {/* Map Layer */}
@@ -326,13 +328,20 @@ export default function RiderView({ user }: RiderViewProps) {
 
       {/* UI Overlay */}
       <div className="absolute top-0 left-0 w-full p-4 z-10 pointer-events-none flex justify-between items-start">
-        <div className="bg-white shadow-lg rounded-xl p-3 flex items-center gap-3 pointer-events-auto max-w-md">
-          <div className="bg-gray-100 p-2 rounded-full">
-            <MapPin size={20} className="text-hail-green" />
-          </div>
-          <div className="flex-1">
-            <p className="text-xs text-gray-500">Current Location</p>
-            <p className="font-medium text-sm truncate">{pickupAddress}</p>
+        <div className="flex items-start gap-2">
+          {appLogo && (
+            <div className="bg-white shadow-lg rounded-xl p-2 pointer-events-auto">
+              <img src={appLogo} alt="Logo" className="h-8 w-auto" />
+            </div>
+          )}
+          <div className="bg-white shadow-lg rounded-xl p-3 flex items-center gap-3 pointer-events-auto max-w-md">
+            <div className="bg-gray-100 p-2 rounded-full">
+              <MapPin size={20} className="text-hail-green" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-gray-500">Current Location</p>
+              <p className="font-medium text-sm truncate">{pickupAddress}</p>
+            </div>
           </div>
         </div>
         <div className="flex gap-2">

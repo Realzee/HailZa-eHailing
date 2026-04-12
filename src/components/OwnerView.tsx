@@ -84,6 +84,8 @@ export default function OwnerView({ user }: { user: any }) {
     window.location.reload();
   };
 
+  const appLogo = localStorage.getItem('appLogo');
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -99,9 +101,18 @@ export default function OwnerView({ user }: { user: any }) {
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <header className="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-        <div>
-          <h1 className="text-2xl font-bold text-hail-green">Owner Dashboard</h1>
-          <p className="text-sm text-gray-500">Fleet Management & Onboarding</p>
+        <div className="flex items-center gap-3">
+          {appLogo ? (
+            <img src={appLogo} alt="Logo" className="h-10 w-auto" />
+          ) : (
+            <div className="w-10 h-10 bg-hail-green rounded-xl flex items-center justify-center text-white">
+              <ShieldCheck size={24} />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold text-hail-green">Owner Dashboard</h1>
+            <p className="text-sm text-gray-500">Fleet Management & Onboarding</p>
+          </div>
         </div>
         <button 
           onClick={handleSignOut}

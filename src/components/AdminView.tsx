@@ -24,7 +24,7 @@ export default function AdminView({ user }: { user: any }) {
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
   const [rides, setRides] = useState<(Ride & { rider: Profile; driver?: Profile })[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings' | 'map'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings' | 'map' | 'branding'>('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
   const [isEditingVehicle, setIsEditingVehicle] = useState(false);
@@ -179,6 +179,8 @@ export default function AdminView({ user }: { user: any }) {
     return null;
   };
 
+  const appLogo = localStorage.getItem('appLogo');
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -193,7 +195,11 @@ export default function AdminView({ user }: { user: any }) {
       <header className="bg-[#141414] text-[#E4E3E0] px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-[#141414]">
         <div className="flex items-center gap-3">
           <div className="bg-[#E4E3E0] p-2 rounded-none">
-            <Shield size={24} className="text-[#141414]" />
+            {appLogo ? (
+              <img src={appLogo} alt="Logo" className="h-6 w-auto" />
+            ) : (
+              <Shield size={24} className="text-[#141414]" />
+            )}
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">eTaxiDriver Admin</h1>
@@ -336,6 +342,10 @@ export default function AdminView({ user }: { user: any }) {
                 })}
               </MapContainer>
             </div>
+          )}
+
+          {activeTab === 'branding' && (
+            <BrandingSettings />
           )}
 
           {activeTab === 'users' && (

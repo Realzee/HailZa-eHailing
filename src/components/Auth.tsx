@@ -188,11 +188,17 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
     }
   };
 
+  const appLogo = localStorage.getItem('appLogo');
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-hail-green mb-2">HailZA</h1>
+          {appLogo ? (
+            <img src={appLogo} alt="Logo" className="h-12 w-auto mx-auto mb-4" />
+          ) : (
+            <h1 className="text-3xl font-bold text-hail-green mb-2">HailZA</h1>
+          )}
           <p className="text-gray-500">South Africa's Local Ride App</p>
           {!isSupabaseConfigured && (
             <div className="mt-2 inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold rounded-full uppercase tracking-wider">

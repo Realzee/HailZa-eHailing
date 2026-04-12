@@ -278,6 +278,8 @@ export default function DriverView({ user }: DriverViewProps) {
     }
   };
 
+  const appLogo = localStorage.getItem('appLogo');
+
   if (isApproved === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -372,7 +374,12 @@ export default function DriverView({ user }: DriverViewProps) {
       {/* Top Status Bar */}
       <div className="absolute top-4 left-4 right-4 z-10 flex flex-col gap-2 pointer-events-none">
         <div className="flex justify-between items-center">
-          <div className="flex-1">
+          <div className="flex-1 flex items-center gap-2">
+            {appLogo && (
+              <div className="bg-white shadow-lg rounded-xl p-2 pointer-events-auto">
+                <img src={appLogo} alt="Logo" className="h-8 w-auto" />
+              </div>
+            )}
             {geoError && (
               <div className="bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-lg pointer-events-auto flex items-center gap-1 w-fit">
                 <ShieldAlert size={12} />
