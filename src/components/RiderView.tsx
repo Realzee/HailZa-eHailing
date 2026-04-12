@@ -55,13 +55,13 @@ export default function RiderView({ user }: RiderViewProps) {
         .eq('rider_id', user.id)
         .in('status', ['requested', 'accepted', 'in_progress', 'completed'])
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
         
-      if (data) {
+      if (data && data.length > 0) {
+        const ride = data[0];
         // If completed but not paid (logic could be added), or just show last status
-        setActiveRide(data);
-        if (data.status === 'completed') {
+        setActiveRide(ride);
+        if (ride.status === 'completed') {
            setShowPayment(true);
         }
       }
