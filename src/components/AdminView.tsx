@@ -633,6 +633,7 @@ export default function AdminView({ user }: { user: any }) {
 
                   {getDriverLocation(selectedDriver) ? (
                     <MapContainer 
+                      key={selectedDriver.id}
                       center={[getDriverLocation(selectedDriver)!.lat, getDriverLocation(selectedDriver)!.lng]} 
                       zoom={15} 
                       style={{ height: '100%', width: '100%' }}
