@@ -31,6 +31,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [isSheetMinimized, setIsSheetMinimized] = useState(false);
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   // 1. Get User Location
@@ -353,15 +354,26 @@ export default function RiderView({ user }: RiderViewProps) {
             </div>
           </motion.div>
         </div>
-        <div className="flex gap-2 pointer-events-auto">
-          <ThemeToggle />
-          <button 
-            onClick={() => supabase.auth.signOut()}
-            className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-red-600 transition-all hover:scale-105 active:scale-95 border border-gray-100"
-            title="Sign Out"
-          >
-            <LogOut size={20} />
-          </button>
+        <div className="flex flex-col gap-2 pointer-events-auto">
+          <div className="flex gap-2">
+            <ThemeToggle />
+            <button 
+              onClick={() => supabase.auth.signOut()}
+              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-red-600 transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              title="Sign Out"
+            >
+              <LogOut size={20} />
+            </button>
+          </div>
+          {activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && (
+            <button
+              onClick={() => setIsSheetMinimized(!isSheetMinimized)}
+              className="bg-hail-green text-white shadow-xl p-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+            >
+              {isSheetMinimized ? <Navigation size={18} /> : <Car size={18} />}
+              {isSheetMinimized ? 'Show Details' : 'Show Map'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -439,13 +451,22 @@ export default function RiderView({ user }: RiderViewProps) {
       {/* Bottom Sheet / Controls */}
       <motion.div 
         initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] p-6 z-20 min-h-[350px] border-t border-gray-100"
+        animate={{ 
+          y: isSheetMinimized && activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') ? '70%' : 0 
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] p-6 z-20 min-h-[350px] border-t border-gray-100 relative"
       >
+        {/* Handle for visual cue / Toggle */}
+        <button 
+          onClick={() => activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && setIsSheetMinimized(!isSheetMinimized)}
+          className="w-full py-2 flex justify-center cursor-pointer"
+        >
+          <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+        </button>
+
         {!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled' ? (
-          <div className="max-w-2xl mx-auto w-full">
-            {/* Handle for visual cue */}
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
+          <div className="max-w-2xl mx-auto w-full mt-4">
 
             {/* Search Destination */}
             <div className="mb-8 relative">
@@ -607,80 +628,96 @@ export default function RiderView({ user }: RiderViewProps) {
           </div>
         ) : (
           /* Active Ride Status */
-          <div className="max-w-2xl mx-auto w-full space-y-8">
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-                  {activeRide.status === 'requested' ? 'Finding Driver' : 
-                   activeRide.status === 'accepted' ? 'On the Way' :
-                   activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
-                </h2>
-                <p className="text-gray-500 font-medium">
-                  {activeRide.status === 'requested' ? 'Searching for nearby drivers...' : 
-                   activeRide.status === 'accepted' ? 'Your driver is heading to you' :
-                   activeRide.status === 'in_progress' ? 'You are on your way' : 'Your ride is complete'}
-                </p>
-              </div>
-              <div className="bg-hail-green/10 text-hail-green px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border border-hail-green/20">
-                {activeRide.status}
-              </div>
-            </div>
-
-            {activeRide.status === 'requested' && (
-               <div className="flex justify-center py-12">
-                 <div className="relative">
-                   <div className="w-24 h-24 border-8 border-gray-100 border-t-hail-green rounded-full animate-spin"></div>
-                   <div className="absolute inset-0 flex items-center justify-center">
-                     <Search size={32} className="text-hail-green animate-pulse" />
-                   </div>
-                 </div>
-               </div>
-            )}
-
-            {(activeRide.status === 'accepted' || activeRide.status === 'in_progress') && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-5 p-6 bg-gray-900 text-white rounded-[2.5rem] shadow-2xl"
-              >
-                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
-                  <Car size={32} className="text-hail-green" />
+          <div className="max-w-2xl mx-auto w-full">
+            {isSheetMinimized ? (
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <h3 className="font-black text-gray-900">
+                    {activeRide.status === 'requested' ? 'Finding Driver...' : 
+                     activeRide.status === 'accepted' ? 'Driver Arriving' :
+                     activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
+                  </h3>
+                  <p className="text-xs text-gray-500 font-medium">{activeRide.dropoff_address}</p>
                 </div>
-                <div className="flex-1">
-                  <p className="font-black text-xl">Toyota Corolla</p>
-                  <p className="text-sm text-gray-400 font-bold tracking-widest uppercase">GP 123 ZA • White</p>
+                <div className="bg-hail-green text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                  {activeRide.status}
                 </div>
-                <div className="text-right">
-                  <div className="flex items-center justify-end gap-1 font-black text-xl">
-                    <span>4.8</span>
-                    <Star size={18} className="text-hail-gold fill-current" />
+              </div>
+            ) : (
+              <div className="space-y-8 mt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                      {activeRide.status === 'requested' ? 'Finding Driver' : 
+                       activeRide.status === 'accepted' ? 'On the Way' :
+                       activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
+                    </h2>
+                    <p className="text-gray-500 font-medium">
+                      {activeRide.status === 'requested' ? 'Searching for nearby drivers...' : 
+                       activeRide.status === 'accepted' ? 'Your driver is heading to you' :
+                       activeRide.status === 'in_progress' ? 'You are on your way' : 'Your ride is complete'}
+                    </p>
                   </div>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Driver Rating</p>
+                  <div className="bg-hail-green/10 text-hail-green px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border border-hail-green/20">
+                    {activeRide.status}
+                  </div>
                 </div>
-              </motion.div>
-            )}
 
-            <div className="flex gap-3">
-              {(activeRide.status === 'requested' || activeRide.status === 'accepted') && (
-                <button
-                  onClick={cancelRide}
-                  className="flex-1 py-4 bg-red-50 text-red-600 rounded-2xl font-black text-lg hover:bg-red-100 transition-all active:scale-95 border border-red-100"
-                >
-                  Cancel Ride
-                </button>
-              )}
-              <button className="flex-1 py-4 bg-gray-100 text-gray-900 rounded-2xl font-black text-lg hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
-                <Settings size={20} />
-                Support
-              </button>
-            </div>
-            
-            {activeRide.status === 'in_progress' && (
-               <div className="bg-blue-50 p-6 rounded-[2rem] text-blue-800 text-center font-bold border border-blue-100">
-                 Ride in progress. Sit back and enjoy the trip!
-               </div>
+                {activeRide.status === 'requested' && (
+                   <div className="flex justify-center py-12">
+                     <div className="relative">
+                       <div className="w-24 h-24 border-8 border-gray-100 border-t-hail-green rounded-full animate-spin"></div>
+                       <div className="absolute inset-0 flex items-center justify-center">
+                         <Search size={32} className="text-hail-green animate-pulse" />
+                       </div>
+                     </div>
+                   </div>
+                )}
+
+                {(activeRide.status === 'accepted' || activeRide.status === 'in_progress') && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-5 p-6 bg-gray-900 text-white rounded-[2.5rem] shadow-2xl"
+                  >
+                    <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
+                      <Car size={32} className="text-hail-green" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-black text-xl">Toyota Corolla</p>
+                      <p className="text-sm text-gray-400 font-bold tracking-widest uppercase">GP 123 ZA • White</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center justify-end gap-1 font-black text-xl">
+                        <span>4.8</span>
+                        <Star size={18} className="text-hail-gold fill-current" />
+                      </div>
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Driver Rating</p>
+                    </div>
+                  </motion.div>
+                )}
+
+                <div className="flex gap-3">
+                  {(activeRide.status === 'requested' || activeRide.status === 'accepted') && (
+                    <button
+                      onClick={cancelRide}
+                      className="flex-1 py-4 bg-red-50 text-red-600 rounded-2xl font-black text-lg hover:bg-red-100 transition-all active:scale-95 border border-red-100"
+                    >
+                      Cancel Ride
+                    </button>
+                  )}
+                  <button className="flex-1 py-4 bg-gray-100 text-gray-900 rounded-2xl font-black text-lg hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <Settings size={20} />
+                    Support
+                  </button>
+                </div>
+                
+                {activeRide.status === 'in_progress' && (
+                   <div className="bg-blue-50 p-6 rounded-[2rem] text-blue-800 text-center font-bold border border-blue-100">
+                     Ride in progress. Sit back and enjoy the trip!
+                   </div>
+                )}
+              </div>
             )}
           </div>
         )}
