@@ -3,6 +3,7 @@ import Map from '@/components/Map';
 import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
 import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 interface RiderViewProps {
   user: any;
@@ -221,6 +222,25 @@ export default function RiderView({ user }: RiderViewProps) {
     }, 2000);
   };
 
+  const cancelRide = async () => {
+    if (!activeRide || !window.confirm('Are you sure you want to cancel this ride?')) return;
+    
+    const { error } = await supabase
+      .from('rides')
+      .update({ status: 'cancelled' })
+      .eq('id', activeRide.id);
+      
+    if (error) {
+      console.error('Error cancelling ride:', error);
+      alert('Failed to cancel ride.');
+    } else {
+      setActiveRide(null);
+      setDestination(null);
+      setRoute(undefined);
+      setRideStats(null);
+    }
+  };
+
   return (
     <div className="relative w-full h-screen flex flex-col">
       {/* Map Layer */}
@@ -252,13 +272,16 @@ export default function RiderView({ user }: RiderViewProps) {
             <p className="font-medium text-sm truncate">{pickupAddress}</p>
           </div>
         </div>
-        <button 
-          onClick={() => supabase.auth.signOut()}
-          className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
-          title="Sign Out"
-        >
-          <LogOut size={20} />
-        </button>
+        <div className="flex gap-2">
+          <ThemeToggle />
+          <button 
+            onClick={() => supabase.auth.signOut()}
+            className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
+            title="Sign Out"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </div>
 
       {/* Payment Modal */}
@@ -401,6 +424,15 @@ export default function RiderView({ user }: RiderViewProps) {
                    <div className="w-16 h-16 border-4 border-gray-200 border-t-hail-green rounded-full animate-spin"></div>
                  </div>
                </div>
+            )}
+
+            {(activeRide.status === 'requested' || activeRide.status === 'accepted') && (
+              <button
+                onClick={cancelRide}
+                className="w-full py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-colors"
+              >
+                Cancel Ride
+              </button>
             )}
 
             {(activeRide.status === 'accepted' || activeRide.status === 'in_progress') && (

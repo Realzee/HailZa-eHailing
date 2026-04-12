@@ -3,6 +3,7 @@ import Map from '@/components/Map';
 import { supabase, type Ride, type Profile } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
 import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 interface DriverViewProps {
   user: any;
@@ -327,7 +328,8 @@ export default function DriverView({ user }: DriverViewProps) {
           >
             {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
           </button>
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-end gap-2">
+            <ThemeToggle />
             <button 
               onClick={handleSignOut}
               className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"

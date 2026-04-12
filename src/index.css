@@ -6,6 +6,17 @@
   --color-hail-gold: #FFD700;  /* SA Gold */
 }
 
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+  }
+  .dark {
+    --background: #111827;
+    --foreground: #f9fafb;
+  }
+}
+
 /* Leaflet Fixes */
 .leaflet-container {
   width: 100%;

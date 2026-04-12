@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import ThemeToggle from './ThemeToggle';
 
 // Fix Leaflet marker icon issue
 // @ts-ignore
@@ -163,6 +164,7 @@ export default function AdminView({ user }: { user: any }) {
           onClick={handleSignOut}
           className="p-2 text-gray-400 hover:text-white transition-colors flex items-center gap-2"
         >
+          <ThemeToggle />
           <span className="text-sm font-medium">Sign Out</span>
           <LogOut size={20} />
         </button>
