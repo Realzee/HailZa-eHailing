@@ -32,7 +32,15 @@ export default function RiderView({ user }: RiderViewProps) {
   const [cancelReason, setCancelReason] = useState('');
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [isSheetMinimized, setIsSheetMinimized] = useState(false);
+  const [selectedRideType, setSelectedRideType] = useState('standard');
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
+
+  const RIDE_TYPES = [
+    { id: 'standard', name: 'eTaxi Standard', category: 'Economy', capacity: 4, desc: 'Affordable, everyday rides', multiplier: 1, icon: Car },
+    { id: 'comfort', name: 'eTaxi Comfort', category: 'Economy', capacity: 4, desc: 'Newer cars with extra legroom', multiplier: 1.3, icon: Car },
+    { id: 'premium', name: 'eTaxi Black', category: 'Premium', capacity: 4, desc: 'High-end cars with top-rated drivers', multiplier: 2.1, icon: Car },
+    { id: 'van', name: 'eTaxi Van', category: 'Premium', capacity: 7, desc: 'Rides for groups up to 7 people', multiplier: 2.5, icon: Car },
+  ];
 
   // 1. Get User Location
   useEffect(() => {
@@ -356,6 +364,23 @@ export default function RiderView({ user }: RiderViewProps) {
         </div>
         <div className="flex flex-col gap-2 pointer-events-auto">
           <div className="flex gap-2">
+            {(destination || activeRide) && (
+              <button 
+                onClick={() => {
+                  if (activeRide) return; // Don't allow going back if ride is active
+                  setDestination(null);
+                  setRoute(undefined);
+                  setRideStats(null);
+                  setSearchQuery('');
+                  setSearchResults([]);
+                  setIsSheetMinimized(false);
+                }}
+                className="bg-white shadow-xl p-3 rounded-2xl text-gray-900 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+                title="Back"
+              >
+                <ChevronRight size={24} className="rotate-180" />
+              </button>
+            )}
             <button 
               onClick={() => {
                 setDestination(null);
@@ -474,9 +499,14 @@ export default function RiderView({ user }: RiderViewProps) {
         {/* Handle for visual cue / Toggle */}
         <button 
           onClick={() => activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && setIsSheetMinimized(!isSheetMinimized)}
-          className="w-full py-2 flex justify-center cursor-pointer"
+          className="w-full py-2 flex flex-col items-center cursor-pointer group"
         >
-          <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+          <div className="w-12 h-1.5 bg-gray-200 rounded-full group-hover:bg-gray-300 transition-colors" />
+          {(!activeRide || activeRide.status === 'completed') && (
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
+              {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
+            </p>
+          )}
         </button>
 
         {!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled' ? (
@@ -567,44 +597,83 @@ export default function RiderView({ user }: RiderViewProps) {
             {/* Ride Selection */}
             {destination && rideStats ? (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="space-y-6 pb-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6 pb-24"
               >
-                <div className="flex items-center justify-between p-5 border-2 border-hail-green bg-hail-green/5 rounded-[2rem] shadow-sm">
-                  <div className="flex items-center gap-5">
-                    <div className="bg-hail-green p-3 rounded-2xl shadow-lg shadow-hail-green/20">
-                      <Car size={32} className="text-white" />
-                    </div>
-                    <div>
-                      <p className="font-black text-xl text-gray-900">eTaxiDriver Standard</p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-                        <Clock size={14} />
-                        <span>4 min away</span>
-                        <span className="text-gray-300">•</span>
-                        <span>{rideStats.distance.toFixed(1)} km</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-black text-2xl text-hail-green">{formatZAR(rideStats.price)}</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fixed Fare</p>
-                  </div>
+                <div className="text-center mb-4">
+                   <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Choose a ride</h2>
                 </div>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => { setDestination(null); setRoute(undefined); setRideStats(null); }}
-                    className="p-4 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 transition-all active:scale-95"
-                  >
-                    <X size={24} />
+                <div className="space-y-8">
+                  {['Economy', 'Premium'].map((category) => (
+                    <div key={category}>
+                      <h3 className="text-xl font-black text-gray-900 mb-4 px-2">{category}</h3>
+                      <div className="space-y-2">
+                        {RIDE_TYPES.filter(t => t.category === category).map((type) => (
+                          <button
+                            key={type.id}
+                            onClick={() => setSelectedRideType(type.id)}
+                            className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border-2 ${
+                              selectedRideType === type.id 
+                                ? 'border-gray-900 bg-gray-50' 
+                                : 'border-transparent hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`p-3 rounded-xl ${selectedRideType === type.id ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                                <type.icon size={28} />
+                              </div>
+                              <div className="text-left">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-black text-gray-900">{type.name}</p>
+                                  <div className="flex items-center gap-1 text-[10px] bg-gray-200 px-1.5 py-0.5 rounded font-bold">
+                                    <Star size={8} className="fill-current" />
+                                    <span>{type.capacity}</span>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-gray-500 font-medium">{type.desc}</p>
+                                <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tighter">
+                                  {Math.round(rideStats.duration / 60)} min dropoff
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-black text-lg text-gray-900">
+                                {formatZAR(rideStats.price * type.multiplier)}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Payment Selector Mock */}
+                <div className="border-t border-gray-100 pt-6 mt-6">
+                  <button className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all group">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-600 p-1.5 rounded text-white">
+                        <CreditCard size={16} />
+                      </div>
+                      <p className="font-bold text-sm text-gray-700">•••• 1059</p>
+                    </div>
+                    <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
                   </button>
+                </div>
+
+                <div className="fixed bottom-6 left-6 right-6 z-30 max-w-2xl mx-auto">
                   <button
                     onClick={requestRide}
                     disabled={searching}
-                    className="flex-1 bg-hail-green text-white py-4 rounded-2xl font-black text-xl hover:bg-green-800 transition-all active:scale-[0.98] shadow-xl shadow-hail-green/20 flex items-center justify-center gap-3"
+                    className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-xl hover:bg-black transition-all active:scale-[0.98] shadow-2xl flex items-center justify-center gap-3"
                   >
-                    {searching ? <Loader2 className="animate-spin" /> : <>Confirm Ride <ChevronRight size={24} /></>}
+                    {searching ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <>Choose {RIDE_TYPES.find(t => t.id === selectedRideType)?.name}</>
+                    )}
                   </button>
                 </div>
               </motion.div>
@@ -644,18 +713,23 @@ export default function RiderView({ user }: RiderViewProps) {
           /* Active Ride Status */
           <div className="max-w-2xl mx-auto w-full">
             {isSheetMinimized ? (
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <h3 className="font-black text-gray-900">
-                    {activeRide.status === 'requested' ? 'Finding Driver...' : 
-                     activeRide.status === 'accepted' ? 'Driver Arriving' :
-                     activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
-                  </h3>
-                  <p className="text-xs text-gray-500 font-medium">{activeRide.dropoff_address}</p>
+              <div className="flex items-center justify-between py-4">
+                <div className="flex items-center gap-4">
+                  <div className="bg-gray-900 p-2 rounded-xl text-white">
+                    <Car size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-gray-900">
+                      {activeRide.status === 'requested' ? 'Finding Driver...' : 
+                       activeRide.status === 'accepted' ? 'Driver Arriving' :
+                       activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
+                    </h3>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">
+                      {activeRide.dropoff_address}
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-hail-green text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                  {activeRide.status}
-                </div>
+                <ChevronRight size={20} className="-rotate-90 text-gray-400" />
               </div>
             ) : (
               <div className="space-y-8 mt-4">
