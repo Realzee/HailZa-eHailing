@@ -40,6 +40,17 @@ export default function AdminView({ user }: { user: any }) {
 
   useEffect(() => {
     fetchAllData();
+    
+    const channel = supabase
+      .channel('drivers-channel')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'drivers' }, (payload) => {
+        setDrivers(prev => prev.map(d => d.id === payload.new.id ? { ...d, ...payload.new } : d));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchAllData = async () => {
