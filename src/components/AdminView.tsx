@@ -202,8 +202,8 @@ export default function AdminView({ user }: { user: any }) {
             )}
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">eTaxiDriver Admin</h1>
-            <p className="text-xs uppercase tracking-widest opacity-60">System Management</p>
+            <h1 className="text-xl font-black tracking-tight font-display">eTaxiDriver Admin</h1>
+            <p className="text-[10px] uppercase tracking-[0.2em] opacity-60 font-bold">System Management</p>
           </div>
         </div>
         <button 

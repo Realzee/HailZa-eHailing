@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { motion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Loader2, AlertCircle, Phone, Mail, ArrowRight, Check } from 'lucide-react';
 
@@ -193,13 +194,25 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           {appLogo ? (
-            <img src={appLogo} alt="Logo" className="h-12 w-auto mx-auto mb-4" />
+            <motion.img 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              src={appLogo} 
+              alt="Logo" 
+              className="h-16 w-auto mx-auto mb-6" 
+            />
           ) : (
-            <h1 className="text-3xl font-bold text-hail-green mb-2">HailZA</h1>
+            <motion.h1 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl font-black text-gray-900 mb-2 tracking-tighter font-display"
+            >
+              HailZA
+            </motion.h1>
           )}
-          <p className="text-gray-500">South Africa's Local Ride App</p>
+          <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">South Africa's Local Ride App</p>
           {!isSupabaseConfigured && (
             <div className="mt-2 inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
               Demo Mode Active
