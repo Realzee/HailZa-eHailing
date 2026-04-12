@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
-import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings } from 'lucide-react';
+import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { PREDEFINED_ROUTES, getPriceForRoute } from '@/constants/pricing';
@@ -356,6 +356,20 @@ export default function RiderView({ user }: RiderViewProps) {
         </div>
         <div className="flex flex-col gap-2 pointer-events-auto">
           <div className="flex gap-2">
+            <button 
+              onClick={() => {
+                setDestination(null);
+                setRoute(undefined);
+                setRideStats(null);
+                setSearchQuery('');
+                setSearchResults([]);
+                setIsSheetMinimized(false);
+              }}
+              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              title="Home"
+            >
+              <Home size={20} />
+            </button>
             <ThemeToggle />
             <button 
               onClick={() => supabase.auth.signOut()}
@@ -455,7 +469,7 @@ export default function RiderView({ user }: RiderViewProps) {
           y: isSheetMinimized && activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') ? '70%' : 0 
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] p-6 z-20 min-h-[350px] border-t border-gray-100 relative"
+        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] p-6 z-20 max-h-[85vh] overflow-y-auto border-t border-gray-100 relative scrollbar-hide"
       >
         {/* Handle for visual cue / Toggle */}
         <button 
@@ -476,16 +490,16 @@ export default function RiderView({ user }: RiderViewProps) {
                   <input
                     type="text"
                     placeholder="Where to?"
-                    className="w-full bg-gray-50 rounded-2xl py-4 pl-12 pr-4 outline-none border border-gray-100 focus:border-hail-green focus:bg-white focus:ring-4 focus:ring-hail-green/5 transition-all text-lg font-medium"
+                    className="w-full bg-gray-50 rounded-2xl py-3 pl-12 pr-4 outline-none border border-gray-100 focus:border-hail-green focus:bg-white focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <button 
                   type="submit" 
-                  className="bg-gray-900 text-white p-4 rounded-2xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-black/10"
+                  className="bg-gray-900 text-white p-3 rounded-2xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-black/10"
                 >
-                  <Search size={24} />
+                  <Search size={20} />
                 </button>
               </form>
               
@@ -535,12 +549,12 @@ export default function RiderView({ user }: RiderViewProps) {
                     View All
                   </button>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-2 px-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
                   {PREDEFINED_ROUTES.slice(0, 8).map((route) => (
                     <button
                       key={route.id}
                       onClick={() => selectPredefinedRoute(route.id)}
-                      className="whitespace-nowrap bg-white border border-gray-100 px-5 py-3 rounded-2xl text-sm font-bold text-gray-700 hover:border-hail-green hover:bg-green-50 transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
+                      className="whitespace-nowrap bg-white border border-gray-100 px-4 py-2 rounded-xl text-xs font-bold text-gray-700 hover:border-hail-green hover:bg-green-50 transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
                     >
                       <div className="w-2 h-2 bg-hail-green rounded-full" />
                       {route.from} → {route.to}
@@ -555,7 +569,7 @@ export default function RiderView({ user }: RiderViewProps) {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-6"
+                className="space-y-6 pb-20"
               >
                 <div className="flex items-center justify-between p-5 border-2 border-hail-green bg-hail-green/5 rounded-[2rem] shadow-sm">
                   <div className="flex items-center gap-5">
@@ -595,7 +609,7 @@ export default function RiderView({ user }: RiderViewProps) {
                 </div>
               </motion.div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-6 pb-20">
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2">
                     <History size={16} className="text-gray-400" /> Recent Trips
@@ -604,14 +618,14 @@ export default function RiderView({ user }: RiderViewProps) {
                 {rideHistory.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {rideHistory.slice(0, 4).map((ride) => (
-                      <div key={ride.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
-                        <div className="flex justify-between items-start mb-2">
+                      <div key={ride.id} className="p-3 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
+                        <div className="flex justify-between items-start mb-1">
                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{new Date(ride.created_at).toLocaleDateString()}</span>
-                          <span className="font-black text-hail-green">{formatZAR(ride.fare_amount)}</span>
+                          <span className="font-black text-hail-green text-sm">{formatZAR(ride.fare_amount)}</span>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-sm font-bold text-gray-800 line-clamp-1 flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
+                          <p className="text-xs font-bold text-gray-800 line-clamp-1 flex items-center gap-2">
+                            <div className="w-1 h-1 bg-gray-300 rounded-full" />
                             {ride.dropoff_address}
                           </p>
                         </div>
