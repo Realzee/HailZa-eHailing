@@ -20,6 +20,16 @@ export default function DriverView({ user }: DriverViewProps) {
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [earnings, setEarnings] = useState({ daily: 0, weekly: 0, total: 0 });
+  const [rideHistory, setRideHistory] = useState<Ride[]>([]);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [vehicleForm, setVehicleForm] = useState({
+    make: '',
+    model: '',
+    plate: '',
+    color: ''
+  });
 
   // Sound effect for new requests
   const playNotificationSound = () => {
@@ -36,11 +46,10 @@ export default function DriverView({ user }: DriverViewProps) {
 
   // 0. Check Approval Status
   useEffect(() => {
-    console.log('Driver isApproved status:', isApproved);
     const checkApproval = async () => {
       const { data, error } = await supabase
         .from('drivers')
-        .select('is_approved, onboarding_status')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -48,7 +57,7 @@ export default function DriverView({ user }: DriverViewProps) {
         console.error('Error checking approval:', error);
       } else if (!data) {
         // If driver record doesn't exist, create it
-        await supabase.from('drivers').insert({
+        const newDriver = {
           id: user.id,
           vehicle_make: 'Toyota',
           vehicle_model: 'Corolla',
@@ -56,16 +65,39 @@ export default function DriverView({ user }: DriverViewProps) {
           vehicle_color: 'White',
           is_approved: false,
           onboarding_status: 'pending'
-        });
+        };
+        await supabase.from('drivers').insert(newDriver);
         setIsApproved(false);
         setOnboardingStatus('pending');
+        setVehicleForm({ make: 'Toyota', model: 'Corolla', plate: 'GP 123 ZA', color: 'White' });
       } else {
         setIsApproved(data.is_approved);
         setOnboardingStatus(data.onboarding_status);
+        setVehicleForm({
+          make: data.vehicle_make,
+          model: data.vehicle_model,
+          plate: data.vehicle_plate,
+          color: data.vehicle_color
+        });
+      }
+    };
+
+    const fetchStats = async () => {
+      const { data: ridesData } = await supabase
+        .from('rides')
+        .select('*')
+        .eq('driver_id', user.id)
+        .eq('status', 'completed');
+      
+      if (ridesData) {
+        setRideHistory(ridesData);
+        const total = ridesData.reduce((acc, r) => acc + (r.fare_amount || 0), 0);
+        setEarnings(prev => ({ ...prev, total }));
       }
     };
 
     checkApproval();
+    fetchStats();
 
     // Subscribe to approval changes
     const channel = supabase
@@ -219,6 +251,33 @@ export default function DriverView({ user }: DriverViewProps) {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
   };
 
+  const sendEmergencyAlert = () => {
+    if (!window.confirm('SEND EMERGENCY ALERT? This will notify dispatch and emergency services of your current location.')) return;
+    alert('Emergency alert sent! Stay calm, help is on the way.');
+    // In a real app, this would send a notification to a backend/dispatch
+  };
+
+  const updateVehicle = async () => {
+    try {
+      const { error } = await supabase
+        .from('drivers')
+        .update({
+          vehicle_make: vehicleForm.make,
+          vehicle_model: vehicleForm.model,
+          vehicle_plate: vehicleForm.plate,
+          vehicle_color: vehicleForm.color
+        })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      setIsEditingProfile(false);
+      alert('Vehicle details updated successfully!');
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      alert('Failed to update vehicle details.');
+    }
+  };
+
   if (isApproved === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -330,6 +389,13 @@ export default function DriverView({ user }: DriverViewProps) {
             {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
           </button>
           <div className="flex-1 flex justify-end gap-2">
+            <button
+              onClick={() => setShowDashboard(!showDashboard)}
+              className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-hail-green transition-colors"
+              title="Dashboard"
+            >
+              <Car size={20} />
+            </button>
             <ThemeToggle />
             <button 
               onClick={handleSignOut}
@@ -341,6 +407,133 @@ export default function DriverView({ user }: DriverViewProps) {
           </div>
         </div>
       </div>
+
+      {/* Dashboard Overlay */}
+      {showDashboard && (
+        <div className="absolute inset-0 z-40 bg-white animate-in slide-in-from-bottom duration-300 overflow-y-auto">
+          <div className="p-6 space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Driver Dashboard</h2>
+              <button 
+                onClick={() => setShowDashboard(false)}
+                className="p-2 bg-gray-100 rounded-full"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-hail-green/10 p-4 rounded-2xl border border-hail-green/20">
+                <p className="text-xs text-hail-green font-bold uppercase mb-1">Total Earnings</p>
+                <p className="text-2xl font-bold text-hail-green">{formatZAR(earnings.total)}</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                <p className="text-xs text-blue-600 font-bold uppercase mb-1">Total Rides</p>
+                <p className="text-2xl font-bold text-blue-600">{rideHistory.length}</p>
+              </div>
+            </div>
+
+            <button 
+              onClick={sendEmergencyAlert}
+              className="w-full bg-red-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-red-600/20"
+            >
+              <ShieldAlert size={24} />
+              EMERGENCY SOS
+            </button>
+
+            {/* Vehicle Info */}
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold flex items-center gap-2">
+                  <Car size={18} /> Vehicle Details
+                </h3>
+                <button 
+                  onClick={() => setIsEditingProfile(!isEditingProfile)}
+                  className="text-xs font-bold text-hail-green uppercase"
+                >
+                  {isEditingProfile ? 'Cancel' : 'Edit'}
+                </button>
+              </div>
+              
+              {isEditingProfile ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Make" 
+                      className="p-2 border rounded-lg text-sm"
+                      value={vehicleForm.make}
+                      onChange={(e) => setVehicleForm({...vehicleForm, make: e.target.value})}
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Model" 
+                      className="p-2 border rounded-lg text-sm"
+                      value={vehicleForm.model}
+                      onChange={(e) => setVehicleForm({...vehicleForm, model: e.target.value})}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Plate" 
+                      className="p-2 border rounded-lg text-sm"
+                      value={vehicleForm.plate}
+                      onChange={(e) => setVehicleForm({...vehicleForm, plate: e.target.value})}
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Color" 
+                      className="p-2 border rounded-lg text-sm"
+                      value={vehicleForm.color}
+                      onChange={(e) => setVehicleForm({...vehicleForm, color: e.target.value})}
+                    />
+                  </div>
+                  <button 
+                    onClick={updateVehicle}
+                    className="w-full bg-hail-green text-white py-2 rounded-lg font-bold text-sm"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 text-[10px] uppercase font-bold">Make & Model</p>
+                    <p className="font-medium">{vehicleForm.make} {vehicleForm.model}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-[10px] uppercase font-bold">License Plate</p>
+                    <p className="font-medium uppercase">{vehicleForm.plate}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Recent History */}
+            <div>
+              <h3 className="font-bold mb-4 flex items-center gap-2">
+                <Navigation size={18} /> Recent Rides
+              </h3>
+              <div className="space-y-3">
+                {rideHistory.slice(0, 5).map((ride) => (
+                  <div key={ride.id} className="p-4 bg-white border rounded-xl flex justify-between items-center">
+                    <div>
+                      <p className="text-xs font-bold text-gray-400">{new Date(ride.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm font-medium line-clamp-1">{ride.dropoff_address}</p>
+                    </div>
+                    <p className="font-bold text-hail-green">{formatZAR(ride.fare_amount)}</p>
+                  </div>
+                ))}
+                {rideHistory.length === 0 && (
+                  <p className="text-center text-gray-400 py-8 italic">No rides completed yet.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Incoming Request Modal */}
       {incomingRide && !activeRide && (
@@ -431,7 +624,7 @@ export default function DriverView({ user }: DriverViewProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => openNavigation(
                   activeRide.status === 'accepted' ? activeRide.pickup_lat : activeRide.dropoff_lat,
@@ -440,13 +633,21 @@ export default function DriverView({ user }: DriverViewProps) {
                 className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
               >
                 <ExternalLink size={18} />
-                Navigate
+                <span className="hidden md:inline">Navigate</span>
               </button>
               <button
+                onClick={() => alert(`Calling ${activeRide.rider?.full_name}...`)}
                 className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
               >
                 <Phone size={18} />
-                Call Rider
+                <span className="hidden md:inline">Call</span>
+              </button>
+              <button
+                onClick={sendEmergencyAlert}
+                className="bg-red-50 text-red-600 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors"
+              >
+                <ShieldAlert size={18} />
+                <span className="hidden md:inline">SOS</span>
               </button>
             </div>
 

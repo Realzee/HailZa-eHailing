@@ -2,9 +2,10 @@ import { useState, useEffect, type FormEvent } from 'react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
-import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut } from 'lucide-react';
+import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
+import { PREDEFINED_ROUTES, getPriceForRoute } from '@/constants/pricing';
 
 interface RiderViewProps {
   user: any;
@@ -24,9 +25,11 @@ export default function RiderView({ user }: RiderViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showPayment, setShowPayment] = useState(false);
+  const [showAllRoutes, setShowAllRoutes] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   // 1. Get User Location
@@ -155,18 +158,18 @@ export default function RiderView({ user }: RiderViewProps) {
     setDestination([lat, lng]);
     const addr = await reverseGeocode(lat, lng);
     setDropoffAddress(addr);
+    setSelectedRouteId(null); // Reset predefined route if map is clicked
     
     // Calculate Route
     const routeData = await getRoute(location, [lat, lng]);
     if (routeData) {
       setRoute(routeData.coordinates);
-      // Simple pricing: R10 base + R12/km
       const distKm = routeData.distance / 1000;
-      const price = 10 + (distKm * 12);
+      const price = getPriceForRoute(null, distKm);
       setRideStats({
         distance: distKm,
         duration: routeData.duration,
-        price: Math.round(price),
+        price: price,
       });
     }
   };
@@ -262,6 +265,43 @@ export default function RiderView({ user }: RiderViewProps) {
       setShowCancelModal(false);
       setCancelReason('');
     }
+  };
+
+  const selectPredefinedRoute = (routeId: string) => {
+    const route = PREDEFINED_ROUTES.find(r => r.id === routeId);
+    if (!route) return;
+
+    setSelectedRouteId(routeId);
+    setDropoffAddress(`${route.from} to ${route.to}`);
+    setShowAllRoutes(false);
+    
+    // For predefined routes, we might not have exact coordinates, 
+    // so we'll just set a dummy destination for the map or use search to find it
+    // For now, let's just set the price and wait for user to confirm
+    setRideStats({
+      distance: 0, // Unknown exactly
+      duration: 0,
+      price: getPriceForRoute(routeId, 0)
+    });
+    
+    // Try to search for the destination to show on map
+    searchAddress(route.to).then(results => {
+      if (results.length > 0) {
+        const lat = parseFloat(results[0].lat);
+        const lng = parseFloat(results[0].lon);
+        setDestination([lat, lng]);
+        getRoute(location, [lat, lng]).then(routeData => {
+          if (routeData) {
+            setRoute(routeData.coordinates);
+            setRideStats(prev => prev ? {
+              ...prev,
+              distance: routeData.distance / 1000,
+              duration: routeData.duration
+            } : null);
+          }
+        });
+      }
+    });
   };
 
   return (
@@ -419,6 +459,66 @@ export default function RiderView({ user }: RiderViewProps) {
                 </div>
               )}
             </div>
+
+            {/* Predefined Routes */}
+            {!destination && (
+              <div className="mb-6">
+                <h3 className="font-bold text-sm text-gray-500 uppercase mb-3 flex items-center gap-2">
+                  <Navigation size={16} /> Popular Routes
+                </h3>
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {PREDEFINED_ROUTES.slice(0, 8).map((route) => (
+                    <button
+                      key={route.id}
+                      onClick={() => selectPredefinedRoute(route.id)}
+                      className="whitespace-nowrap bg-gray-50 border border-gray-100 px-4 py-2 rounded-xl text-sm font-medium hover:border-hail-green hover:bg-green-50 transition-colors"
+                    >
+                      {route.from} → {route.to}
+                    </button>
+                  ))}
+                  <button 
+                    onClick={() => setShowAllRoutes(true)}
+                    className="whitespace-nowrap bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium"
+                  >
+                    View All
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* All Routes Modal */}
+            {showAllRoutes && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-4 pointer-events-auto">
+                <div className="bg-white w-full max-w-md rounded-2xl p-6 max-h-[80vh] flex flex-col">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">All Predefined Routes</h2>
+                    <button onClick={() => setShowAllRoutes(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                      <X size={24} />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                    {PREDEFINED_ROUTES.map((route) => (
+                      <button
+                        key={route.id}
+                        onClick={() => selectPredefinedRoute(route.id)}
+                        className="w-full flex justify-between items-center p-4 bg-gray-50 rounded-xl hover:bg-green-50 hover:border-hail-green border border-transparent transition-all text-left"
+                      >
+                        <div>
+                          <p className="font-bold text-gray-900">{route.from} → {route.to}</p>
+                          <p className="text-xs text-gray-500">Fixed rate trip</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-hail-green">R{new Date().getHours() >= 20 || new Date().getHours() < 5 ? route.nightPrice : route.dayPrice}</p>
+                          <p className="text-[10px] text-gray-400 uppercase font-bold">
+                            {new Date().getHours() >= 20 || new Date().getHours() < 5 ? 'Night Rate' : 'Day Rate'}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Ride Selection */}
             {destination && rideStats ? (
