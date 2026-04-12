@@ -12,29 +12,6 @@ export default function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Check Configuration First
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md">
-          <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Loader2 className="text-orange-600" size={32} />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">App Configuration Missing</h1>
-          <p className="text-gray-500 text-sm mb-6">
-            The Supabase connection details are not set. If you are the developer, please add 
-            <code className="bg-gray-100 px-1 rounded mx-1">VITE_SUPABASE_URL</code> and 
-            <code className="bg-gray-100 px-1 rounded mx-1">VITE_SUPABASE_ANON_KEY</code> 
-            to the project settings.
-          </p>
-          <div className="text-xs text-gray-400 border-t pt-4">
-            End users should not see this. Please ensure environment variables are configured in the platform settings.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     // 1. Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -64,10 +41,9 @@ export default function App() {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error) {
-        // If profile doesn't exist, it will be handled by Auth component
+      if (error || !data) {
         setProfile(null);
       } else {
         setProfile(data);
@@ -87,13 +63,17 @@ export default function App() {
     );
   }
 
-  if (!session || !profile) {
-    return <Auth onAuthSuccess={() => {}} />;
-  }
-
   return (
-    <main className="w-full h-screen overflow-hidden bg-gray-100">
-      {profile.role === 'admin' ? (
+    <main className="w-full h-screen overflow-hidden bg-gray-100 relative">
+      {!isSupabaseConfigured && (
+        <div className="absolute top-0 left-0 right-0 bg-orange-500 text-white text-[10px] py-1 px-2 text-center z-[9999] font-bold uppercase tracking-widest">
+          Demo Mode (No Backend Connected)
+        </div>
+      )}
+      
+      {!session || !profile ? (
+        <Auth onAuthSuccess={() => {}} />
+      ) : profile.role === 'admin' ? (
         <AdminView user={session.user} />
       ) : profile.role === 'driver' ? (
         <DriverView user={session.user} />

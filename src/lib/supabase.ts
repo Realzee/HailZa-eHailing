@@ -4,13 +4,83 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+const isRealSupabase = !!(supabaseUrl && supabaseAnonKey && supabaseUrl.includes('.supabase.co'));
 
-// Initialize with real credentials or safe placeholders to prevent crash
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder'
-);
+// Mock Supabase Client for Demo Mode
+const createMockClient = () => {
+  const mockStorage = {
+    getItem: (key: string) => localStorage.getItem(`mock_${key}`),
+    setItem: (key: string, value: string) => localStorage.setItem(`mock_${key}`, value),
+    removeItem: (key: string) => localStorage.removeItem(`mock_${key}`),
+  };
+
+  const getSession = async () => {
+    const sessionStr = mockStorage.getItem('session');
+    return { data: { session: sessionStr ? JSON.parse(sessionStr) : null }, error: null };
+  };
+
+  return {
+    auth: {
+      getSession,
+      onAuthStateChange: (callback: any) => {
+        getSession().then(({ data }) => callback('SIGNED_IN', data.session));
+        return { data: { subscription: { unsubscribe: () => {} } } };
+      },
+      signInWithPassword: async ({ email }: any) => {
+        const user = { id: 'mock-user-id', email };
+        const session = { user, access_token: 'mock-token' };
+        mockStorage.setItem('session', JSON.stringify(session));
+        return { data: { session }, error: null };
+      },
+      signUp: async ({ email }: any) => {
+        const user = { id: 'mock-user-id', email };
+        const session = { user, access_token: 'mock-token' };
+        mockStorage.setItem('session', JSON.stringify(session));
+        return { data: { user, session }, error: null };
+      },
+      signOut: async () => {
+        mockStorage.removeItem('session');
+        return { error: null };
+      },
+    },
+    from: (table: string) => ({
+      select: () => ({
+        eq: () => ({
+          single: async () => {
+            const data = mockStorage.getItem(`table_${table}`);
+            return { data: data ? JSON.parse(data) : null, error: null };
+          },
+          maybeSingle: async () => {
+            const data = mockStorage.getItem(`table_${table}`);
+            return { data: data ? JSON.parse(data) : null, error: null };
+          },
+        }),
+        order: () => ({
+          limit: async () => ({ data: [], error: null }),
+        }),
+      }),
+      upsert: async (data: any) => {
+        mockStorage.setItem(`table_${table}`, JSON.stringify(data));
+        return { data, error: null };
+      },
+      update: () => ({
+        eq: async () => ({ error: null }),
+      }),
+      insert: async (data: any) => ({ data, error: null }),
+    }),
+    channel: () => ({
+      on: () => ({
+        subscribe: () => {},
+      }),
+    }),
+  } as any;
+};
+
+export const isSupabaseConfigured = isRealSupabase;
+
+export const supabase = isRealSupabase
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createMockClient();
 
 export type Profile = {
   id: string;
