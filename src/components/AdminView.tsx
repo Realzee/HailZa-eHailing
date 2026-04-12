@@ -673,6 +673,43 @@ export default function AdminView({ user }: { user: any }) {
                   )}
                 </div>
               </div>
+
+              {/* Ride History Section */}
+              <div className="p-6 border-t border-gray-100">
+                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Car size={16} /> Ride History
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+                      <tr>
+                        <th className="px-4 py-2">Date</th>
+                        <th className="px-4 py-2">Pickup</th>
+                        <th className="px-4 py-2">Dropoff</th>
+                        <th className="px-4 py-2">Fare</th>
+                        <th className="px-4 py-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {rides.filter(r => r.driver_id === selectedDriver.id).map(ride => (
+                        <tr key={ride.id}>
+                          <td className="px-4 py-2">{new Date(ride.created_at).toLocaleDateString()}</td>
+                          <td className="px-4 py-2 truncate max-w-[150px]">{ride.pickup_address}</td>
+                          <td className="px-4 py-2 truncate max-w-[150px]">{ride.dropoff_address}</td>
+                          <td className="px-4 py-2 font-bold">{formatZAR(ride.fare_amount)}</td>
+                          <td className="px-4 py-2">
+                            <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                              ride.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {ride.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             <div className="px-6 py-4 bg-gray-50 border-t flex justify-end">
