@@ -2,20 +2,22 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  --color-hail-green: #2596be; /* Primary color */
-  --color-hail-gold: #67bed9;  /* Secondary color */
-  --color-primary: #2596be;
-  --color-secondary: #67bed9;
+  --color-hail-green: #141414; /* Professional dark */
+  --color-hail-gold: #E4E3E0;  /* Professional light */
+  --color-primary: #141414;
+  --color-secondary: #E4E3E0;
+  --font-mono: 'Courier New', Courier, monospace;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #000000;
+    --background: #E4E3E0;
+    --foreground: #141414;
   }
   .dark {
-    --background: #111827;
-    --foreground: #f9fafb;
+    --background: #141414;
+    --foreground: #E4E3E0;
   }
 }
 
@@ -24,10 +26,4 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-}
-
-/* Custom Marker Styles if needed */
-.driver-marker {
-  background: transparent;
-  border: none;
 }

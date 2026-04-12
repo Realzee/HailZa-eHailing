@@ -178,39 +178,39 @@ export default function AdminView({ user }: { user: any }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-20">
+      <header className="bg-[#141414] text-[#E4E3E0] px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-[#141414]">
         <div className="flex items-center gap-3">
-          <div className="bg-hail-green p-2 rounded-lg shadow-inner">
-            <Shield size={24} className="text-white" />
+          <div className="bg-[#E4E3E0] p-2 rounded-none">
+            <Shield size={24} className="text-[#141414]" />
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">eTaxiDriver Admin</h1>
-            <p className="text-xs text-gray-400 uppercase tracking-widest">System Management</p>
+            <p className="text-xs uppercase tracking-widest opacity-60">System Management</p>
           </div>
         </div>
         <button 
           onClick={handleSignOut}
-          className="p-2 text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+          className="p-2 text-[#E4E3E0] hover:opacity-70 transition-opacity flex items-center gap-2"
         >
           <ThemeToggle />
-          <span className="text-sm font-medium">Sign Out</span>
+          <span className="text-sm font-medium uppercase tracking-wider">Sign Out</span>
           <LogOut size={20} />
         </button>
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-white border-b px-6 py-4 grid grid-cols-3 gap-4">
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Users</span>
-          <span className="text-2xl font-bold">{profiles.length}</span>
+      <div className="bg-[#E4E3E0] border-b border-[#141414] px-6 py-6 grid grid-cols-3 gap-4">
+        <div className="flex flex-col border-l border-[#141414] pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Total Users</span>
+          <span className="text-3xl font-mono tracking-tighter">{profiles.length}</span>
         </div>
-        <div className="flex flex-col border-l pl-4">
-          <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Active Drivers</span>
-          <span className="text-2xl font-bold">{drivers.filter(d => d.is_online).length}</span>
+        <div className="flex flex-col border-l border-[#141414] pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Active Drivers</span>
+          <span className="text-3xl font-mono tracking-tighter">{drivers.filter(d => d.is_online).length}</span>
         </div>
-        <div className="flex flex-col border-l pl-4">
-          <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Rides</span>
-          <span className="text-2xl font-bold">{rides.length}</span>
+        <div className="flex flex-col border-l border-[#141414] pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Total Rides</span>
+          <span className="text-3xl font-mono tracking-tighter">{rides.length}</span>
         </div>
       </div>
 
@@ -218,65 +218,28 @@ export default function AdminView({ user }: { user: any }) {
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         {/* Tabs & Search */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex bg-gray-200 p-1 rounded-xl w-full md:w-auto">
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'users' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Users
-            </button>
-            <button
-              onClick={() => setActiveTab('drivers')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'drivers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Drivers
-            </button>
-            <button
-              onClick={() => setActiveTab('rides')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'rides' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Rides
-            </button>
-            <button
-              onClick={() => setActiveTab('earnings')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'earnings' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Earnings
-            </button>
-            <button
-              onClick={() => setActiveTab('map')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'map' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Live Map
-            </button>
-            <button
-              onClick={() => setActiveTab('branding')}
-              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === 'branding' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Branding
-            </button>
+          <div className="flex bg-[#141414] p-1 w-full md:w-auto">
+            {['users', 'drivers', 'rides', 'earnings', 'map', 'branding'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`flex-1 md:flex-none px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
+                  activeTab === tab ? 'bg-[#E4E3E0] text-[#141414]' : 'text-[#E4E3E0] hover:opacity-70'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
           <div className="relative w-full md:w-72">
             {activeTab !== 'earnings' && (
               <>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" size={18} />
                 <input
                   type="text"
                   placeholder={`Search ${activeTab}...`}
-                  className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-hail-green outline-none"
+                  className="w-full pl-10 pr-4 py-2 bg-transparent border border-[#141414] focus:ring-1 focus:ring-[#141414] outline-none font-mono text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -286,7 +249,7 @@ export default function AdminView({ user }: { user: any }) {
         </div>
 
         {/* Data Tables */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-[#E4E3E0] border border-[#141414] overflow-hidden">
           {activeTab === 'earnings' && (
             <div className="p-4 bg-white border-b flex flex-wrap gap-4 items-center">
               <div className="flex items-center gap-2">
@@ -365,40 +328,33 @@ export default function AdminView({ user }: { user: any }) {
 
           {activeTab === 'users' && (
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+              <table className="w-full text-left border-collapse">
+                <thead className="border-b border-[#141414]">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">User</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Role</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Joined</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Actions</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">User</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Joined</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-[#141414]">
                   {filteredProfiles.map((profile) => (
-                    <tr key={profile.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={profile.id} className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-500">
+                          <div className="w-8 h-8 bg-[#141414] text-[#E4E3E0] flex items-center justify-center font-mono text-xs">
                             {profile.full_name?.charAt(0)}
                           </div>
-                          <div>
+                          <div className="font-mono">
                             <p className="font-bold">{profile.full_name}</p>
-                            <p className="text-xs text-gray-500">{profile.email}</p>
+                            <p className="text-xs opacity-60">{profile.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                          profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                          profile.role === 'owner' ? 'bg-blue-100 text-blue-700' :
-                          profile.role === 'driver' ? 'bg-green-100 text-green-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {profile.role}
-                        </span>
+                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                        {profile.role}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-6 py-4 font-mono text-xs opacity-60">
                         {new Date(profile.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
@@ -406,14 +362,14 @@ export default function AdminView({ user }: { user: any }) {
                           {profile.role !== 'admin' && (
                             <button 
                               onClick={() => promoteToAdmin(profile.id)}
-                              className="text-purple-600 hover:text-purple-800 transition-colors p-1"
+                              className="hover:opacity-50 transition-opacity p-1"
                               title="Promote to Admin"
                             >
-                              <Shield size={18} />
+                              <Shield size={16} />
                             </button>
                           )}
-                          <button className="text-gray-400 hover:text-red-600 transition-colors p-1">
-                            <Trash2 size={18} />
+                          <button className="hover:opacity-50 transition-opacity p-1">
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -426,83 +382,42 @@ export default function AdminView({ user }: { user: any }) {
 
           {activeTab === 'drivers' && (
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+              <table className="w-full text-left border-collapse">
+                <thead className="border-b border-[#141414]">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Driver</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Vehicle</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Status</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Approval</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Driver</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Vehicle</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Approval</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-[#141414]">
                   {filteredDrivers.map((driver) => (
                     <tr 
                       key={driver.id} 
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors cursor-pointer"
                       onClick={() => setSelectedDriver(driver)}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center font-bold text-green-600">
+                          <div className="w-8 h-8 bg-[#141414] text-[#E4E3E0] flex items-center justify-center font-mono text-xs">
                             {driver.profiles.full_name?.charAt(0)}
                           </div>
-                          <div>
+                          <div className="font-mono">
                             <p className="font-bold">{driver.profiles.full_name}</p>
-                            <p className="text-xs text-gray-500">{driver.profiles.email}</p>
+                            <p className="text-xs opacity-60">{driver.profiles.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-medium">{driver.vehicle_make} {driver.vehicle_model}</p>
-                        <p className="text-xs text-gray-500">{driver.vehicle_plate}</p>
+                      <td className="px-6 py-4 font-mono text-xs">
+                        <p>{driver.vehicle_make} {driver.vehicle_model}</p>
+                        <p className="opacity-60">{driver.vehicle_plate}</p>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${driver.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                          <span className="text-sm">{driver.is_online ? 'Online' : 'Offline'}</span>
-                        </div>
+                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                        {driver.is_online ? 'Online' : 'Offline'}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            driver.onboarding_status === 'approved' ? 'bg-green-100 text-green-700' :
-                            driver.onboarding_status === 'declined' ? 'bg-red-100 text-red-700' :
-                            'bg-orange-100 text-orange-700'
-                          }`}>
-                            {driver.onboarding_status || 'pending'}
-                          </span>
-                          
-                          <div className="flex items-center gap-1 ml-auto" onClick={(e) => e.stopPropagation()}>
-                            {driver.onboarding_status !== 'approved' && (
-                              <button 
-                                onClick={() => updateDriverStatus(driver.id, 'approved')}
-                                className="p-1 text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                title="Approve Driver"
-                              >
-                                <CheckCircle size={18} />
-                              </button>
-                            )}
-                            {driver.onboarding_status !== 'declined' && (
-                              <button 
-                                onClick={() => updateDriverStatus(driver.id, 'declined')}
-                                className="p-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                title="Decline Driver"
-                              >
-                                <XCircle size={18} />
-                              </button>
-                            )}
-                            {driver.onboarding_status !== 'pending' && (
-                              <button 
-                                onClick={() => updateDriverStatus(driver.id, 'pending')}
-                                className="p-1 text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
-                                title="Set to Pending"
-                              >
-                                <Filter size={18} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                        {driver.onboarding_status || 'pending'}
                       </td>
                     </tr>
                   ))}
@@ -522,39 +437,19 @@ export default function AdminView({ user }: { user: any }) {
                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-[#141414]">
                   {filteredRides.map((ride) => (
-                    <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 max-w-xs">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-xs">
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
-                            <span className="truncate">{ride.pickup_address}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs">
-                            <div className="w-2 h-2 bg-red-500 rounded-full" />
-                            <span className="truncate">{ride.dropoff_address}</span>
-                          </div>
-                        </div>
+                    <tr key={ride.id} className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors">
+                      <td className="px-6 py-4 max-w-xs font-mono text-xs">
+                        <p className="truncate">P: {ride.pickup_address}</p>
+                        <p className="truncate opacity-60">D: {ride.dropoff_address}</p>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-bold">R: {ride.rider?.full_name}</p>
-                        <p className="text-xs text-gray-500">D: {ride.driver?.full_name || 'Unassigned'}</p>
+                      <td className="px-6 py-4 font-mono text-xs">
+                        <p className="font-bold">R: {ride.rider?.full_name}</p>
+                        <p className="opacity-60">D: {ride.driver?.full_name || 'Unassigned'}</p>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-bold">{formatZAR(ride.fare_amount)}</p>
-                        <p className="text-xs text-gray-500">{ride.distance_km.toFixed(1)} km</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                          ride.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          ride.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                          ride.status === 'requested' ? 'bg-orange-100 text-orange-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {ride.status}
-                        </span>
-                      </td>
+                      <td className="px-6 py-4 font-mono text-xs">{formatZAR(ride.fare_amount)}</td>
+                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">{ride.status}</td>
                     </tr>
                   ))}
                 </tbody>
