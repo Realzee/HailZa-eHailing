@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import Map from '@/components/Map';
-import { supabase, type Ride } from '@/lib/supabase';
+import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
 import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut } from 'lucide-react';
 
@@ -17,6 +17,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [rideStats, setRideStats] = useState<{ distance: number; duration: number; price: number } | null>(null);
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -63,6 +64,7 @@ export default function RiderView({ user }: RiderViewProps) {
 
     fetchActiveRide();
     fetchRideHistory();
+    fetchDrivers();
 
     const channel = supabase
       .channel('rider_rides')
@@ -95,6 +97,32 @@ export default function RiderView({ user }: RiderViewProps) {
     if (data) {
       setRideHistory(data);
     }
+  };
+
+  const fetchDrivers = async () => {
+    const { data } = await supabase
+      .from('drivers')
+      .select('*')
+      .eq('is_online', true)
+      .eq('is_approved', true);
+    
+    if (data) {
+      setDrivers(data);
+    }
+  };
+
+  const getDriverLocation = (driver: Driver) => {
+    if (!driver.current_location) return null;
+    if (typeof driver.current_location === 'string') {
+      const match = driver.current_location.match(/POINT\(([-\d.]+) ([-\d.]+)\)/);
+      if (match) {
+        return { lng: parseFloat(match[1]), lat: parseFloat(match[2]) };
+      }
+    }
+    if (driver.current_location.coordinates) {
+      return { lng: driver.current_location.coordinates[0], lat: driver.current_location.coordinates[1] };
+    }
+    return null;
   };
 
   // 3. Handle Map Click (Set Destination)
@@ -202,6 +230,10 @@ export default function RiderView({ user }: RiderViewProps) {
           markers={[
             { position: location, type: 'user', title: 'You' },
             ...(destination ? [{ position: destination, type: 'destination' as const, title: 'Dropoff' }] : []),
+            ...drivers.map(d => {
+              const loc = getDriverLocation(d);
+              return loc ? { position: [loc.lat, loc.lng] as [number, number], type: 'driver' as const, title: 'Available Driver' } : null;
+            }).filter(m => m !== null) as any[]
           ]}
           route={route}
           onMapClick={handleMapClick}
