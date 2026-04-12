@@ -87,11 +87,17 @@ if (isRealSupabase) {
   supabase.from('profiles').select('id', { count: 'exact', head: true })
     .then(({ error }) => {
       if (error) {
-        console.warn('Supabase Connection Warning:', error.message);
+        console.error('âŒ Supabase Connection Error:', error.message);
+        console.log('URL being used:', supabaseUrl);
       } else {
         console.log('âœ… Supabase Connected Successfully');
       }
+    })
+    .catch(err => {
+      console.error('âŒ Critical Connection Failure:', err);
     });
+} else {
+  console.log('âš ï¸ Running in Demo Mode (No Backend)');
 }
 
 export type Profile = {
