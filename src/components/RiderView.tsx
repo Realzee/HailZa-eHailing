@@ -4,6 +4,7 @@ import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
 import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import Footer from './Footer';
 
 interface RiderViewProps {
   user: any;
@@ -505,6 +506,7 @@ export default function RiderView({ user }: RiderViewProps) {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

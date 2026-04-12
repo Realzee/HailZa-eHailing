@@ -7,6 +7,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import ThemeToggle from './ThemeToggle';
+import Footer from './Footer';
+import BrandingSettings from './BrandingSettings';
 
 // Fix Leaflet marker icon issue
 // @ts-ignore
@@ -230,6 +232,14 @@ export default function AdminView({ user }: { user: any }) {
               }`}
             >
               Live Map
+            </button>
+            <button
+              onClick={() => setActiveTab('branding')}
+              className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                activeTab === 'branding' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Branding
             </button>
           </div>
 
@@ -727,6 +737,7 @@ export default function AdminView({ user }: { user: any }) {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }

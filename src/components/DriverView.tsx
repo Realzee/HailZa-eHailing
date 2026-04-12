@@ -4,6 +4,7 @@ import { supabase, type Ride, type Profile } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
 import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import Footer from './Footer';
 
 interface DriverViewProps {
   user: any;
@@ -471,6 +472,7 @@ export default function DriverView({ user }: DriverViewProps) {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
