@@ -34,6 +34,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [isSheetMinimized, setIsSheetMinimized] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedRideType, setSelectedRideType] = useState('standard');
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   const RIDE_TYPES = [
@@ -224,10 +225,29 @@ export default function RiderView({ user }: RiderViewProps) {
   };
 
   // 5. Address Search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.trim().length > 2) {
+        setIsSearchingAddress(true);
+        const results = await searchAddress(searchQuery);
+        setSearchResults(results);
+        setIsSearchingAddress(false);
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
-    const results = await searchAddress(searchQuery);
-    setSearchResults(results);
+    if (searchQuery.trim().length > 2) {
+      setIsSearchingAddress(true);
+      const results = await searchAddress(searchQuery);
+      setSearchResults(results);
+      setIsSearchingAddress(false);
+    }
   };
 
   const selectSearchResult = async (result: any) => {
@@ -529,17 +549,26 @@ export default function RiderView({ user }: RiderViewProps) {
                   <input
                     type="text"
                     placeholder="Where to?"
-                    className="w-full bg-gray-50 rounded-2xl py-3 pl-12 pr-4 outline-none border border-gray-100 focus:border-hail-green focus:bg-white focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium"
+                    className="w-full bg-gray-50 rounded-2xl py-3 pl-12 pr-12 outline-none border border-gray-100 focus:border-hail-green focus:bg-white focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    {isSearchingAddress && <Loader2 size={16} className="animate-spin text-hail-green" />}
+                    {searchQuery && !isSearchingAddress && (
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSearchResults([]);
+                        }}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <button 
-                  type="submit" 
-                  className="bg-gray-900 text-white p-3 rounded-2xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-black/10"
-                >
-                  <Search size={20} />
-                </button>
               </form>
               
               {/* Search Results */}
