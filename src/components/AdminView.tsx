@@ -295,7 +295,7 @@ export default function AdminView({ user }: { user: any }) {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={Object.entries(rides
-                    .filter(r => r.status === 'completed')
+                    .filter(r => r.status === 'completed' || r.status === 'paid')
                     .filter(r => earningsDriverFilter === 'all' || r.driver_id === earningsDriverFilter)
                     .filter(r => !earningsDateStart || new Date(r.created_at) >= new Date(earningsDateStart))
                     .filter(r => !earningsDateEnd || new Date(r.created_at) <= new Date(earningsDateEnd))
@@ -492,7 +492,7 @@ export default function AdminView({ user }: { user: any }) {
                 </thead>
                 <tbody className="divide-y dark:divide-gray-700 transition-colors">
                   {rides
-                    .filter(r => r.status === 'completed')
+                    .filter(r => r.status === 'completed' || r.status === 'paid')
                     .filter(r => earningsDriverFilter === 'all' || r.driver_id === earningsDriverFilter)
                     .filter(r => !earningsDateStart || new Date(r.created_at) >= new Date(earningsDateStart))
                     .filter(r => !earningsDateEnd || new Date(r.created_at) <= new Date(earningsDateEnd))
@@ -709,7 +709,7 @@ export default function AdminView({ user }: { user: any }) {
                           <td className="px-4 py-2 font-bold">{formatZAR(ride.fare_amount)}</td>
                           <td className="px-4 py-2">
                             <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                              ride.status === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                              (ride.status === 'completed' || ride.status === 'paid') ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                             }`}>
                               {ride.status}
                             </span>

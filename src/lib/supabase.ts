@@ -131,7 +131,7 @@ export type Ride = {
   dropoff_lng: number;
   pickup_address: string;
   dropoff_address: string;
-  status: 'requested' | 'accepted' | 'arrived' | 'in_progress' | 'completed' | 'cancelled';
+  status: 'requested' | 'accepted' | 'arrived' | 'in_progress' | 'completed' | 'cancelled' | 'paid';
   fare_amount: number;
   distance_km: number;
   created_at: string;

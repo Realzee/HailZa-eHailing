@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
-import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home } from 'lucide-react';
+import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { PREDEFINED_ROUTES, getPriceForRoute } from '@/constants/pricing';
@@ -123,7 +123,7 @@ export default function RiderView({ user }: RiderViewProps) {
       .from('rides')
       .select('*')
       .eq('rider_id', user.id)
-      .eq('status', 'completed')
+      .in('status', ['completed', 'paid'])
       .order('created_at', { ascending: false });
     
     if (data) {
@@ -159,12 +159,11 @@ export default function RiderView({ user }: RiderViewProps) {
 
   // 3. Handle Map Click (Set Destination)
   const handleMapClick = async (lat: number, lng: number) => {
-    if (activeRide && activeRide.status !== 'completed' && activeRide.status !== 'cancelled') return;
+    if (activeRide && activeRide.status !== 'cancelled') return;
     
-    // Reset if previous ride was completed/cancelled
-    if (activeRide && (activeRide.status === 'completed' || activeRide.status === 'cancelled')) {
+    // Reset if previous ride was cancelled
+    if (activeRide && activeRide.status === 'cancelled') {
         setActiveRide(null);
-        setShowPayment(false);
     }
 
     setDestination([lat, lng]);
@@ -258,18 +257,34 @@ export default function RiderView({ user }: RiderViewProps) {
     handleMapClick(lat, lng);
   };
 
-  const handlePayment = async () => {
+  const handlePayment = async (method: string) => {
+    if (!activeRide) return;
     setProcessingPayment(true);
-    // Simulate Paystack payment delay
-    setTimeout(async () => {
+    
+    try {
+      // Update ride status to paid
+      const { error } = await supabase
+        .from('rides')
+        .update({ status: 'paid' })
+        .eq('id', activeRide.id);
+        
+      if (error) throw error;
+      
+      // Simulate payment processing delay
+      setTimeout(() => {
+        setProcessingPayment(false);
+        setShowPayment(false);
+        setActiveRide(null);
+        setDestination(null);
+        setRoute(undefined);
+        setRideStats(null);
+        alert(`Payment via ${method} Successful!`);
+      }, 1500);
+    } catch (err) {
+      console.error('Payment error:', err);
       setProcessingPayment(false);
-      setShowPayment(false);
-      setActiveRide(null);
-      setDestination(null);
-      setRoute(undefined);
-      setRideStats(null);
-      alert('Payment Successful!');
-    }, 2000);
+      alert('Payment failed. Please try again.');
+    }
   };
 
   const cancelRide = () => {
@@ -353,7 +368,7 @@ export default function RiderView({ user }: RiderViewProps) {
           ]}
           route={route}
           onMapClick={handleMapClick}
-          interactive={!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled'}
+          interactive={!activeRide || activeRide.status === 'cancelled'}
         />
       </div>
 
@@ -469,13 +484,31 @@ export default function RiderView({ user }: RiderViewProps) {
               <span className="text-2xl font-bold text-gray-900 dark:text-white">{formatZAR(activeRide.fare_amount)}</span>
             </div>
 
-            <button
-              onClick={handlePayment}
-              disabled={processingPayment}
-              className="w-full bg-hail-green text-white py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-colors flex items-center justify-center gap-2"
-            >
-              {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Paystack <CreditCard size={20} /></>}
-            </button>
+            <div className="space-y-3">
+              <button
+                onClick={() => handlePayment('Paystack')}
+                disabled={processingPayment}
+                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-colors flex items-center justify-center gap-2"
+              >
+                {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Card (Paystack) <CreditCard size={20} /></>}
+              </button>
+              
+              <button
+                onClick={() => handlePayment('Cash')}
+                disabled={processingPayment}
+                className="w-full bg-gray-900 dark:bg-gray-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-black dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+              >
+                {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Cash <Banknote size={20} /></>}
+              </button>
+
+              <button
+                onClick={() => handlePayment('Wallet')}
+                disabled={processingPayment}
+                className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Wallet <Wallet size={20} /></>}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -533,14 +566,14 @@ export default function RiderView({ user }: RiderViewProps) {
             className="w-full py-2 flex flex-col items-center cursor-pointer group mb-4"
           >
             <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500 transition-colors" />
-            {(!activeRide || activeRide.status === 'completed') && (
+            {(!activeRide || activeRide.status === 'cancelled') && (
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-2">
                 {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
               </p>
             )}
           </button>
 
-          {!activeRide || activeRide.status === 'completed' || activeRide.status === 'cancelled' ? (
+          {!activeRide || activeRide.status === 'cancelled' ? (
             <div className="w-full">
 
             {/* Search Destination */}

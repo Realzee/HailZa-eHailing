@@ -87,7 +87,7 @@ export default function DriverView({ user }: DriverViewProps) {
         .from('rides')
         .select('*')
         .eq('driver_id', user.id)
-        .eq('status', 'completed');
+        .in('status', ['completed', 'paid']);
       
       if (ridesData) {
         setRideHistory(ridesData);
