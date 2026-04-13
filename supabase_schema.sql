@@ -56,11 +56,15 @@ create table if not exists public.rides (
   dropoff_address text not null,
   dropoff_lat double precision not null,
   dropoff_lng double precision not null,
-  status text check (status in ('requested', 'accepted', 'in_progress', 'completed', 'cancelled')) default 'requested',
+  status text check (status in ('requested', 'accepted', 'in_progress', 'completed', 'cancelled', 'paid')) default 'requested',
   fare_amount numeric not null,
   distance_km numeric not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Ensure 'paid' status is allowed in existing rides table
+alter table public.rides drop constraint if exists rides_status_check;
+alter table public.rides add constraint rides_status_check check (status in ('requested', 'accepted', 'in_progress', 'completed', 'cancelled', 'paid'));
 
 -- 5. RLS POLICIES (Row Level Security)
 alter table public.profiles enable row level security;
