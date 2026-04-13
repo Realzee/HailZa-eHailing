@@ -57,14 +57,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+      <div className="h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
         <Loader2 className="animate-spin text-hail-green" size={48} />
       </div>
     );
   }
 
   return (
-    <main className="w-full h-screen overflow-hidden bg-gray-100 relative">
+    <main className="w-full h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 relative transition-colors">
       {!isSupabaseConfigured && (
         <div className="absolute top-0 left-0 right-0 bg-orange-500 text-white text-[10px] py-1 px-2 text-center z-[9999] font-bold uppercase tracking-widest">
           Demo Mode (No Backend Connected)

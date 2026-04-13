@@ -100,10 +100,10 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
       {/* Satellite Toggle Button */}
       <button
         onClick={() => setMapStyle(prev => prev === 'streets' ? 'satellite' : 'streets')}
-        className="absolute top-4 right-4 z-10 bg-white p-3 rounded-2xl shadow-xl border border-gray-100 hover:bg-gray-50 transition-all active:scale-95 group"
+        className="absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all active:scale-95 group"
         title="Toggle Map Style"
       >
-        <Layers size={20} className="text-gray-700 group-hover:text-hail-green transition-colors" />
+        <Layers size={20} className="text-gray-700 dark:text-gray-300 group-hover:text-hail-green dark:group-hover:text-hail-green transition-colors" />
       </button>
     </div>
   );

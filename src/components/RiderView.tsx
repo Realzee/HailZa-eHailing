@@ -364,7 +364,7 @@ export default function RiderView({ user }: RiderViewProps) {
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white shadow-xl rounded-2xl p-2 pointer-events-auto border border-gray-100"
+              className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-2 pointer-events-auto border border-gray-100 dark:border-gray-700 transition-colors"
             >
               <img src={appLogo} alt="Logo" className="h-8 w-auto" />
             </motion.div>
@@ -372,14 +372,14 @@ export default function RiderView({ user }: RiderViewProps) {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white shadow-xl rounded-2xl p-3 flex items-center gap-3 pointer-events-auto max-w-md border border-gray-100"
+            className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-3 flex items-center gap-3 pointer-events-auto max-w-md border border-gray-100 dark:border-gray-700 transition-colors"
           >
             <div className="bg-hail-green/10 p-2 rounded-xl">
               <MapPin size={20} className="text-hail-green" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Current Location</p>
-              <p className="font-bold text-sm truncate text-gray-900">{pickupAddress}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Current Location</p>
+              <p className="font-bold text-sm truncate text-gray-900 dark:text-white">{pickupAddress}</p>
             </div>
           </motion.div>
         </div>
@@ -396,7 +396,7 @@ export default function RiderView({ user }: RiderViewProps) {
                   setSearchResults([]);
                   setIsSheetMinimized(false);
                 }}
-                className="bg-white shadow-xl p-3 rounded-2xl text-gray-900 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+                className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-900 dark:text-white hover:text-hail-green dark:hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
                 title="Back"
               >
                 <ChevronRight size={24} className="rotate-180" />
@@ -411,22 +411,24 @@ export default function RiderView({ user }: RiderViewProps) {
                 setSearchResults([]);
                 setIsSheetMinimized(false);
               }}
-              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-hail-green dark:hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
               title="Home"
             >
               <Home size={20} />
             </button>
             <button 
               onClick={() => setShowHistoryModal(true)}
-              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-hail-green dark:hover:text-hail-green transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
               title="Trip History"
             >
               <History size={20} />
             </button>
-            <ThemeToggle />
+            <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700">
+              <ThemeToggle />
+            </div>
             <button 
               onClick={() => supabase.auth.signOut()}
-              className="bg-white shadow-xl p-3 rounded-2xl text-gray-600 hover:text-red-600 transition-all hover:scale-105 active:scale-95 border border-gray-100"
+              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
               title="Sign Out"
             >
               <LogOut size={20} />
@@ -447,13 +449,13 @@ export default function RiderView({ user }: RiderViewProps) {
       {/* Payment Modal */}
       {showPayment && activeRide && (
         <div className="absolute inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4">
-          <div className="bg-white w-full max-w-md rounded-2xl p-6 animate-in slide-in-from-bottom duration-300">
+          <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6 animate-in slide-in-from-bottom duration-300 border border-gray-100 dark:border-gray-700">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-green-100 text-hail-green rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-hail-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={32} />
               </div>
-              <h2 className="text-2xl font-bold">Ride Completed!</h2>
-              <p className="text-gray-500">How was your ride?</p>
+              <h2 className="text-2xl font-bold dark:text-white">Ride Completed!</h2>
+              <p className="text-gray-500 dark:text-gray-400">How was your ride?</p>
             </div>
 
             <div className="flex justify-center gap-2 mb-6">
@@ -462,9 +464,9 @@ export default function RiderView({ user }: RiderViewProps) {
               ))}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-xl mb-6 flex justify-between items-center">
-              <span className="font-medium text-gray-700">Total Fare</span>
-              <span className="text-2xl font-bold text-gray-900">{formatZAR(activeRide.fare_amount)}</span>
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl mb-6 flex justify-between items-center border border-gray-100 dark:border-gray-600">
+              <span className="font-medium text-gray-700 dark:text-gray-300">Total Fare</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">{formatZAR(activeRide.fare_amount)}</span>
             </div>
 
             <button
@@ -481,15 +483,15 @@ export default function RiderView({ user }: RiderViewProps) {
       {/* Cancellation Modal */}
       {showCancelModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white w-full max-w-sm rounded-2xl p-6 animate-in zoom-in-95 duration-200">
-            <h2 className="text-xl font-bold mb-4">Select Cancellation Reason</h2>
+          <div className="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl p-6 animate-in zoom-in-95 duration-200 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-xl font-bold mb-4 dark:text-white">Select Cancellation Reason</h2>
             <div className="space-y-2 mb-6">
               {cancellationReasons.map((reason) => (
                 <button
                   key={reason}
                   onClick={() => setCancelReason(reason)}
                   className={`w-full p-3 rounded-xl text-left font-medium transition-colors ${
-                    cancelReason === reason ? 'bg-hail-green text-white' : 'bg-gray-100 hover:bg-gray-200'
+                    cancelReason === reason ? 'bg-hail-green text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   {reason}
@@ -499,14 +501,14 @@ export default function RiderView({ user }: RiderViewProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="flex-1 py-3 bg-gray-100 rounded-xl font-bold"
+                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={confirmCancel}
                 disabled={!cancelReason}
-                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold disabled:opacity-50"
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold disabled:opacity-50 hover:bg-red-700 transition-colors"
               >
                 Confirm Cancellation
               </button>
@@ -522,7 +524,7 @@ export default function RiderView({ user }: RiderViewProps) {
           y: isSheetMinimized && activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') ? '70%' : 0 
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] z-20 max-h-[85vh] overflow-y-auto border-t border-gray-100 relative scrollbar-hide flex justify-center"
+        className="bg-white dark:bg-gray-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] z-20 max-h-[85vh] overflow-y-auto border-t border-gray-100 dark:border-gray-700 relative scrollbar-hide flex justify-center transition-colors"
       >
         <div className="w-full max-w-2xl p-6">
           {/* Handle for visual cue / Toggle */}
@@ -530,9 +532,9 @@ export default function RiderView({ user }: RiderViewProps) {
             onClick={() => activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && setIsSheetMinimized(!isSheetMinimized)}
             className="w-full py-2 flex flex-col items-center cursor-pointer group mb-4"
           >
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full group-hover:bg-gray-300 transition-colors" />
+            <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500 transition-colors" />
             {(!activeRide || activeRide.status === 'completed') && (
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-2">
                 {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
               </p>
             )}
@@ -545,11 +547,11 @@ export default function RiderView({ user }: RiderViewProps) {
             <div className="mb-8 relative">
               <form onSubmit={handleSearch} className="flex gap-3">
                 <div className="relative flex-1 group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-hail-green transition-colors" size={20} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-hail-green transition-colors" size={20} />
                   <input
                     type="text"
                     placeholder="Where to?"
-                    className="w-full bg-gray-50 rounded-2xl py-3 pl-12 pr-12 outline-none border border-gray-100 focus:border-hail-green focus:bg-white focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium"
+                    className="w-full bg-gray-50 dark:bg-gray-700 rounded-2xl py-3 pl-12 pr-12 outline-none border border-gray-100 dark:border-gray-600 focus:border-hail-green focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium dark:text-white"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -562,7 +564,7 @@ export default function RiderView({ user }: RiderViewProps) {
                           setSearchQuery('');
                           setSearchResults([]);
                         }}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                       >
                         <X size={16} />
                       </button>
@@ -578,23 +580,23 @@ export default function RiderView({ user }: RiderViewProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-0 w-full bg-white shadow-2xl rounded-2xl mt-3 overflow-hidden border border-gray-100 z-30"
+                    className="absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-2xl rounded-2xl mt-3 overflow-hidden border border-gray-100 dark:border-gray-700 z-30"
                   >
-                    <div className="flex justify-between items-center p-4 bg-gray-50/50 border-b border-gray-100">
-                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Search Results</span>
-                       <button onClick={() => setSearchResults([])} className="p-1 hover:bg-gray-200 rounded-full transition-colors"><X size={16} /></button>
+                    <div className="flex justify-between items-center p-4 bg-gray-50/50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                       <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Search Results</span>
+                       <button onClick={() => setSearchResults([])} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"><X size={16} className="dark:text-gray-300" /></button>
                     </div>
                     <div className="max-h-64 overflow-y-auto">
                       {searchResults.map((res, idx) => (
                         <button
                           key={idx}
                           onClick={() => selectSearchResult(res)}
-                          className="w-full text-left p-4 hover:bg-hail-green/5 border-b border-gray-50 last:border-0 transition-colors flex items-center gap-3"
+                          className="w-full text-left p-4 hover:bg-hail-green/5 dark:hover:bg-hail-green/10 border-b border-gray-50 dark:border-gray-700 last:border-0 transition-colors flex items-center gap-3"
                         >
-                          <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
+                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-500 dark:text-gray-400">
                             <MapPin size={18} />
                           </div>
-                          <span className="text-sm font-medium text-gray-700 line-clamp-1">{res.display_name}</span>
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200 line-clamp-1">{res.display_name}</span>
                         </button>
                       ))}
                     </div>
@@ -607,7 +609,7 @@ export default function RiderView({ user }: RiderViewProps) {
             {!destination && (
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
                     <Navigation size={16} className="text-hail-green" /> Popular Routes
                   </h3>
                   <button 
@@ -622,7 +624,7 @@ export default function RiderView({ user }: RiderViewProps) {
                     <button
                       key={route.id}
                       onClick={() => selectPredefinedRoute(route.id)}
-                      className="whitespace-nowrap bg-white border border-gray-100 px-4 py-2 rounded-xl text-xs font-bold text-gray-700 hover:border-hail-green hover:bg-green-50 transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
+                      className="whitespace-nowrap bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-2 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-hail-green dark:hover:border-hail-green hover:bg-green-50 dark:hover:bg-hail-green/10 transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
                     >
                       <div className="w-2 h-2 bg-hail-green rounded-full" />
                       {route.from} → {route.to}
@@ -646,7 +648,7 @@ export default function RiderView({ user }: RiderViewProps) {
                 <div className="space-y-8">
                   {['Economy', 'Premium'].map((category) => (
                     <div key={category}>
-                      <h3 className="text-xl font-black text-gray-900 mb-4 px-2">{category}</h3>
+                      <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 px-2">{category}</h3>
                       <div className="space-y-2">
                         {RIDE_TYPES.filter(t => t.category === category).map((type) => (
                           <button
@@ -654,30 +656,30 @@ export default function RiderView({ user }: RiderViewProps) {
                             onClick={() => setSelectedRideType(type.id)}
                             className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border-2 ${
                               selectedRideType === type.id 
-                                ? 'border-gray-900 bg-gray-50' 
-                                : 'border-transparent hover:bg-gray-50'
+                                ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700' 
+                                : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-700/50'
                             }`}
                           >
                             <div className="flex items-center gap-4">
-                              <div className={`p-3 rounded-xl ${selectedRideType === type.id ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                              <div className={`p-3 rounded-xl ${selectedRideType === type.id ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
                                 <type.icon size={28} />
                               </div>
                               <div className="text-left">
                                 <div className="flex items-center gap-2">
-                                  <p className="font-black text-gray-900">{type.name}</p>
-                                  <div className="flex items-center gap-1 text-[10px] bg-gray-200 px-1.5 py-0.5 rounded font-bold">
+                                  <p className="font-black text-gray-900 dark:text-white">{type.name}</p>
+                                  <div className="flex items-center gap-1 text-[10px] bg-gray-200 dark:bg-gray-600 px-1.5 py-0.5 rounded font-bold dark:text-gray-300">
                                     <Star size={8} className="fill-current" />
                                     <span>{type.capacity}</span>
                                   </div>
                                 </div>
-                                <p className="text-xs text-gray-500 font-medium">{type.desc}</p>
-                                <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tighter">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{type.desc}</p>
+                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold mt-1 uppercase tracking-tighter">
                                   {Math.round(rideStats.duration / 60)} min dropoff
                                 </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-black text-lg text-gray-900">
+                              <p className="font-black text-lg text-gray-900 dark:text-white">
                                 {formatZAR(rideStats.price * type.multiplier)}
                               </p>
                             </div>
@@ -689,15 +691,15 @@ export default function RiderView({ user }: RiderViewProps) {
                 </div>
 
                 {/* Payment Selector Mock */}
-                <div className="border-t border-gray-100 pt-6 mt-6">
-                  <button className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all group">
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-6 mt-6">
+                  <button className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all group">
                     <div className="flex items-center gap-3">
                       <div className="bg-blue-600 p-1.5 rounded text-white">
                         <CreditCard size={16} />
                       </div>
-                      <p className="font-bold text-sm text-gray-700">•••• 1059</p>
+                      <p className="font-bold text-sm text-gray-700 dark:text-gray-200">•••• 1059</p>
                     </div>
-                    <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight size={16} className="text-gray-400 dark:text-gray-500 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
 
@@ -705,7 +707,7 @@ export default function RiderView({ user }: RiderViewProps) {
                   <button
                     onClick={requestRide}
                     disabled={searching}
-                    className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-xl hover:bg-black transition-all active:scale-[0.98] shadow-2xl flex items-center justify-center gap-3"
+                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-5 rounded-2xl font-black text-xl hover:bg-black dark:hover:bg-gray-200 transition-all active:scale-[0.98] shadow-2xl flex items-center justify-center gap-3"
                   >
                     {searching ? (
                       <Loader2 className="animate-spin" />
@@ -723,32 +725,32 @@ export default function RiderView({ user }: RiderViewProps) {
             {isSheetMinimized ? (
               <div className="flex items-center justify-between py-4">
                 <div className="flex items-center gap-4">
-                  <div className="bg-gray-900 p-2 rounded-xl text-white">
+                  <div className="bg-gray-900 dark:bg-gray-700 p-2 rounded-xl text-white">
                     <Car size={20} />
                   </div>
                   <div>
-                    <h3 className="font-black text-gray-900">
+                    <h3 className="font-black text-gray-900 dark:text-white">
                       {activeRide.status === 'requested' ? 'Finding Driver...' : 
                        activeRide.status === 'accepted' ? 'Driver Arriving' :
                        activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
                     </h3>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tighter">
                       {activeRide.dropoff_address}
                     </p>
                   </div>
                 </div>
-                <ChevronRight size={20} className="-rotate-90 text-gray-400" />
+                <ChevronRight size={20} className="-rotate-90 text-gray-400 dark:text-gray-500" />
               </div>
             ) : (
               <div className="space-y-8 mt-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                    <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                       {activeRide.status === 'requested' ? 'Finding Driver' : 
                        activeRide.status === 'accepted' ? 'On the Way' :
                        activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
                     </h2>
-                    <p className="text-gray-500 font-medium">
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
                       {activeRide.status === 'requested' ? 'Searching for nearby drivers...' : 
                        activeRide.status === 'accepted' ? 'Your driver is heading to you' :
                        activeRide.status === 'in_progress' ? 'You are on your way' : 'Your ride is complete'}
@@ -762,7 +764,7 @@ export default function RiderView({ user }: RiderViewProps) {
                 {activeRide.status === 'requested' && (
                    <div className="flex justify-center py-12">
                      <div className="relative">
-                       <div className="w-24 h-24 border-8 border-gray-100 border-t-hail-green rounded-full animate-spin"></div>
+                       <div className="w-24 h-24 border-8 border-gray-100 dark:border-gray-700 border-t-hail-green dark:border-t-hail-green rounded-full animate-spin"></div>
                        <div className="absolute inset-0 flex items-center justify-center">
                          <Search size={32} className="text-hail-green animate-pulse" />
                        </div>
@@ -774,7 +776,7 @@ export default function RiderView({ user }: RiderViewProps) {
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-5 p-6 bg-gray-900 text-white rounded-[2.5rem] shadow-2xl"
+                    className="flex items-center gap-5 p-6 bg-gray-900 dark:bg-gray-800 text-white rounded-[2.5rem] shadow-2xl border border-gray-800 dark:border-gray-700"
                   >
                     <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
                       <Car size={32} className="text-hail-green" />
@@ -797,19 +799,19 @@ export default function RiderView({ user }: RiderViewProps) {
                   {(activeRide.status === 'requested' || activeRide.status === 'accepted') && (
                     <button
                       onClick={cancelRide}
-                      className="flex-1 py-4 bg-red-50 text-red-600 rounded-2xl font-black text-lg hover:bg-red-100 transition-all active:scale-95 border border-red-100"
+                      className="flex-1 py-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-black text-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all active:scale-95 border border-red-100 dark:border-red-900/30"
                     >
                       Cancel Ride
                     </button>
                   )}
-                  <button className="flex-1 py-4 bg-gray-100 text-gray-900 rounded-2xl font-black text-lg hover:bg-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                  <button className="flex-1 py-4 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-2xl font-black text-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95 flex items-center justify-center gap-2">
                     <Settings size={20} />
                     Support
                   </button>
                 </div>
                 
                 {activeRide.status === 'in_progress' && (
-                   <div className="bg-blue-50 p-6 rounded-[2rem] text-blue-800 text-center font-bold border border-blue-100">
+                   <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-[2rem] text-blue-800 dark:text-blue-300 text-center font-bold border border-blue-100 dark:border-blue-900/30">
                      Ride in progress. Sit back and enjoy the trip!
                    </div>
                 )}
@@ -820,7 +822,7 @@ export default function RiderView({ user }: RiderViewProps) {
       </div>
     </motion.div>
 
-      {/* All Routes Modal */}
+      {/* Trip History Modal */}
       <AnimatePresence>
         {showHistoryModal && (
           <motion.div 
@@ -834,42 +836,42 @@ export default function RiderView({ user }: RiderViewProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="bg-white w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl"
+              className="bg-white dark:bg-gray-800 w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 dark:border-gray-700"
             >
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Trip History</h2>
-                  <p className="text-sm text-gray-500 font-medium">Your recent rides</p>
+                  <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Trip History</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Your recent rides</p>
                 </div>
                 <button 
                   onClick={() => setShowHistoryModal(false)} 
-                  className="p-3 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-all active:scale-95"
+                  className="p-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-2xl transition-all active:scale-95"
                 >
-                  <X size={24} className="text-gray-600" />
+                  <X size={24} className="text-gray-600 dark:text-gray-300" />
                 </button>
               </div>
               
               <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-hide">
                 {rideHistory.length > 0 ? (
                   rideHistory.map((ride) => (
-                    <div key={ride.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
+                    <div key={ride.id} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all cursor-pointer group">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(ride.created_at).toLocaleDateString()}</span>
+                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{new Date(ride.created_at).toLocaleDateString()}</span>
                         <span className="font-black text-hail-green text-lg">{formatZAR(ride.fare_amount)}</span>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
+                        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-gray-300 dark:bg-gray-500 rounded-full" />
                           {ride.dropoff_address}
                         </p>
-                        <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                          <span className="bg-gray-200 px-2 py-1 rounded-md">{ride.status}</span>
+                        <div className="flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                          <span className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-md">{ride.status}</span>
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500 font-medium">
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400 font-medium">
                     No recent trips found.
                   </div>
                 )}
@@ -893,18 +895,18 @@ export default function RiderView({ user }: RiderViewProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="bg-white w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl"
+              className="bg-white dark:bg-gray-800 w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 dark:border-gray-700"
             >
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Predefined Routes</h2>
-                  <p className="text-sm text-gray-500 font-medium">Select a route for a fixed fare</p>
+                  <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Predefined Routes</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Select a route for a fixed fare</p>
                 </div>
                 <button 
                   onClick={() => setShowAllRoutes(false)} 
-                  className="p-3 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-all active:scale-95"
+                  className="p-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-2xl transition-all active:scale-95"
                 >
-                  <X size={24} className="text-gray-600" />
+                  <X size={24} className="text-gray-600 dark:text-gray-300" />
                 </button>
               </div>
               
@@ -916,22 +918,22 @@ export default function RiderView({ user }: RiderViewProps) {
                       selectPredefinedRoute(route.id);
                       setShowAllRoutes(false);
                     }}
-                    className="w-full flex justify-between items-center p-5 bg-gray-50 rounded-[2rem] hover:bg-hail-green/5 hover:border-hail-green border-2 border-transparent transition-all text-left group"
+                    className="w-full flex justify-between items-center p-5 bg-gray-50 dark:bg-gray-700/50 rounded-[2rem] hover:bg-hail-green/5 dark:hover:bg-hail-green/10 hover:border-hail-green dark:hover:border-hail-green border-2 border-transparent transition-all text-left group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                      <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all border border-gray-100 dark:border-gray-700">
                         <Navigation size={20} className="text-hail-green" />
                       </div>
                       <div>
-                        <p className="font-black text-gray-900 group-hover:text-hail-green transition-colors">{route.from} → {route.to}</p>
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Fixed rate trip</p>
+                        <p className="font-black text-gray-900 dark:text-white group-hover:text-hail-green dark:group-hover:text-hail-green transition-colors">{route.from} → {route.to}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Fixed rate trip</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="font-black text-xl text-hail-green">
                         R{new Date().getHours() >= 20 || new Date().getHours() < 5 ? route.nightPrice : route.dayPrice}
                       </p>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-widest">
                         {new Date().getHours() >= 20 || new Date().getHours() < 5 ? 'Night Rate' : 'Day Rate'}
                       </p>
                     </div>

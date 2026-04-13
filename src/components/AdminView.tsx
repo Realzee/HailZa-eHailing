@@ -183,16 +183,16 @@ export default function AdminView({ user }: { user: any }) {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
         <Loader2 className="animate-spin text-hail-green" size={48} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors">
       {/* Header */}
-      <header className="bg-[#141414] text-[#E4E3E0] px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-[#141414]">
+      <header className="bg-[#141414] text-[#E4E3E0] px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-[#141414] dark:border-gray-800">
         <div className="flex items-center gap-3">
           <div className="bg-[#E4E3E0] p-2 rounded-none">
             {appLogo ? (
@@ -217,18 +217,18 @@ export default function AdminView({ user }: { user: any }) {
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-[#E4E3E0] border-b border-[#141414] px-6 py-6 grid grid-cols-3 gap-4">
-        <div className="flex flex-col border-l border-[#141414] pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Total Users</span>
-          <span className="text-3xl font-mono tracking-tighter">{profiles.length}</span>
+      <div className="bg-[#E4E3E0] dark:bg-gray-800 border-b border-[#141414] dark:border-gray-700 px-6 py-6 grid grid-cols-3 gap-4 transition-colors">
+        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Total Users</span>
+          <span className="text-3xl font-mono tracking-tighter dark:text-white">{profiles.length}</span>
         </div>
-        <div className="flex flex-col border-l border-[#141414] pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Active Drivers</span>
-          <span className="text-3xl font-mono tracking-tighter">{drivers.filter(d => d.is_online).length}</span>
+        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Active Drivers</span>
+          <span className="text-3xl font-mono tracking-tighter dark:text-white">{drivers.filter(d => d.is_online).length}</span>
         </div>
-        <div className="flex flex-col border-l border-[#141414] pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider">Total Rides</span>
-          <span className="text-3xl font-mono tracking-tighter">{rides.length}</span>
+        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
+          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Total Rides</span>
+          <span className="text-3xl font-mono tracking-tighter dark:text-white">{rides.length}</span>
         </div>
       </div>
 
@@ -236,13 +236,13 @@ export default function AdminView({ user }: { user: any }) {
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         {/* Tabs & Search */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex bg-[#141414] p-1 w-full md:w-auto">
+          <div className="flex bg-[#141414] dark:bg-gray-800 p-1 w-full md:w-auto transition-colors">
             {['users', 'drivers', 'rides', 'earnings', 'map', 'branding'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 className={`flex-1 md:flex-none px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
-                  activeTab === tab ? 'bg-[#E4E3E0] text-[#141414]' : 'text-[#E4E3E0] hover:opacity-70'
+                  activeTab === tab ? 'bg-[#E4E3E0] dark:bg-gray-700 text-[#141414] dark:text-white' : 'text-[#E4E3E0] dark:text-gray-400 hover:opacity-70 dark:hover:text-white'
                 }`}
               >
                 {tab}
@@ -253,11 +253,11 @@ export default function AdminView({ user }: { user: any }) {
           <div className="relative w-full md:w-72">
             {activeTab !== 'earnings' && (
               <>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" size={18} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 dark:text-gray-400" size={18} />
                 <input
                   type="text"
                   placeholder={`Search ${activeTab}...`}
-                  className="w-full pl-10 pr-4 py-2 bg-transparent border border-[#141414] focus:ring-1 focus:ring-[#141414] outline-none font-mono text-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-transparent border border-[#141414] dark:border-gray-700 focus:ring-1 focus:ring-[#141414] dark:focus:ring-gray-500 outline-none font-mono text-sm dark:text-white transition-colors"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -267,13 +267,13 @@ export default function AdminView({ user }: { user: any }) {
         </div>
 
         {/* Data Tables */}
-        <div className="bg-[#E4E3E0] border border-[#141414] overflow-hidden">
+        <div className="bg-[#E4E3E0] dark:bg-gray-800 border border-[#141414] dark:border-gray-700 overflow-hidden transition-colors">
           {activeTab === 'earnings' && (
-            <div className="p-4 bg-white border-b flex flex-wrap gap-4 items-center">
+            <div className="p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 flex flex-wrap gap-4 items-center transition-colors">
               <div className="flex items-center gap-2">
-                <Filter size={18} className="text-gray-400" />
+                <Filter size={18} className="text-gray-400 dark:text-gray-500" />
                 <select 
-                  className="border rounded-lg px-3 py-2 text-sm"
+                  className="border dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white transition-colors"
                   value={earningsDriverFilter}
                   onChange={(e) => setEarningsDriverFilter(e.target.value)}
                 >
@@ -282,16 +282,16 @@ export default function AdminView({ user }: { user: any }) {
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <input type="date" className="border rounded-lg px-3 py-2 text-sm" value={earningsDateStart} onChange={(e) => setEarningsDateStart(e.target.value)} />
-                <span>to</span>
-                <input type="date" className="border rounded-lg px-3 py-2 text-sm" value={earningsDateEnd} onChange={(e) => setEarningsDateEnd(e.target.value)} />
+                <input type="date" className="border dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white transition-colors" value={earningsDateStart} onChange={(e) => setEarningsDateStart(e.target.value)} />
+                <span className="dark:text-gray-300">to</span>
+                <input type="date" className="border dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white transition-colors" value={earningsDateEnd} onChange={(e) => setEarningsDateEnd(e.target.value)} />
               </div>
             </div>
           )}
 
           {activeTab === 'earnings' && (
-            <div className="p-6 bg-white border-b">
-              <h3 className="text-lg font-bold mb-4">Daily Earnings</h3>
+            <div className="p-6 bg-white dark:bg-gray-800 border-b dark:border-gray-700 transition-colors">
+              <h3 className="text-lg font-bold mb-4 dark:text-white">Daily Earnings</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={Object.entries(rides
@@ -316,7 +316,7 @@ export default function AdminView({ user }: { user: any }) {
           )}
 
           {activeTab === 'map' && (
-            <div className="h-[600px] w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div className="h-[600px] w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
               <MapContainer center={[-26.2041, 28.0473]} zoom={12} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -351,20 +351,20 @@ export default function AdminView({ user }: { user: any }) {
           {activeTab === 'users' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="border-b border-[#141414]">
+                <thead className="border-b border-[#141414] dark:border-gray-700 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">User</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Joined</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">User</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Role</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Joined</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#141414]">
+                <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
                   {filteredProfiles.map((profile) => (
-                    <tr key={profile.id} className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors">
+                    <tr key={profile.id} className="hover:bg-[#141414] dark:hover:bg-gray-700 hover:text-[#E4E3E0] dark:hover:text-white transition-colors dark:text-gray-200">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-[#141414] text-[#E4E3E0] flex items-center justify-center font-mono text-xs">
+                          <div className="w-8 h-8 bg-[#141414] dark:bg-gray-600 text-[#E4E3E0] dark:text-white flex items-center justify-center font-mono text-xs transition-colors">
                             {profile.full_name?.charAt(0)}
                           </div>
                           <div className="font-mono">
@@ -405,24 +405,24 @@ export default function AdminView({ user }: { user: any }) {
           {activeTab === 'drivers' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="border-b border-[#141414]">
+                <thead className="border-b border-[#141414] dark:border-gray-700 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Driver</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Vehicle</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider">Approval</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Driver</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Vehicle</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Status</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Approval</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#141414]">
+                <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
                   {filteredDrivers.map((driver) => (
                     <tr 
                       key={driver.id} 
-                      className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors cursor-pointer"
+                      className="hover:bg-[#141414] dark:hover:bg-gray-700 hover:text-[#E4E3E0] dark:hover:text-white transition-colors cursor-pointer dark:text-gray-200"
                       onClick={() => setSelectedDriver(driver)}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-[#141414] text-[#E4E3E0] flex items-center justify-center font-mono text-xs">
+                          <div className="w-8 h-8 bg-[#141414] dark:bg-gray-600 text-[#E4E3E0] dark:text-white flex items-center justify-center font-mono text-xs transition-colors">
                             {driver.profiles.full_name?.charAt(0)}
                           </div>
                           <div className="font-mono">
@@ -451,17 +451,17 @@ export default function AdminView({ user }: { user: any }) {
           {activeTab === 'rides' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Route</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Rider/Driver</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Fare</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Status</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Route</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Rider/Driver</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Fare</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#141414]">
+                <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
                   {filteredRides.map((ride) => (
-                    <tr key={ride.id} className="hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors">
+                    <tr key={ride.id} className="hover:bg-[#141414] dark:hover:bg-gray-600 hover:text-[#E4E3E0] dark:hover:text-white transition-colors dark:text-gray-200">
                       <td className="px-6 py-4 max-w-xs font-mono text-xs">
                         <p className="truncate">P: {ride.pickup_address}</p>
                         <p className="truncate opacity-60">D: {ride.dropoff_address}</p>
@@ -482,22 +482,22 @@ export default function AdminView({ user }: { user: any }) {
           {activeTab === 'earnings' && (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Date</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Driver</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Rider</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Fare</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Driver</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Rider</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Fare</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y dark:divide-gray-700 transition-colors">
                   {rides
                     .filter(r => r.status === 'completed')
                     .filter(r => earningsDriverFilter === 'all' || r.driver_id === earningsDriverFilter)
                     .filter(r => !earningsDateStart || new Date(r.created_at) >= new Date(earningsDateStart))
                     .filter(r => !earningsDateEnd || new Date(r.created_at) <= new Date(earningsDateEnd))
                     .map((ride) => (
-                      <tr key={ride.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={ride.id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors dark:text-gray-200">
                         <td className="px-6 py-4 text-sm">{new Date(ride.created_at).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-sm font-medium">{ride.driver?.full_name || 'N/A'}</td>
                         <td className="px-6 py-4 text-sm">{ride.rider?.full_name}</td>
@@ -514,8 +514,8 @@ export default function AdminView({ user }: { user: any }) {
       {/* Driver Details Modal */}
       {selectedDriver && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[95vh]">
-            <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-900 text-white">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[95vh] transition-colors border border-gray-100 dark:border-gray-700">
+            <div className="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-900 text-white transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-hail-green rounded-full flex items-center justify-center font-bold">
                   {selectedDriver.profiles.full_name?.charAt(0)}
@@ -536,57 +536,57 @@ export default function AdminView({ user }: { user: any }) {
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2">
                 {/* Left Column: Details */}
-                <div className="p-6 space-y-8 border-r border-gray-100">
+                <div className="p-6 space-y-8 border-r border-gray-100 dark:border-gray-700 transition-colors">
                   {/* Profile Section */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
                       <Users size={16} /> Profile Information
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Full Name</p>
-                        <p className="font-bold">{selectedDriver.profiles.full_name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Full Name</p>
+                        <p className="font-bold dark:text-white">{selectedDriver.profiles.full_name}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Email Address</p>
-                        <p className="font-bold">{selectedDriver.profiles.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email Address</p>
+                        <p className="font-bold dark:text-white">{selectedDriver.profiles.email}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Phone Number</p>
-                        <p className="font-bold">{selectedDriver.profiles.phone || 'Not provided'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Phone Number</p>
+                        <p className="font-bold dark:text-white">{selectedDriver.profiles.phone || 'Not provided'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Joined Date</p>
-                        <p className="font-bold">{new Date(selectedDriver.profiles.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Joined Date</p>
+                        <p className="font-bold dark:text-white">{new Date(selectedDriver.profiles.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Vehicle Section */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
                       <Car size={16} /> Vehicle Details
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl transition-colors">
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Make & Model</p>
-                        <p className="font-bold">{selectedDriver.vehicle_make} {selectedDriver.vehicle_model}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Make & Model</p>
+                        <p className="font-bold dark:text-white">{selectedDriver.vehicle_make} {selectedDriver.vehicle_model}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">License Plate</p>
-                        <p className="font-bold uppercase">{selectedDriver.vehicle_plate}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">License Plate</p>
+                        <p className="font-bold uppercase dark:text-white">{selectedDriver.vehicle_plate}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Color</p>
-                        <p className="font-bold">{selectedDriver.vehicle_color}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Color</p>
+                        <p className="font-bold dark:text-white">{selectedDriver.vehicle_color}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Onboarding Status</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Onboarding Status</p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            selectedDriver.onboarding_status === 'approved' ? 'bg-green-100 text-green-700' :
-                            selectedDriver.onboarding_status === 'declined' ? 'bg-red-100 text-red-700' :
-                            'bg-orange-100 text-orange-700'
+                            selectedDriver.onboarding_status === 'approved' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            selectedDriver.onboarding_status === 'declined' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                            'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
                           }`}>
                             {selectedDriver.onboarding_status || 'pending'}
                           </span>
@@ -604,7 +604,7 @@ export default function AdminView({ user }: { user: any }) {
                         });
                         setIsEditingVehicle(true);
                       }}
-                      className="mt-4 w-full bg-gray-900 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                      className="mt-4 w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                     >
                       Edit Vehicle Details
                     </button>
@@ -612,12 +612,12 @@ export default function AdminView({ user }: { user: any }) {
 
                   {/* Quick Actions */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h4>
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h4>
                     <div className="flex flex-wrap gap-3">
                       {selectedDriver.onboarding_status !== 'approved' && (
                         <button 
                           onClick={() => updateDriverStatus(selectedDriver.id, 'approved')}
-                          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-green-600 dark:bg-green-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 dark:hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
                         >
                           <CheckCircle size={18} /> Approve Driver
                         </button>
@@ -625,7 +625,7 @@ export default function AdminView({ user }: { user: any }) {
                       {selectedDriver.onboarding_status !== 'declined' && (
                         <button 
                           onClick={() => updateDriverStatus(selectedDriver.id, 'declined')}
-                          className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-red-600 dark:bg-red-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 dark:hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
                         >
                           <XCircle size={18} /> Decline Driver
                         </button>
@@ -633,12 +633,12 @@ export default function AdminView({ user }: { user: any }) {
                       {selectedDriver.onboarding_status !== 'pending' && (
                         <button 
                           onClick={() => updateDriverStatus(selectedDriver.id, 'pending')}
-                          className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-orange-600 dark:bg-orange-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-700 dark:hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
                         >
                           <Filter size={18} /> Reset to Pending
                         </button>
                       )}
-                      <button className="flex-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                      <button className="flex-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2 border border-red-100 dark:border-red-900/30">
                         <Trash2 size={18} /> Delete Account
                       </button>
                     </div>
@@ -646,10 +646,10 @@ export default function AdminView({ user }: { user: any }) {
                 </div>
 
                 {/* Right Column: Map */}
-                <div className="relative min-h-[400px] lg:min-h-0 bg-gray-100">
-                  <div className="absolute top-4 left-4 z-[1000] bg-white px-3 py-1.5 rounded-lg shadow-md border flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${selectedDriver.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                    <span className="text-xs font-bold uppercase tracking-wide">
+                <div className="relative min-h-[400px] lg:min-h-0 bg-gray-100 dark:bg-gray-900 transition-colors">
+                  <div className="absolute top-4 left-4 z-[1000] bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg shadow-md border dark:border-gray-700 flex items-center gap-2 transition-colors">
+                    <div className={`w-2.5 h-2.5 rounded-full ${selectedDriver.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                    <span className="text-xs font-bold uppercase tracking-wide dark:text-white">
                       {selectedDriver.is_online ? 'Live Tracking' : 'Last Known Location'}
                     </span>
                   </div>
@@ -675,9 +675,9 @@ export default function AdminView({ user }: { user: any }) {
                       </Marker>
                     </MapContainer>
                   ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-8 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-8 text-center">
                       <MapPin size={48} className="mb-4 opacity-20" />
-                      <p className="font-bold text-gray-900">No Location Data</p>
+                      <p className="font-bold text-gray-900 dark:text-white">No Location Data</p>
                       <p className="text-sm max-w-xs mx-auto mt-1">This driver hasn't shared their location yet. They must be online to be tracked.</p>
                     </div>
                   )}
@@ -685,13 +685,13 @@ export default function AdminView({ user }: { user: any }) {
               </div>
 
               {/* Ride History Section */}
-              <div className="p-6 border-t border-gray-100">
-                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <div className="p-6 border-t border-gray-100 dark:border-gray-700 transition-colors">
+                <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Car size={16} /> Ride History
                 </h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+                    <thead className="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 uppercase text-xs transition-colors">
                       <tr>
                         <th className="px-4 py-2">Date</th>
                         <th className="px-4 py-2">Pickup</th>
@@ -700,16 +700,16 @@ export default function AdminView({ user }: { user: any }) {
                         <th className="px-4 py-2">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y dark:divide-gray-700 transition-colors">
                       {rides.filter(r => r.driver_id === selectedDriver.id).map(ride => (
-                        <tr key={ride.id}>
+                        <tr key={ride.id} className="dark:text-gray-200">
                           <td className="px-4 py-2">{new Date(ride.created_at).toLocaleDateString()}</td>
                           <td className="px-4 py-2 truncate max-w-[150px]">{ride.pickup_address}</td>
                           <td className="px-4 py-2 truncate max-w-[150px]">{ride.dropoff_address}</td>
                           <td className="px-4 py-2 font-bold">{formatZAR(ride.fare_amount)}</td>
                           <td className="px-4 py-2">
                             <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                              ride.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                              ride.status === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                             }`}>
                               {ride.status}
                             </span>
@@ -722,10 +722,10 @@ export default function AdminView({ user }: { user: any }) {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 flex justify-end transition-colors">
               <button 
                 onClick={() => setSelectedDriver(null)}
-                className="px-8 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
+                className="px-8 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
               >
                 Close
               </button>
@@ -737,58 +737,58 @@ export default function AdminView({ user }: { user: any }) {
       {/* Edit Vehicle Modal */}
       {isEditingVehicle && selectedDriver && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h3 className="text-xl font-bold mb-4">Edit Vehicle Details</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100 dark:border-gray-700 transition-colors">
+            <h3 className="text-xl font-bold mb-4 dark:text-white">Edit Vehicle Details</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Make</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Make</label>
                 <input
                   type="text"
                   value={editVehicleForm.vehicle_make}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_make: e.target.value})}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Model</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Model</label>
                 <input
                   type="text"
                   value={editVehicleForm.vehicle_model}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_model: e.target.value})}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">License Plate</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">License Plate</label>
                 <input
                   type="text"
                   value={editVehicleForm.vehicle_plate}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_plate: e.target.value})}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Color</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
                 <input
                   type="text"
                   value={editVehicleForm.vehicle_color}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_color: e.target.value})}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Capacity</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Capacity</label>
                 <input
                   type="number"
                   value={editVehicleForm.vehicle_capacity}
                   onChange={(e) => setEditVehicleForm({...editVehicleForm, vehicle_capacity: parseInt(e.target.value)})}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
                 />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setIsEditingVehicle(false)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold">Cancel</button>
-              <button onClick={updateDriverVehicleDetails} className="px-4 py-2 bg-hail-green text-white rounded-lg font-bold">Save</button>
+              <button onClick={() => setIsEditingVehicle(false)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+              <button onClick={updateDriverVehicleDetails} className="px-4 py-2 bg-hail-green text-white rounded-lg font-bold hover:bg-green-600 transition-colors">Save</button>
             </div>
           </div>
         </div>

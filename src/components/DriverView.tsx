@@ -282,7 +282,7 @@ export default function DriverView({ user }: DriverViewProps) {
 
   if (isApproved === null) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
         <Loader2 className="animate-spin text-hail-green" size={48} />
       </div>
     );
@@ -290,17 +290,17 @@ export default function DriverView({ user }: DriverViewProps) {
 
   if (onboardingStatus === 'declined') {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
-        <div className="bg-red-100 p-6 rounded-full mb-6">
-          <ShieldAlert size={64} className="text-red-600" />
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 text-center transition-colors">
+        <div className="bg-red-100 dark:bg-red-900/30 p-6 rounded-full mb-6">
+          <ShieldAlert size={64} className="text-red-600 dark:text-red-500" />
         </div>
-        <h1 className="text-2xl font-bold mb-2 text-red-600">Account Suspended</h1>
-        <p className="text-gray-500 mb-8 max-w-xs">
+        <h1 className="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">Account Suspended</h1>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-xs">
           Your driver account has been declined or suspended. Please contact support for more information.
         </p>
         <button 
           onClick={handleSignOut}
-          className="flex items-center gap-2 text-gray-600 font-semibold hover:text-red-600 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 font-semibold hover:text-red-600 dark:hover:text-red-400 transition-colors"
         >
           <LogOut size={20} />
           Sign Out
@@ -311,18 +311,18 @@ export default function DriverView({ user }: DriverViewProps) {
 
   if (isApproved === false) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
-        <div className="bg-orange-100 p-6 rounded-full mb-6">
-          <Car size={64} className="text-orange-600" />
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 text-center transition-colors">
+        <div className="bg-orange-100 dark:bg-orange-900/30 p-6 rounded-full mb-6">
+          <Car size={64} className="text-orange-600 dark:text-orange-500" />
         </div>
-        <h1 className="text-2xl font-bold mb-2">Waiting for Approval</h1>
-        <p className="text-gray-500 mb-8 max-w-xs">
+        <h1 className="text-2xl font-bold mb-2 dark:text-white">Waiting for Approval</h1>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-xs">
           Your driver account is currently pending review by a fleet owner. 
           You'll be able to go online once approved.
         </p>
         <button 
           onClick={handleSignOut}
-          className="flex items-center gap-2 text-gray-600 font-semibold hover:text-red-600 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 font-semibold hover:text-red-600 dark:hover:text-red-400 transition-colors"
         >
           <LogOut size={20} />
           Sign Out
@@ -376,7 +376,7 @@ export default function DriverView({ user }: DriverViewProps) {
         <div className="flex justify-between items-center">
           <div className="flex-1 flex items-center gap-2">
             {appLogo && (
-              <div className="bg-white shadow-lg rounded-xl p-2 pointer-events-auto">
+              <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-2 pointer-events-auto border border-gray-100 dark:border-gray-700 transition-colors">
                 <img src={appLogo} alt="Logo" className="h-8 w-auto" />
               </div>
             )}
@@ -390,7 +390,7 @@ export default function DriverView({ user }: DriverViewProps) {
           <button
             onClick={() => setIsOnline(!isOnline)}
             className={`px-6 py-2 rounded-full font-bold shadow-lg transition-colors pointer-events-auto ${
-              isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 text-gray-300'
+              isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 dark:bg-gray-700 text-gray-300 dark:text-gray-200'
             }`}
           >
             {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
@@ -398,7 +398,7 @@ export default function DriverView({ user }: DriverViewProps) {
           <div className="flex-1 flex justify-end gap-2">
             <button
               onClick={() => setShowDashboard(!showDashboard)}
-              className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-hail-green transition-colors"
+              className="bg-white dark:bg-gray-800 shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 dark:text-gray-300 hover:text-hail-green dark:hover:text-hail-green transition-colors border dark:border-gray-700"
               title="Dashboard"
             >
               <Car size={20} />
@@ -406,7 +406,7 @@ export default function DriverView({ user }: DriverViewProps) {
             <ThemeToggle />
             <button 
               onClick={handleSignOut}
-              className="bg-white shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 hover:text-red-600 transition-colors"
+              className="bg-white dark:bg-gray-800 shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors border dark:border-gray-700"
               title="Sign Out"
             >
               <LogOut size={20} />
@@ -417,13 +417,13 @@ export default function DriverView({ user }: DriverViewProps) {
 
       {/* Dashboard Overlay */}
       {showDashboard && (
-        <div className="absolute inset-0 z-40 bg-white animate-in slide-in-from-bottom duration-300 overflow-y-auto">
+        <div className="absolute inset-0 z-40 bg-white dark:bg-gray-900 animate-in slide-in-from-bottom duration-300 overflow-y-auto transition-colors">
           <div className="p-6 space-y-8">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Driver Dashboard</h2>
+              <h2 className="text-2xl font-bold dark:text-white">Driver Dashboard</h2>
               <button 
                 onClick={() => setShowDashboard(false)}
-                className="p-2 bg-gray-100 rounded-full"
+                className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full dark:text-gray-300"
               >
                 <X size={24} />
               </button>
@@ -431,28 +431,28 @@ export default function DriverView({ user }: DriverViewProps) {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-hail-green/10 p-4 rounded-2xl border border-hail-green/20">
+              <div className="bg-hail-green/10 dark:bg-hail-green/5 p-4 rounded-2xl border border-hail-green/20 dark:border-hail-green/10">
                 <p className="text-xs text-hail-green font-bold uppercase mb-1">Total Earnings</p>
                 <p className="text-2xl font-bold text-hail-green">{formatZAR(earnings.total)}</p>
               </div>
-              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                <p className="text-xs text-blue-600 font-bold uppercase mb-1">Total Rides</p>
-                <p className="text-2xl font-bold text-blue-600">{rideHistory.length}</p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-1">Total Rides</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{rideHistory.length}</p>
               </div>
             </div>
 
             <button 
               onClick={sendEmergencyAlert}
-              className="w-full bg-red-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-red-600/20"
+              className="w-full bg-red-600 dark:bg-red-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-red-600/20 dark:shadow-red-900/20"
             >
               <ShieldAlert size={24} />
               EMERGENCY SOS
             </button>
 
             {/* Vehicle Info */}
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold flex items-center gap-2">
+                <h3 className="font-bold flex items-center gap-2 dark:text-white">
                   <Car size={18} /> Vehicle Details
                 </h3>
                 <button 
@@ -469,14 +469,14 @@ export default function DriverView({ user }: DriverViewProps) {
                     <input 
                       type="text" 
                       placeholder="Make" 
-                      className="p-2 border rounded-lg text-sm"
+                      className="p-2 border dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white"
                       value={vehicleForm.make}
                       onChange={(e) => setVehicleForm({...vehicleForm, make: e.target.value})}
                     />
                     <input 
                       type="text" 
                       placeholder="Model" 
-                      className="p-2 border rounded-lg text-sm"
+                      className="p-2 border dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white"
                       value={vehicleForm.model}
                       onChange={(e) => setVehicleForm({...vehicleForm, model: e.target.value})}
                     />
@@ -485,14 +485,14 @@ export default function DriverView({ user }: DriverViewProps) {
                     <input 
                       type="text" 
                       placeholder="Plate" 
-                      className="p-2 border rounded-lg text-sm"
+                      className="p-2 border dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white"
                       value={vehicleForm.plate}
                       onChange={(e) => setVehicleForm({...vehicleForm, plate: e.target.value})}
                     />
                     <input 
                       type="text" 
                       placeholder="Color" 
-                      className="p-2 border rounded-lg text-sm"
+                      className="p-2 border dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white"
                       value={vehicleForm.color}
                       onChange={(e) => setVehicleForm({...vehicleForm, color: e.target.value})}
                     />
@@ -507,12 +507,12 @@ export default function DriverView({ user }: DriverViewProps) {
               ) : (
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500 text-[10px] uppercase font-bold">Make & Model</p>
-                    <p className="font-medium">{vehicleForm.make} {vehicleForm.model}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-[10px] uppercase font-bold">Make & Model</p>
+                    <p className="font-medium dark:text-gray-200">{vehicleForm.make} {vehicleForm.model}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-[10px] uppercase font-bold">License Plate</p>
-                    <p className="font-medium uppercase">{vehicleForm.plate}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-[10px] uppercase font-bold">License Plate</p>
+                    <p className="font-medium uppercase dark:text-gray-200">{vehicleForm.plate}</p>
                   </div>
                 </div>
               )}
@@ -520,15 +520,15 @@ export default function DriverView({ user }: DriverViewProps) {
 
             {/* Recent History */}
             <div>
-              <h3 className="font-bold mb-4 flex items-center gap-2">
+              <h3 className="font-bold mb-4 flex items-center gap-2 dark:text-white">
                 <Navigation size={18} /> Recent Rides
               </h3>
               <div className="space-y-3">
                 {rideHistory.slice(0, 5).map((ride) => (
-                  <div key={ride.id} className="p-4 bg-white border rounded-xl flex justify-between items-center">
+                  <div key={ride.id} className="p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl flex justify-between items-center">
                     <div>
-                      <p className="text-xs font-bold text-gray-400">{new Date(ride.created_at).toLocaleDateString()}</p>
-                      <p className="text-sm font-medium line-clamp-1">{ride.dropoff_address}</p>
+                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500">{new Date(ride.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{ride.dropoff_address}</p>
                     </div>
                     <p className="font-bold text-hail-green">{formatZAR(ride.fare_amount)}</p>
                   </div>
@@ -545,26 +545,26 @@ export default function DriverView({ user }: DriverViewProps) {
       {/* Incoming Request Modal */}
       {incomingRide && !activeRide && (
         <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300">
-            <h3 className="text-xl font-bold mb-4 text-center">New Ride Request!</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300 border border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-bold mb-4 text-center dark:text-white">New Ride Request!</h3>
             <div className="flex items-center gap-4 mb-6">
-              <div className="bg-gray-100 p-3 rounded-full">
+              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-full dark:text-white">
                 <Car size={24} />
               </div>
               <div className="flex-1">
-                <p className="font-bold text-lg">{formatZAR(incomingRide.fare_amount)}</p>
-                <p className="text-gray-500 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
+                <p className="font-bold text-lg dark:text-white">{formatZAR(incomingRide.fare_amount)}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
               </div>
             </div>
             
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
                 <div className="mt-1 w-2 h-2 bg-green-500 rounded-full" />
-                <p className="text-sm">{incomingRide.pickup_address}</p>
+                <p className="text-sm dark:text-gray-200">{incomingRide.pickup_address}</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="mt-1 w-2 h-2 bg-red-500 rounded-full" />
-                <p className="text-sm">{incomingRide.dropoff_address}</p>
+                <p className="text-sm dark:text-gray-200">{incomingRide.dropoff_address}</p>
               </div>
             </div>
 
@@ -574,13 +574,13 @@ export default function DriverView({ user }: DriverViewProps) {
                   setIncomingRide(null);
                   setShowNotification(false);
                 }}
-                className="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-700"
+                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 Decline
               </button>
               <button 
                 onClick={acceptRide}
-                className="flex-1 py-3 bg-hail-green text-white rounded-xl font-bold"
+                className="flex-1 py-3 bg-hail-green text-white rounded-xl font-bold hover:bg-hail-green/90 transition-colors"
               >
                 Accept Ride
               </button>
@@ -592,41 +592,41 @@ export default function DriverView({ user }: DriverViewProps) {
       {/* Active Ride Controls */}
       {activeRide && (
         <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 space-y-6 border border-gray-100 dark:border-gray-700">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-600 text-xl">
+                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 text-xl">
                   {activeRide.rider?.full_name?.charAt(0) || 'R'}
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{activeRide.rider?.full_name || 'Rider'}</h3>
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <h3 className="font-bold text-lg dark:text-white">{activeRide.rider?.full_name || 'Rider'}</h3>
+                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                     <MapPin size={12} />
                     {activeRide.status === 'accepted' ? 'Heading to Pickup' : 'Heading to Dropoff'}
                   </div>
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-1">
+                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-1">
                   {activeRide.status.replace('_', ' ')}
                 </span>
                 <p className="font-bold text-hail-green">{formatZAR(activeRide.fare_amount)}</p>
               </div>
             </div>
 
-            <div className="space-y-3 bg-gray-50 p-4 rounded-xl">
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
               <div className="flex items-start gap-3">
-                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'accepted' ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'}`} />
+                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'accepted' ? 'bg-green-500 ring-4 ring-green-100 dark:ring-green-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase font-bold">Pickup</p>
-                  <p className="text-sm font-medium line-clamp-1">{activeRide.pickup_address}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold">Pickup</p>
+                  <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.pickup_address}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'in_progress' ? 'bg-red-500 ring-4 ring-red-100' : 'bg-gray-300'}`} />
+                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'in_progress' ? 'bg-red-500 ring-4 ring-red-100 dark:ring-red-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase font-bold">Dropoff</p>
-                  <p className="text-sm font-medium line-clamp-1">{activeRide.dropoff_address}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold">Dropoff</p>
+                  <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.dropoff_address}</p>
                 </div>
               </div>
             </div>
@@ -637,21 +637,21 @@ export default function DriverView({ user }: DriverViewProps) {
                   activeRide.status === 'accepted' ? activeRide.pickup_lat : activeRide.dropoff_lat,
                   activeRide.status === 'accepted' ? activeRide.pickup_lng : activeRide.dropoff_lng
                 )}
-                className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 <ExternalLink size={18} />
                 <span className="hidden md:inline">Navigate</span>
               </button>
               <button
                 onClick={() => alert(`Calling ${activeRide.rider?.full_name}...`)}
-                className="bg-gray-100 text-gray-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 <Phone size={18} />
                 <span className="hidden md:inline">Call</span>
               </button>
               <button
                 onClick={sendEmergencyAlert}
-                className="bg-red-50 text-red-600 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors"
+                className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/30"
               >
                 <ShieldAlert size={18} />
                 <span className="hidden md:inline">SOS</span>
@@ -661,7 +661,7 @@ export default function DriverView({ user }: DriverViewProps) {
             {activeRide.status === 'accepted' && (
               <button
                 onClick={() => updateRideStatus('in_progress')}
-                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20"
+                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20 hover:bg-hail-green/90 transition-colors"
               >
                 <Navigation size={20} />
                 Start Trip
@@ -671,7 +671,7 @@ export default function DriverView({ user }: DriverViewProps) {
             {activeRide.status === 'in_progress' && (
               <button
                 onClick={() => updateRideStatus('completed')}
-                className="w-full bg-red-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
+                className="w-full bg-red-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 hover:bg-red-700 transition-colors"
               >
                 <CheckCircle size={20} />
                 Complete Trip

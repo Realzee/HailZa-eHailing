@@ -192,8 +192,8 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const appLogo = localStorage.getItem('appLogo');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4 transition-colors">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700 transition-colors">
         <div className="text-center mb-10">
           {appLogo ? (
             <motion.img 
@@ -207,26 +207,26 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl font-black text-gray-900 mb-2 tracking-tighter font-display"
+              className="text-5xl font-black text-gray-900 dark:text-white mb-2 tracking-tighter font-display"
             >
               eTaxiDriver
             </motion.h1>
           )}
-          <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">South Africa's Local Ride App</p>
+          <p className="text-gray-400 dark:text-gray-500 font-medium uppercase tracking-[0.2em] text-[10px]">South Africa's Local Ride App</p>
           {!isSupabaseConfigured && (
-            <div className="mt-2 inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <div className="mt-2 inline-block px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
               Demo Mode Active
             </div>
           )}
           {isSupabaseConfigured && (
-            <div className="mt-2 inline-block px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <div className="mt-2 inline-block px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
               Live Backend Connected
             </div>
           )}
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg flex items-center gap-2 mb-4 text-sm">
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg flex items-center gap-2 mb-4 text-sm">
             <AlertCircle size={16} />
             {error}
           </div>
@@ -234,14 +234,14 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
         {step === 'profile' ? (
           <form onSubmit={handleSaveProfile} className="space-y-4 animate-in fade-in slide-in-from-right-4">
-            <h2 className="text-xl font-semibold text-center mb-4">Complete your Profile</h2>
+            <h2 className="text-xl font-semibold text-center mb-4 dark:text-white">Complete your Profile</h2>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
               <input
                 type="text"
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-hail-green outline-none"
+                className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Thabo Molefe"
@@ -249,15 +249,15 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">I am a</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">I am a</label>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setRole('rider')}
-                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
+                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
                     role === 'rider' 
                       ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
                   Rider
@@ -265,10 +265,10 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 <button
                   type="button"
                   onClick={() => setRole('driver')}
-                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
+                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
                     role === 'driver' 
                       ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
                   Driver
@@ -276,10 +276,10 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 <button
                   type="button"
                   onClick={() => setRole('owner')}
-                  className={`py-3 rounded-lg border font-medium transition-all text-sm ${
+                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
                     role === 'owner' 
                       ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
                   Owner
@@ -298,11 +298,11 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         ) : (
           <>
             {/* Auth Method Tabs */}
-            <div className="flex mb-6 bg-gray-100 p-1 rounded-lg">
+            <div className="flex mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
               <button
                 onClick={() => { setAuthMethod('phone'); setStep('input'); setError(null); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  authMethod === 'phone' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  authMethod === 'phone' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 }`}
               >
                 <Phone size={16} /> Phone
@@ -310,7 +310,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               <button
                 onClick={() => { setAuthMethod('email'); setStep('input'); setError(null); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  authMethod === 'email' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  authMethod === 'email' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 }`}
               >
                 <Mail size={16} /> Email
@@ -321,29 +321,29 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               <form onSubmit={step === 'input' ? handlePhoneLogin : handleVerifyOtp} className="space-y-4">
                 {step === 'input' ? (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium border-r pr-2">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium border-r dark:border-gray-600 pr-2">
                         +27
                       </span>
                       <input
                         type="tel"
                         required
-                        className="w-full pl-14 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-lg tracking-wide"
+                        className="w-full pl-14 pr-4 py-3 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-lg tracking-wide dark:bg-gray-700 dark:text-white"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="82 123 4567"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">We'll send you a code to verify.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">We'll send you a code to verify.</p>
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Enter OTP Code</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Enter OTP Code</label>
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-center text-2xl tracking-[0.5em] font-mono"
+                      className="w-full px-4 py-3 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-center text-2xl tracking-[0.5em] font-mono dark:bg-gray-700 dark:text-white"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="••••••"
@@ -372,22 +372,22 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             {authMethod === 'email' && (
               <form onSubmit={handleEmailAuth} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                   <input
                     type="email"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-hail-green outline-none"
+                    className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
                   <input
                     type="password"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-hail-green outline-none"
+                    className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
