@@ -21,6 +21,10 @@
   --color-gray-800: #1e293b;
   --color-gray-900: #0f172a;
 
+  /* Dark mode overrides for common grays to maintain professional navy aesthetic */
+  --color-dark-gray-800: #0f172a;
+  --color-dark-gray-900: #020617;
+
   /* Premium Named Palette */
   --color-navy: #020617;
   --color-ocean-deep: #0f172a;

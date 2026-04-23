@@ -143,7 +143,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
             <p className="text-gray-500 dark:text-gray-400 font-medium">Thank you for alerting other drivers.</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto pr-2 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             <div className="grid grid-cols-2 gap-3 mb-8">
               {HAZARD_TYPES.map((h) => {
                 const Icon = h.icon;
