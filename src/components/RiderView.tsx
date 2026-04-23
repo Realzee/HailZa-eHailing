@@ -667,9 +667,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
           y: isSheetMinimized ? '85%' : 0 
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[3rem] z-20 max-h-[90vh] overflow-hidden border-t border-gray-100 dark:border-gray-700 flex flex-col transition-colors"
+        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[3rem] z-20 h-[85vh] sm:h-auto sm:max-h-[90vh] overflow-hidden border-t border-gray-100 dark:border-gray-700 flex flex-col transition-colors"
       >
-        <div className="w-full h-full max-w-2xl mx-auto flex flex-col">
+        <div className="w-full flex-1 max-w-2xl mx-auto flex flex-col overflow-hidden">
           {/* Handle for visual cue / Toggle */}
           <button 
             onClick={() => setIsSheetMinimized(!isSheetMinimized)}
@@ -678,7 +678,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500 transition-colors" />
           </button>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-24 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-6 pb-32 custom-scrollbar">
             {(!activeRide || activeRide.status === 'cancelled') && (
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-2">
                 {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
