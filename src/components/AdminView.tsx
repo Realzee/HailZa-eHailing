@@ -183,18 +183,18 @@ export default function AdminView({ user }: { user: any }) {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
-        <Loader2 className="animate-spin text-hail-green" size={48} />
+      <div className="h-screen flex items-center justify-center bg-ice dark:bg-navy transition-colors">
+        <Loader2 className="animate-spin text-secondary" size={48} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors">
+    <div className="min-h-screen bg-mist/30 dark:bg-navy flex flex-col transition-colors">
       {/* Header */}
-      <header className="bg-[#141414] text-[#E4E3E0] px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-[#141414] dark:border-gray-800">
+      <header className="bg-navy text-ice px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-ocean-deep">
         <div className="flex items-center gap-3">
-          <div className="bg-[#E4E3E0] p-2 rounded-none">
+          <div className="bg-mist p-2 rounded-xl">
             {appLogo ? (
               <img src={appLogo} alt="Logo" className="h-6 w-auto" />
             ) : (

@@ -38,6 +38,19 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const appIcon = localStorage.getItem('appIcon');
+    if (appIcon) {
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = appIcon;
+    }
+  }, []);
+
+  useEffect(() => {
     if (profile && profile.verification_status === 'unverified') {
       setShowVerification(true);
     }
