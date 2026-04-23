@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
-import { supabase, type Ride, type Profile } from '@/lib/supabase';
+import { supabase, type Ride, type Profile, type Hazard } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
-import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X, Users, ShieldCheck, Banknote, Clock, AlertTriangle } from 'lucide-react';
+import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X, Users, ShieldCheck, Banknote, Clock, AlertTriangle, TriangleAlert } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
+import { HazardsPanel } from './HazardsPanel';
+import { AnimatePresence } from 'motion/react';
 
 interface DriverViewProps {
   user: any;
@@ -23,6 +25,8 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   const [geoError, setGeoError] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showHazardsPanel, setShowHazardsPanel] = useState(false);
+  const [hazards, setHazards] = useState<Hazard[]>([]);
   const [earnings, setEarnings] = useState({ daily: 0, weekly: 0, total: 0 });
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -100,6 +104,17 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
 
     checkApproval();
     fetchStats();
+    fetchHazards();
+
+    // Subscribe to hazards
+    const hazardsChannel = supabase
+      .channel('hazards_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'hazards' },
+        () => fetchHazards()
+      )
+      .subscribe();
 
     // Subscribe to approval changes
     const channel = supabase
@@ -116,8 +131,17 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(hazardsChannel);
     };
   }, [user.id]);
+
+  const fetchHazards = async () => {
+    const { data } = await supabase
+      .from('hazards')
+      .select('*')
+      .gt('expires_at', new Date().toISOString());
+    if (data) setHazards(data);
+  };
 
   // 1. Location Tracking & Status Update
   useEffect(() => {
@@ -367,10 +391,24 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
             ...(activeRide ? [
               { position: [activeRide.pickup_lat, activeRide.pickup_lng] as [number, number], type: 'user' as const, title: 'Pickup' },
               { position: [activeRide.dropoff_lat, activeRide.dropoff_lng] as [number, number], type: 'destination' as const, title: 'Dropoff' }
-            ] : [])
+            ] : []),
+            ...hazards.map(h => ({
+              position: [h.lat, h.lng] as [number, number],
+              type: 'hazard' as const,
+              title: `${h.type.toUpperCase()}: ${h.description}`
+            }))
           ]}
           route={route}
         />
+
+        {/* Hazard Button */}
+        <button
+          onClick={() => setShowHazardsPanel(true)}
+          className="absolute top-20 right-4 z-10 bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 group transition-all active:scale-95 pointer-events-auto"
+          title="Report Hazard"
+        >
+          <TriangleAlert size={20} className="text-red-600 group-hover:scale-110 transition-transform" />
+        </button>
       </div>
 
       {/* Top Status Bar */}
@@ -773,6 +811,17 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
         </div>
       )}
       <Footer />
+
+      <AnimatePresence>
+        {showHazardsPanel && (
+          <HazardsPanel
+            onClose={() => setShowHazardsPanel(false)}
+            currentLat={location[0]}
+            currentLng={location[1]}
+            reporterId={user.id}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

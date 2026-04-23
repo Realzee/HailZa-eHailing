@@ -9,11 +9,13 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-gray-900 text-white p-6 mt-auto">
-      <div className="max-w-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-2">
-          <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full" />
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} eTaxiDriver. All rights reserved.</p>
+    <footer className="bg-gray-900 text-white p-8 mt-auto border-t border-gray-800">
+      <div className="max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 text-center">
+        <div className="flex items-center gap-3">
+          <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full shadow-lg" />
+          <p className="text-sm text-gray-400 font-medium tracking-wide">
+            © {new Date().getFullYear()} eTaxiDriver. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

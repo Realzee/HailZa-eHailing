@@ -139,3 +139,17 @@ export type Ride = {
   passenger_count?: number;
   created_at: string;
 };
+
+export type HazardType = 'pothole' | 'roadblock' | 'flooding' | 'hijack_hotspot' | 'accident' | 'traffic' | 'construction';
+
+export type Hazard = {
+  id: string;
+  type: HazardType;
+  description: string;
+  lat: number;
+  lng: number;
+  reported_by: string;
+  created_at: string;
+  expires_at: string;
+  is_verified?: boolean;
+};

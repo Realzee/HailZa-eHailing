@@ -1,11 +1,12 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Map from '@/components/Map';
-import { supabase, type Ride, type Driver } from '@/lib/supabase';
+import { supabase, type Ride, type Driver, type Hazard } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
-import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet, Users, Info, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet, Users, Info, ShieldCheck, AlertTriangle, TriangleAlert } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
+import { HazardsPanel } from './HazardsPanel';
 import { PREDEFINED_ROUTES, getPriceForRoute, calculateTotalFare } from '@/constants/pricing';
 
 interface RiderViewProps {
@@ -38,6 +39,8 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const [selectedRideType, setSelectedRideType] = useState('standard');
   const [isSearchingAddress, setIsSearchingAddress] = useState(false);
   const [passengerCount, setPassengerCount] = useState(1);
+  const [showHazardsPanel, setShowHazardsPanel] = useState(false);
+  const [hazards, setHazards] = useState<Hazard[]>([]);
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   const RIDE_TYPES = [
@@ -88,6 +91,16 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     fetchActiveRide();
     fetchRideHistory();
     fetchDrivers();
+    fetchHazards();
+
+    const hazardsChannel = supabase
+      .channel('hazards_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'hazards' },
+        () => fetchHazards()
+      )
+      .subscribe();
 
     const rideChannel = supabase
       .channel('rider_rides')
@@ -118,6 +131,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     return () => {
       supabase.removeChannel(rideChannel);
       supabase.removeChannel(driverChannel);
+      supabase.removeChannel(hazardsChannel);
     };
   }, [user.id]);
 
@@ -144,6 +158,14 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     if (data) {
       setDrivers(data);
     }
+  };
+
+  const fetchHazards = async () => {
+    const { data } = await supabase
+      .from('hazards')
+      .select('*')
+      .gt('expires_at', new Date().toISOString());
+    if (data) setHazards(data);
   };
 
   const getDriverLocation = (driver: Driver) => {
@@ -415,12 +437,26 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             ...drivers.map(d => {
               const loc = getDriverLocation(d);
               return loc ? { position: [loc.lat, loc.lng] as [number, number], type: 'driver' as const, title: 'Available Driver' } : null;
-            }).filter(m => m !== null) as any[]
+            }).filter(m => m !== null) as any[],
+            ...hazards.map(h => ({
+              position: [h.lat, h.lng] as [number, number],
+              type: 'hazard' as const,
+              title: `${h.type.toUpperCase()}: ${h.description}`
+            }))
           ]}
           route={route}
           onMapClick={handleMapClick}
           interactive={!activeRide || activeRide.status === 'cancelled'}
         />
+
+        {/* Hazard Button */}
+        <button
+          onClick={() => setShowHazardsPanel(true)}
+          className="absolute top-20 right-4 z-10 bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 group transition-all active:scale-95"
+          title="Report Hazard"
+        >
+          <TriangleAlert size={20} className="text-red-600 group-hover:scale-110 transition-transform" />
+        </button>
       </div>
 
       {/* UI Overlay */}
@@ -1024,6 +1060,14 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
 
       {/* All Routes Modal */}
       <AnimatePresence>
+        {showHazardsPanel && (
+          <HazardsPanel
+            onClose={() => setShowHazardsPanel(false)}
+            currentLat={location[0]}
+            currentLng={location[1]}
+            reporterId={user.id}
+          />
+        )}
         {showAllRoutes && (
           <motion.div 
             initial={{ opacity: 0 }}
