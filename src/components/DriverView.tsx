@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Profile } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
-import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X } from 'lucide-react';
+import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X, Users, ShieldCheck, Banknote, Clock, AlertTriangle } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 
 interface DriverViewProps {
   user: any;
+  profile: any;
+  onShowVerification: () => void;
 }
 
-export default function DriverView({ user }: DriverViewProps) {
+export default function DriverView({ user, profile, onShowVerification }: DriverViewProps) {
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
@@ -388,7 +390,13 @@ export default function DriverView({ user }: DriverViewProps) {
             )}
           </div>
           <button
-            onClick={() => setIsOnline(!isOnline)}
+            onClick={() => {
+              if (profile?.verification_status !== 'verified') {
+                onShowVerification();
+                return;
+              }
+              setIsOnline(!isOnline);
+            }}
             className={`px-6 py-2 rounded-full font-bold shadow-lg transition-colors pointer-events-auto ${
               isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 dark:bg-gray-700 text-gray-300 dark:text-gray-200'
             }`}
@@ -396,6 +404,16 @@ export default function DriverView({ user }: DriverViewProps) {
             {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
           </button>
           <div className="flex-1 flex justify-end gap-2">
+            {profile?.verification_status !== 'verified' && (
+              <button 
+                onClick={onShowVerification}
+                className="bg-orange-500 text-white shadow-lg p-3 rounded-xl pointer-events-auto hover:bg-orange-600 transition-colors border-none flex items-center gap-2 animate-pulse"
+                title="Account Verification Required"
+              >
+                <AlertTriangle size={20} />
+                <span className="text-[10px] font-black uppercase tracking-tight hidden md:inline">Verify Account</span>
+              </button>
+            )}
             <button
               onClick={() => setShowDashboard(!showDashboard)}
               className="bg-white dark:bg-gray-800 shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 dark:text-gray-300 hover:text-hail-green dark:hover:text-hail-green transition-colors border dark:border-gray-700"
@@ -439,6 +457,40 @@ export default function DriverView({ user }: DriverViewProps) {
                 <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-1">Total Rides</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{rideHistory.length}</p>
               </div>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold flex items-center gap-2 dark:text-white">
+                  <Banknote size={18} className="text-hail-green" /> Wallet & Payouts
+                </h3>
+              </div>
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Available for payout</p>
+                  <p className="text-2xl font-black dark:text-white">{formatZAR(earnings.total)}</p>
+                </div>
+                <button 
+                  onClick={async () => {
+                    if (earnings.total <= 0) return alert('No earnings to withdraw.');
+                    if (window.confirm(`Request instant payout of ${formatZAR(earnings.total)}?`)) {
+                      const { error } = await supabase.from('payout_requests').insert({
+                        driver_id: user.id,
+                        amount: earnings.total,
+                        status: 'pending',
+                        payout_method: 'Instant'
+                      });
+                      if (!error) alert('Payout request sent! You will receive your funds shortly.');
+                    }
+                  }}
+                  className="bg-hail-green text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-md"
+                >
+                  Request Payout
+                </button>
+              </div>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase leading-relaxed uppercase tracking-tighter">
+                * Same-day withdrawals available. Transaction fees may apply depending on your bank.
+              </p>
             </div>
 
             <button 
@@ -552,8 +604,15 @@ export default function DriverView({ user }: DriverViewProps) {
                 <Car size={24} />
               </div>
               <div className="flex-1">
-                <p className="font-bold text-lg dark:text-white">{formatZAR(incomingRide.fare_amount)}</p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
+                <p className="font-bold text-lg dark:text-white">{formatZAR(incomingRide.fare_amount || 0)}</p>
+                <div className="flex items-center gap-2">
+                   <p className="text-gray-500 dark:text-gray-400 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
+                   <span className="text-gray-300">•</span>
+                   <div className="flex items-center gap-1 text-hail-green text-sm font-bold">
+                     <Users size={14} />
+                     <span>{incomingRide.passenger_count || 1}</span>
+                   </div>
+                </div>
               </div>
             </div>
             
@@ -595,11 +654,25 @@ export default function DriverView({ user }: DriverViewProps) {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 space-y-6 border border-gray-100 dark:border-gray-700">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 text-xl">
-                  {activeRide.rider?.full_name?.charAt(0) || 'R'}
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 text-xl">
+                    {activeRide.rider?.full_name?.charAt(0) || 'R'}
+                  </div>
+                  {(activeRide.rider?.is_verified || true) && (
+                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5">
+                      <ShieldCheck size={16} className="text-blue-500 fill-current bg-white rounded-full" />
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg dark:text-white">{activeRide.rider?.full_name || 'Rider'}</h3>
+                  <h3 className="font-bold text-lg dark:text-white flex items-center gap-2">
+                    {activeRide.rider?.full_name || 'Rider'}
+                    {activeRide.passenger_count && activeRide.passenger_count > 1 && (
+                      <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full flex items-center gap-1 text-gray-500">
+                        <Users size={12} /> {activeRide.passenger_count}
+                      </span>
+                    )}
+                  </h3>
                   <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                     <MapPin size={12} />
                     {activeRide.status === 'accepted' ? 'Heading to Pickup' : 'Heading to Dropoff'}
@@ -677,6 +750,25 @@ export default function DriverView({ user }: DriverViewProps) {
                 Complete Trip
               </button>
             )}
+
+            <button 
+              onClick={() => {
+                const reason = window.prompt('Report an issue with this trip:');
+                if (reason) {
+                  supabase.from('disputes').insert({
+                    ride_id: activeRide.id,
+                    reported_by: user.id,
+                    target_user_id: activeRide.rider_id,
+                    reason: 'General Report',
+                    description: reason,
+                    status: 'pending'
+                  }).then(() => alert('Report submitted to our investigation team.'));
+                }
+              }}
+              className="w-full text-center text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors uppercase tracking-widest pt-2"
+            >
+              Report Issue with Trip
+            </button>
           </div>
         </div>
       )}

@@ -58,3 +58,8 @@ export function getPriceForRoute(routeId: string | null, distanceKm: number): nu
   // Fallback: R10 per km
   return Math.round(distanceKm * FALLBACK_KM_PRICE);
 }
+
+export function calculateTotalFare(baseFare: number, passengerCount: number): number {
+  const extraPassengers = Math.max(0, passengerCount - 1);
+  return baseFare + (extraPassengers * 10);
+}

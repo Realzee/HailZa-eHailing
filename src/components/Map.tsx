@@ -23,11 +23,16 @@ const carIcon = createModernIcon(carSvg, 'bg-gray-900');
 const userIcon = createModernIcon(userSvg, 'bg-blue-600');
 const destinationIcon = createModernIcon(destinationSvg, 'bg-hail-green');
 
-function MapController({ center }: { center: [number, number] }) {
+function MapController({ center, route }: { center: [number, number], route?: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
-    map.flyTo(center, map.getZoom());
-  }, [center, map]);
+    if (route && route.length > 0) {
+      const bounds = L.latLngBounds(route);
+      map.flyToBounds(bounds, { padding: [50, 50] });
+    } else {
+      map.flyTo(center, map.getZoom());
+    }
+  }, [center, route, map]);
   return null;
 }
 
@@ -38,6 +43,8 @@ interface MapProps {
     title?: string;
     type?: 'user' | 'driver' | 'destination';
     rotation?: number;
+    draggable?: boolean;
+    onDragEnd?: (lat: number, lng: number) => void;
   }>;
   route?: [number, number][];
   onMapClick?: (lat: number, lng: number) => void;
@@ -85,6 +92,16 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
               key={idx}
               position={marker.position}
               icon={icon}
+              draggable={marker.draggable}
+              eventHandlers={{
+                dragend: (e) => {
+                  if (marker.onDragEnd) {
+                    const m = e.target;
+                    const position = m.getLatLng();
+                    marker.onDragEnd(position.lat, position.lng);
+                  }
+                }
+              }}
             >
               {marker.title && <Popup className="font-sans font-bold">{marker.title}</Popup>}
             </Marker>

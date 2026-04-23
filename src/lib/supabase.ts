@@ -106,6 +106,8 @@ export type Profile = {
   full_name: string;
   role: 'rider' | 'driver' | 'owner' | 'admin';
   phone?: string;
+  is_verified?: boolean;
+  verification_status?: 'unverified' | 'pending' | 'verified' | 'rejected';
 };
 
 export type Driver = {
@@ -134,5 +136,6 @@ export type Ride = {
   status: 'requested' | 'accepted' | 'arrived' | 'in_progress' | 'completed' | 'cancelled' | 'paid';
   fare_amount: number;
   distance_km: number;
+  passenger_count?: number;
   created_at: string;
 };

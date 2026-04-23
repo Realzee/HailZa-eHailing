@@ -9,12 +9,30 @@ create table if not exists public.profiles (
   role text check (role in ('rider', 'driver', 'owner', 'admin')) default 'rider',
   phone text,
   avatar_url text,
+  is_verified boolean default false,
+  verification_status text check (verification_status in ('unverified', 'pending', 'verified', 'rejected')) default 'unverified',
+  id_document_url text,
+  selfie_url text,
+  last_verified_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Ensure 'admin' role is allowed in existing profiles table
-alter table public.profiles drop constraint if exists profiles_role_check;
-alter table public.profiles add constraint profiles_role_check check (role in ('rider', 'driver', 'owner', 'admin'));
+-- Ensure 'admin' role is allowed and verification columns exist
+do $$ 
+begin 
+  if not exists (select 1 from information_schema.columns where table_name='profiles' and column_name='is_verified') then
+    alter table public.profiles add column is_verified boolean default false;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name='profiles' and column_name='verification_status') then
+    alter table public.profiles add column verification_status text check (verification_status in ('unverified', 'pending', 'verified', 'rejected')) default 'unverified';
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name='profiles' and column_name='id_document_url') then
+    alter table public.profiles add column id_document_url text;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name='profiles' and column_name='selfie_url') then
+    alter table public.profiles add column selfie_url text;
+  end if;
+end $$;
 
 -- 3. DRIVERS (Extended profile for drivers)
 create table if not exists public.drivers (
@@ -31,20 +49,6 @@ create table if not exists public.drivers (
   updated_at timestamp with time zone default timezone('utc'::text, now())
 );
 
--- Add missing columns to drivers if they don't exist (for existing tables)
-do $$ 
-begin 
-  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='is_approved') then
-    alter table public.drivers add column is_approved boolean default false;
-  end if;
-  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='onboarding_status') then
-    alter table public.drivers add column onboarding_status text check (onboarding_status in ('pending', 'approved', 'declined')) default 'pending';
-  end if;
-  if not exists (select 1 from information_schema.columns where table_name='drivers' and column_name='owner_id') then
-    alter table public.drivers add column owner_id uuid references public.profiles(id);
-  end if;
-end $$;
-
 -- 4. RIDES (Ride requests and history)
 create table if not exists public.rides (
   id uuid default gen_random_uuid() primary key,
@@ -59,8 +63,54 @@ create table if not exists public.rides (
   status text check (status in ('requested', 'accepted', 'in_progress', 'completed', 'cancelled', 'paid')) default 'requested',
   fare_amount numeric not null,
   distance_km numeric not null,
+  passenger_count integer default 1 check (passenger_count >= 1 and passenger_count <= 4),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Add passenger_count to rides if it doesn't exist
+do $$ 
+begin 
+  if not exists (select 1 from information_schema.columns where table_name='rides' and column_name='passenger_count') then
+    alter table public.rides add column passenger_count integer default 1 check (passenger_count >= 1 and passenger_count <= 4);
+  end if;
+end $$;
+
+-- 8. DISPUTES
+create table if not exists public.disputes (
+  id uuid default gen_random_uuid() primary key,
+  ride_id uuid references public.rides(id) not null,
+  reported_by uuid references public.profiles(id) not null,
+  target_user_id uuid references public.profiles(id) not null,
+  reason text not null,
+  description text,
+  evidence_url text,
+  status text check (status in ('pending', 'investigating', 'resolved', 'dismissed')) default 'pending',
+  resolution text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 9. PAYOUT REQUESTS
+create table if not exists public.payout_requests (
+  id uuid default gen_random_uuid() primary key,
+  driver_id uuid references public.profiles(id) not null,
+  amount numeric not null,
+  status text check (status in ('pending', 'processed', 'failed')) default 'pending',
+  payout_method text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 5. RLS POLICIES (Row Level Security)
+alter table public.disputes enable row level security;
+alter table public.payout_requests enable row level security;
+
+-- Dispute Policies
+create policy "Users can see their own reported disputes" on public.disputes for select using (auth.uid() = reported_by or auth.uid() = target_user_id);
+create policy "Users can report disputes" on public.disputes for insert with check (auth.uid() = reported_by);
+
+-- Payout Policies
+create policy "Drivers can see their own payout requests" on public.payout_requests for select using (auth.uid() = driver_id);
+create policy "Drivers can request payouts" on public.payout_requests for insert with check (auth.uid() = driver_id);
+
 
 -- Ensure 'paid' status is allowed in existing rides table
 alter table public.rides drop constraint if exists rides_status_check;

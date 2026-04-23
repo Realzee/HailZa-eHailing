@@ -3,16 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
-import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet } from 'lucide-react';
+import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet, Users, Info, ShieldCheck, AlertTriangle } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
-import { PREDEFINED_ROUTES, getPriceForRoute } from '@/constants/pricing';
+import { PREDEFINED_ROUTES, getPriceForRoute, calculateTotalFare } from '@/constants/pricing';
 
 interface RiderViewProps {
   user: any;
+  profile: any;
+  onShowVerification: () => void;
 }
 
-export default function RiderView({ user }: RiderViewProps) {
+export default function RiderView({ user, profile, onShowVerification }: RiderViewProps) {
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]); // JHB Default
   const [destination, setDestination] = useState<[number, number] | null>(null);
   const [pickupAddress, setPickupAddress] = useState('Locating...');
@@ -35,6 +37,7 @@ export default function RiderView({ user }: RiderViewProps) {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedRideType, setSelectedRideType] = useState('standard');
   const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const [passengerCount, setPassengerCount] = useState(1);
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   const RIDE_TYPES = [
@@ -185,9 +188,55 @@ export default function RiderView({ user }: RiderViewProps) {
     }
   };
 
+  const handlePickupDragEnd = async (lat: number, lng: number) => {
+    if (activeRide && activeRide.status !== 'cancelled') return;
+    setLocation([lat, lng]);
+    const addr = await reverseGeocode(lat, lng);
+    setPickupAddress(addr);
+    
+    if (destination) {
+      const routeData = await getRoute([lat, lng], destination);
+      if (routeData) {
+        setRoute(routeData.coordinates);
+        const distKm = routeData.distance / 1000;
+        const price = getPriceForRoute(selectedRouteId, distKm);
+        setRideStats({
+          distance: distKm,
+          duration: routeData.duration,
+          price
+        });
+      }
+    }
+  };
+
+  const handleDestinationDragEnd = async (lat: number, lng: number) => {
+    if (activeRide && activeRide.status !== 'cancelled') return;
+    setDestination([lat, lng]);
+    const addr = await reverseGeocode(lat, lng);
+    setDropoffAddress(addr);
+    
+    const routeData = await getRoute(location, [lat, lng]);
+    if (routeData) {
+      setRoute(routeData.coordinates);
+      const distKm = routeData.distance / 1000;
+      const price = getPriceForRoute(selectedRouteId, distKm);
+      setRideStats({
+        distance: distKm,
+        duration: routeData.duration,
+        price
+      });
+    }
+  };
+
   // 4. Request Ride
   const requestRide = async () => {
     if (!destination || !rideStats) return;
+
+    if (profile?.verification_status !== 'verified') {
+      onShowVerification();
+      return;
+    }
+
     setSearching(true);
     
     try {
@@ -199,8 +248,9 @@ export default function RiderView({ user }: RiderViewProps) {
         dropoff_lng: destination[1],
         pickup_address: pickupAddress,
         dropoff_address: dropoffAddress,
-        fare_amount: rideStats.price,
+        fare_amount: calculateTotalFare(rideStats.price * (RIDE_TYPES.find(t => t.id === selectedRideType)?.multiplier || 1), passengerCount),
         distance_km: rideStats.distance,
+        passenger_count: passengerCount,
         status: 'requested'
       });
       const { error } = await supabase.from('rides').insert({
@@ -211,8 +261,9 @@ export default function RiderView({ user }: RiderViewProps) {
         dropoff_lng: destination[1],
         pickup_address: pickupAddress,
         dropoff_address: dropoffAddress,
-        fare_amount: rideStats.price,
+        fare_amount: calculateTotalFare(rideStats.price * (RIDE_TYPES.find(t => t.id === selectedRideType)?.multiplier || 1), passengerCount),
         distance_km: rideStats.distance,
+        passenger_count: passengerCount,
         status: 'requested'
       });
       
@@ -359,8 +410,8 @@ export default function RiderView({ user }: RiderViewProps) {
         <Map
           center={location}
           markers={[
-            { position: location, type: 'user', title: 'You' },
-            ...(destination ? [{ position: destination, type: 'destination' as const, title: 'Dropoff' }] : []),
+            { position: location, type: 'user', title: 'You', draggable: !activeRide || activeRide.status === 'cancelled', onDragEnd: handlePickupDragEnd },
+            ...(destination ? [{ position: destination, type: 'destination' as const, title: 'Dropoff', draggable: !activeRide || activeRide.status === 'cancelled', onDragEnd: handleDestinationDragEnd }] : []),
             ...drivers.map(d => {
               const loc = getDriverLocation(d);
               return loc ? { position: [loc.lat, loc.lng] as [number, number], type: 'driver' as const, title: 'Available Driver' } : null;
@@ -575,8 +626,32 @@ export default function RiderView({ user }: RiderViewProps) {
 
           {!activeRide || activeRide.status === 'cancelled' ? (
             <div className="w-full">
+              
+              {profile?.verification_status !== 'verified' && (
+                <motion.button
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={onShowVerification}
+                  className="w-full mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 rounded-3xl flex items-center gap-3 group transition-all hover:shadow-md"
+                >
+                  <div className="bg-white dark:bg-gray-800 p-2 rounded-xl text-orange-600 shadow-sm border dark:border-gray-700">
+                    {profile?.verification_status === 'pending' ? <Clock size={20} className="animate-pulse" /> : <AlertTriangle size={20} />}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-xs font-black text-orange-900 dark:text-orange-200 uppercase tracking-widest">
+                      {profile?.verification_status === 'pending' ? 'Verification Pending' : 'Action Required'}
+                    </p>
+                    <p className="text-[10px] text-orange-700 dark:text-orange-300 font-bold leading-tight">
+                      {profile?.verification_status === 'pending' 
+                        ? 'Your documents are being reviewed. Click to check status.' 
+                        : 'Verify your ID and face to unlock all features. Get started now!'}
+                    </p>
+                  </div>
+                  <ChevronRight size={16} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              )}
 
-            {/* Search Destination */}
+              {/* Search Destination */}
             <div className="mb-8 relative">
               <form onSubmit={handleSearch} className="flex gap-3">
                 <div className="relative flex-1 group">
@@ -674,6 +749,35 @@ export default function RiderView({ user }: RiderViewProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6 pb-24"
               >
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-2xl flex items-start gap-3">
+                  <Info className="text-blue-600 dark:text-blue-400 mt-0.5" size={18} />
+                  <div>
+                    <p className="text-xs font-bold text-blue-900 dark:text-blue-200">Mandatory Verification</p>
+                    <p className="text-[10px] text-blue-700 dark:text-blue-300 mt-0.5">Please ensure all passengers are registered or verified before travel.</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-600">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <Users size={20} className="text-hail-green" />
+                      <span className="font-bold text-gray-900 dark:text-white">Passengers</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => setPassengerCount(Math.max(1, passengerCount - 1))}
+                        className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-gray-700"
+                      >-</button>
+                      <span className="font-black text-xl w-4 text-center dark:text-white">{passengerCount}</span>
+                      <button 
+                        onClick={() => setPassengerCount(Math.min(4, passengerCount + 1))}
+                        className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-gray-700"
+                      >+</button>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">+ R10 per additional passenger</p>
+                </div>
+
                 <div className="text-center mb-4">
                    <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Choose a ride</h2>
                 </div>
@@ -713,7 +817,7 @@ export default function RiderView({ user }: RiderViewProps) {
                             </div>
                             <div className="text-right">
                               <p className="font-black text-lg text-gray-900 dark:text-white">
-                                {formatZAR(rideStats.price * type.multiplier)}
+                                {formatZAR(calculateTotalFare(rideStats.price * type.multiplier, passengerCount))}
                               </p>
                             </div>
                           </button>

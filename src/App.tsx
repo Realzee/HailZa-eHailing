@@ -5,12 +5,14 @@ import RiderView from '@/components/RiderView';
 import DriverView from '@/components/DriverView';
 import OwnerView from '@/components/OwnerView';
 import AdminView from '@/components/AdminView';
+import VerificationFlow from '@/components/VerificationFlow';
 import { Loader2 } from 'lucide-react';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showVerification, setShowVerification] = useState(false);
 
   useEffect(() => {
     // 1. Check active session
@@ -34,6 +36,12 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (profile && profile.verification_status === 'unverified') {
+      setShowVerification(true);
+    }
+  }, [profile]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -73,14 +81,23 @@ export default function App() {
       
       {!session || !profile ? (
         <Auth onAuthSuccess={() => {}} />
+      ) : showVerification ? (
+        <VerificationFlow 
+          user={profile} 
+          onClose={() => setShowVerification(false)} 
+          onComplete={() => {
+            fetchProfile(session.user.id);
+            setShowVerification(false);
+          }} 
+        />
       ) : profile.role === 'admin' ? (
         <AdminView user={session.user} />
       ) : profile.role === 'driver' ? (
-        <DriverView user={session.user} />
+        <DriverView user={session.user} onShowVerification={() => setShowVerification(true)} profile={profile} />
       ) : profile.role === 'owner' ? (
         <OwnerView user={session.user} />
       ) : (
-        <RiderView user={session.user} />
+        <RiderView user={session.user} onShowVerification={() => setShowVerification(true)} profile={profile} />
       )}
     </main>
   );
