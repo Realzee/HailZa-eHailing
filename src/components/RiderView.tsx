@@ -149,23 +149,46 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   };
 
   const fetchDrivers = async () => {
-    const { data } = await supabase
-      .from('drivers')
-      .select('*')
-      .eq('is_online', true)
-      .eq('is_approved', true);
-    
-    if (data) {
-      setDrivers(data);
+    try {
+      const { data, error } = await supabase
+        .from('drivers')
+        .select('*')
+        .eq('is_online', true)
+        .eq('is_approved', true);
+      
+      if (error) {
+        if (error.code === 'PGRST116' || error.message.includes('not found')) {
+          console.warn('Drivers table not found.');
+          return;
+        }
+        throw error;
+      }
+      if (data) {
+        setDrivers(data);
+      }
+    } catch (err) {
+      console.error('Error fetching drivers:', err);
     }
   };
 
   const fetchHazards = async () => {
-    const { data } = await supabase
-      .from('hazards')
-      .select('*')
-      .gt('expires_at', new Date().toISOString());
-    if (data) setHazards(data);
+    try {
+      const { data, error } = await supabase
+        .from('hazards')
+        .select('*')
+        .gt('expires_at', new Date().toISOString());
+        
+      if (error) {
+        if (error.code === 'PGRST116' || error.message.includes('not found')) {
+          console.warn('Hazards table not found. Please ensure database schema is applied.');
+          return;
+        }
+        throw error;
+      }
+      if (data) setHazards(data);
+    } catch (err) {
+      console.error('Error fetching hazards:', err);
+    }
   };
 
   const getDriverLocation = (driver: Driver) => {

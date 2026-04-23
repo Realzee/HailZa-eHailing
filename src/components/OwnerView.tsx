@@ -35,9 +35,15 @@ export default function OwnerView({ user }: { user: any }) {
           profiles:id (*)
         `);
       
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116' || error.message.includes('not found')) {
+          console.warn('Drivers table not found.');
+          return;
+        }
+        throw error;
+      }
       setDrivers(data as any);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching drivers:', error);
     } finally {
       setLoading(false);

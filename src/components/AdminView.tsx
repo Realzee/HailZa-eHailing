@@ -52,9 +52,9 @@ export default function AdminView({ user }: { user: any }) {
         supabase.from('rides').select('*, rider:rider_id(*), driver:driver_id(*)').order('created_at', { ascending: false })
       ]);
 
-      if (profilesRes.error) throw profilesRes.error;
-      if (driversRes.error) throw driversRes.error;
-      if (ridesRes.error) throw ridesRes.error;
+      if (profilesRes.error && !profilesRes.error.message.includes('not found')) throw profilesRes.error;
+      if (driversRes.error && !driversRes.error.message.includes('not found')) throw driversRes.error;
+      if (ridesRes.error && !ridesRes.error.message.includes('not found')) throw ridesRes.error;
 
       setProfiles(profilesRes.data || []);
       setDrivers(driversRes.data as any || []);

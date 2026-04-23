@@ -136,11 +136,23 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   }, [user.id]);
 
   const fetchHazards = async () => {
-    const { data } = await supabase
-      .from('hazards')
-      .select('*')
-      .gt('expires_at', new Date().toISOString());
-    if (data) setHazards(data);
+    try {
+      const { data, error } = await supabase
+        .from('hazards')
+        .select('*')
+        .gt('expires_at', new Date().toISOString());
+        
+      if (error) {
+        if (error.code === 'PGRST116' || error.message.includes('not found')) {
+          console.warn('Hazards table not found. Please ensure database schema is applied.');
+          return;
+        }
+        throw error;
+      }
+      if (data) setHazards(data);
+    } catch (err) {
+      console.error('Error fetching hazards:', err);
+    }
   };
 
   // 1. Location Tracking & Status Update
