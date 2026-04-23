@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Profile, type Driver } from '@/lib/supabase';
 import { Loader2, Users, CheckCircle, XCircle, Car, ShieldCheck, LogOut } from 'lucide-react';
+import { motion } from 'motion/react';
+import ThemeToggle from './ThemeToggle';
+import Footer from './Footer';
 
 export default function OwnerView({ user }: { user: any }) {
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
@@ -262,6 +265,7 @@ export default function OwnerView({ user }: { user: any }) {
           )}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

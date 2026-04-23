@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 
 export default function BrandingSettings() {
   const [logo, setLogo] = useState(localStorage.getItem('appLogo') || '');

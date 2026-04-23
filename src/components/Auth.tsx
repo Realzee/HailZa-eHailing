@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Loader2, AlertCircle, Phone, Mail, ArrowRight, Check } from 'lucide-react';
 

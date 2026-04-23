@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver, type Hazard } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
