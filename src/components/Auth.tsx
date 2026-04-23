@@ -192,7 +192,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const appLogo = localStorage.getItem('appLogo');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-navy p-6 transition-colors overflow-hidden relative">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-navy p-6 transition-colors overflow-y-auto relative custom-scrollbar">
       {/* Abstract Background Decor */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]" />

@@ -190,59 +190,68 @@ export default function AdminView({ user }: { user: any }) {
   }
 
   return (
-    <div className="min-h-screen bg-mist/30 dark:bg-navy flex flex-col transition-colors">
+    <div className="h-screen bg-mist/30 dark:bg-navy flex flex-col transition-colors overflow-hidden">
       {/* Header */}
-      <header className="bg-navy text-ice px-6 py-4 flex justify-between items-center sticky top-0 z-20 border-b border-ocean-deep">
+      <header className="bg-navy text-ice px-6 py-4 flex justify-between items-center z-20 border-b border-ocean-deep flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="bg-mist p-2 rounded-xl">
             {appLogo ? (
               <img src={appLogo} alt="Logo" className="h-6 w-auto" />
             ) : (
-              <Shield size={24} className="text-[#141414]" />
+              <Shield size={24} className="text-navy" />
             )}
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-tight font-display">eTaxiDriver Admin</h1>
+            <h1 className="text-xl font-black tracking-tight font-display">eTaxi Admin</h1>
             <p className="text-[10px] uppercase tracking-[0.2em] opacity-60 font-bold">System Management</p>
           </div>
         </div>
-        <button 
-          onClick={handleSignOut}
-          className="p-2 text-[#E4E3E0] hover:opacity-70 transition-opacity flex items-center gap-2"
-        >
+        <div className="flex items-center gap-4 group">
+          <div className="hidden sm:flex flex-col items-end opacity-60 group-hover:opacity-100 transition-opacity">
+            <span className="text-[10px] font-black uppercase tracking-widest text-mist">{user.email}</span>
+            <span className="text-[9px] font-bold uppercase tracking-tighter text-sky-bright">Authenticated System Admin</span>
+          </div>
+          <div className="h-8 w-px bg-ocean-deep mx-2" />
           <ThemeToggle />
-          <span className="text-sm font-medium uppercase tracking-wider">Sign Out</span>
-          <LogOut size={20} />
-        </button>
+          <button 
+            onClick={handleSignOut}
+            className="p-3 bg-red-600/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+            title="Sign Out"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-[#E4E3E0] dark:bg-gray-800 border-b border-[#141414] dark:border-gray-700 px-6 py-6 grid grid-cols-3 gap-4 transition-colors">
-        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Total Users</span>
-          <span className="text-3xl font-mono tracking-tighter dark:text-white">{profiles.length}</span>
+      <div className="bg-white dark:bg-ocean-deep/30 border-b border-mist dark:border-white/5 px-8 py-6 grid grid-cols-3 gap-8 transition-colors flex-shrink-0 shadow-sm">
+        <div className="flex flex-col border-l-4 border-secondary pl-6">
+          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Total Users</span>
+          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{profiles.length}</span>
         </div>
-        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Active Drivers</span>
-          <span className="text-3xl font-mono tracking-tighter dark:text-white">{drivers.filter(d => d.is_online).length}</span>
+        <div className="flex flex-col border-l-4 border-sky-bright pl-6">
+          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Active Fleet</span>
+          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{drivers.filter(d => d.is_online).length}</span>
         </div>
-        <div className="flex flex-col border-l border-[#141414] dark:border-gray-600 pl-4">
-          <span className="text-[11px] uppercase font-serif italic opacity-50 tracking-wider dark:text-gray-300">Total Rides</span>
-          <span className="text-3xl font-mono tracking-tighter dark:text-white">{rides.length}</span>
+        <div className="flex flex-col border-l-4 border-steel pl-6">
+          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Total Operations</span>
+          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{rides.length}</span>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full custom-scrollbar">
         {/* Tabs & Search */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex bg-[#141414] dark:bg-gray-800 p-1 w-full md:w-auto transition-colors">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+          <div className="flex bg-mist/30 dark:bg-ocean-deep/50 p-1.5 rounded-2xl w-full md:w-auto border border-mist dark:border-white/5">
             {['users', 'drivers', 'rides', 'earnings', 'map', 'branding'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`flex-1 md:flex-none px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
-                  activeTab === tab ? 'bg-[#E4E3E0] dark:bg-gray-700 text-[#141414] dark:text-white' : 'text-[#E4E3E0] dark:text-gray-400 hover:opacity-70 dark:hover:text-white'
+                className={`flex-1 md:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${
+                  activeTab === tab 
+                    ? 'bg-secondary text-white shadow-lg shadow-secondary/20' 
+                    : 'text-steel hover:text-navy dark:hover:text-white'
                 }`}
               >
                 {tab}

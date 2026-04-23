@@ -142,10 +142,10 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
       exit="exit"
       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     >
-      <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl relative border border-gray-100 dark:border-gray-700 transition-colors">
+      <div className="bg-white dark:bg-navy w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl relative border border-mist dark:border-white/5 transition-all flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 flex justify-between items-center border-b border-gray-50 dark:border-gray-700/50">
-          <div className="flex items-center gap-2">
+        <div className="p-6 flex justify-between items-center border-b border-mist/20 dark:border-white/5 flex-shrink-0">
+          <div className="flex items-center gap-3">
             {step !== 'intro' && step !== 'pending' && (
               <button 
                 onClick={() => {
@@ -153,25 +153,25 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                   if (step === 'selfie') setStep('id_upload');
                   if (step === 'phone') setStep('selfie');
                 }}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                className="p-2 hover:bg-mist/50 dark:hover:bg-white/5 rounded-xl transition-all"
               >
-                <ArrowLeft size={20} className="dark:text-gray-300" />
+                <ArrowLeft size={20} className="text-steel" />
               </button>
             )}
-            <h2 className="font-black text-xl tracking-tight dark:text-white">Verification</h2>
+            <h2 className="font-black text-xl tracking-tight text-navy dark:text-white">Account Registry</h2>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400 dark:text-gray-500"
+            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all text-steel hover:text-red-500"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-700 flex">
+        <div className="h-1.5 w-full bg-mist/30 dark:bg-white/5 flex-shrink-0">
            <motion.div 
-             className="h-full bg-hail-green"
+             className="h-full bg-secondary shadow-lg shadow-secondary/20"
              animate={{ 
                width: step === 'intro' ? '20%' : 
                       step === 'id_upload' ? '40%' : 
@@ -181,7 +181,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
            />
         </div>
 
-        <div className="p-8">
+        <div className="p-8 overflow-y-auto overflow-x-hidden custom-scrollbar flex-1">
           <AnimatePresence mode="wait">
             {step === 'intro' && (
               <motion.div key="intro" variants={stepVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">

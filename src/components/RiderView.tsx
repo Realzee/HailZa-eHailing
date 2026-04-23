@@ -655,7 +655,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500 transition-colors" />
           </button>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-24 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto px-6 pb-24 custom-scrollbar">
             {(!activeRide || activeRide.status === 'cancelled') && (
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-2">
                 {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
@@ -765,7 +765,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                     View All
                   </button>
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar -mx-2 px-2">
                   {PREDEFINED_ROUTES.slice(0, 8).map((route) => (
                     <button
                       key={route.id}
@@ -1095,7 +1095,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                 </button>
               </div>
               
-              <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-hide">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                 {PREDEFINED_ROUTES.map((route) => (
                   <button
                     key={route.id}
