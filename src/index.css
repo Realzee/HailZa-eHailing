@@ -1,49 +1,71 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  --color-primary: #091f2d;
-  --color-secondary: #5accfe;
-  --color-accent: #7dc9e1;
-  --color-hail-green: #5accfe;
-  --color-hail-gold: #c6ebf6;
+  --color-primary: #020617;
+  --color-secondary: #0ea5e9;
+  --color-accent: #7dd3fc;
+  --color-hail-green: #0ea5e9;
+  --color-hail-gold: #f0f9ff;
   
-  /* Global Color Overrides */
-  --color-gray-50: #f2fafb;
-  --color-gray-100: #c6ebf6;
-  --color-gray-200: #a5bbc5;
-  --color-gray-300: #a5bbc5;
-  --color-gray-400: #5e8596;
-  --color-gray-500: #5e8596;
-  --color-gray-600: #324c59;
-  --color-gray-700: #324c59;
-  --color-gray-800: #324c59;
-  --color-gray-900: #091f2d;
+  /* Modern Professional Slate-Blue Palette */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
 
-  /* Named Palette */
-  --color-ocean-deep: #324c59;
-  --color-ocean: #5e8596;
-  --color-steel: #a5bbc5;
-  --color-mist: #c6ebf6;
-  --color-ice: #f2fafb;
-  --color-navy: #091f2d;
-  --color-sky-bright: #5accfe;
-  --color-sky-pale: #7dc9e1;
+  /* Premium Named Palette */
+  --color-navy: #020617;
+  --color-ocean-deep: #0f172a;
+  --color-ocean: #1e293b;
+  --color-steel: #64748b;
+  --color-mist: #e2e8f0;
+  --color-ice: #f8fafc;
+  --color-sky-bright: #0ea5e9;
+  --color-sky-pale: #bae6fd;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
   :root {
-    --background: #f2fafb;
-    --foreground: #091f2d;
+    --background: #f8fafc;
+    --foreground: #020617;
   }
   .dark {
-    --background: #091f2d;
-    --foreground: #f2fafb;
+    --background: #020617;
+    --foreground: #f8fafc;
+  }
+  
+  body {
+    @apply font-sans antialiased text-foreground bg-background transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 dark:bg-navy/70 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+  
+  .card-premium {
+    @apply bg-white dark:bg-navy border border-gray-200 dark:border-gray-800 rounded-3xl shadow-sm hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-secondary text-white font-semibold py-3 px-6 rounded-2xl hover:bg-sky-600 active:scale-95 transition-all shadow-lg shadow-secondary/20;
   }
 }
 

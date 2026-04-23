@@ -412,21 +412,21 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       </div>
 
       {/* Top Status Bar */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex flex-col gap-2 pointer-events-none">
-        <div className="flex justify-between items-center">
-          <div className="flex-1 flex items-center gap-2">
+      <div className="absolute top-0 left-0 right-0 p-6 z-10 pointer-events-none flex flex-col gap-3">
+        <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
+          <div className="flex items-center gap-3">
             {appLogo && (
-              <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-2 pointer-events-auto border border-gray-100 dark:border-gray-700 transition-colors">
-                <img src={appLogo} alt="Logo" className="h-8 w-auto" />
+              <div className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5">
+                <img src={appLogo} alt="Logo" className="h-9 w-auto" />
               </div>
             )}
             {geoError && (
-              <div className="bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-lg pointer-events-auto flex items-center gap-1 w-fit">
-                <ShieldAlert size={12} />
-                GPS ERROR: {geoError}
+              <div className="bg-red-600 text-white text-[10px] px-4 py-1.5 rounded-full font-black shadow-2xl pointer-events-auto flex items-center gap-1 w-fit uppercase tracking-wider border border-red-500/50">
+                <ShieldAlert size={14} /> GPS SIGNAL LOST
               </div>
             )}
           </div>
+
           <button
             onClick={() => {
               if (profile?.verification_status !== 'verified') {
@@ -435,37 +435,39 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               }
               setIsOnline(!isOnline);
             }}
-            className={`px-6 py-2 rounded-full font-bold shadow-lg transition-colors pointer-events-auto ${
-              isOnline ? 'bg-hail-green text-white' : 'bg-gray-800 dark:bg-gray-700 text-gray-300 dark:text-gray-200'
+            className={`px-8 py-3 rounded-2xl font-black shadow-2xl transition-all pointer-events-auto uppercase tracking-widest text-sm border-2 ${
+              isOnline 
+                ? 'bg-secondary text-white border-secondary shadow-secondary/20 scale-105' 
+                : 'bg-navy dark:bg-navy text-steel border-mist/20 dark:border-white/5'
             }`}
           >
-            {isOnline ? 'YOU ARE ONLINE' : 'GO ONLINE'}
+            {isOnline ? 'Active Online' : 'Go Online'}
           </button>
-          <div className="flex-1 flex justify-end gap-2">
+
+          <div className="flex gap-3 pointer-events-auto">
             {profile?.verification_status !== 'verified' && (
               <button 
                 onClick={onShowVerification}
-                className="bg-orange-500 text-white shadow-lg p-3 rounded-xl pointer-events-auto hover:bg-orange-600 transition-colors border-none flex items-center gap-2 animate-pulse"
+                className="bg-orange-500 text-white shadow-2xl p-3.5 rounded-2xl hover:bg-orange-600 transition-all border-none flex items-center gap-2 animate-pulse"
                 title="Account Verification Required"
               >
-                <AlertTriangle size={20} />
-                <span className="text-[10px] font-black uppercase tracking-tight hidden md:inline">Verify Account</span>
+                <AlertTriangle size={22} />
               </button>
             )}
             <button
               onClick={() => setShowDashboard(!showDashboard)}
-              className="bg-white dark:bg-gray-800 shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 dark:text-gray-300 hover:text-hail-green dark:hover:text-hail-green transition-colors border dark:border-gray-700"
-              title="Dashboard"
+              className="glass p-3.5 rounded-2xl text-steel hover:text-secondary transition-all shadow-2xl border-white/40 dark:border-white/5"
+              title="Operational Overview"
             >
-              <Car size={20} />
+              <Car size={22} />
             </button>
             <ThemeToggle />
             <button 
               onClick={handleSignOut}
-              className="bg-white dark:bg-gray-800 shadow-lg p-3 rounded-xl pointer-events-auto text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors border dark:border-gray-700"
-              title="Sign Out"
+              className="glass p-3.5 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all shadow-2xl border-white/40 dark:border-white/5"
+              title="Terminate Session"
             >
-              <LogOut size={20} />
+              <LogOut size={22} />
             </button>
           </div>
         </div>
@@ -473,31 +475,40 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
 
       {/* Dashboard Overlay */}
       {showDashboard && (
-        <div className="absolute inset-0 z-40 bg-white dark:bg-gray-900 animate-in slide-in-from-bottom duration-300 overflow-y-auto transition-colors">
-          <div className="p-6 space-y-8">
+        <div className="absolute inset-0 z-40 glass animate-in fade-in slide-in-from-bottom duration-500 overflow-y-auto pointer-events-auto">
+          <div className="max-w-4xl mx-auto p-10 space-y-12">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold dark:text-white">Driver Dashboard</h2>
+              <div>
+                <h2 className="text-5xl font-black text-navy dark:text-white tracking-tighter font-display leading-none">Fleet Dashboard</h2>
+                <p className="text-steel font-black uppercase tracking-[0.4em] text-[10px] mt-3">Live Performance Metrics</p>
+              </div>
               <button 
                 onClick={() => setShowDashboard(false)}
-                className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full dark:text-gray-300"
+                className="p-4 bg-navy/5 dark:bg-white/5 rounded-3xl hover:scale-110 transition-all text-navy dark:text-white border border-mist dark:border-white/5 shadow-sm"
               >
-                <X size={24} />
+                <X size={28} />
               </button>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-hail-green/10 dark:bg-hail-green/5 p-4 rounded-2xl border border-hail-green/20 dark:border-hail-green/10">
-                <p className="text-xs text-hail-green font-bold uppercase mb-1">Total Earnings</p>
-                <p className="text-2xl font-bold text-hail-green">{formatZAR(earnings.total)}</p>
+            {/* Performance Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-secondary/10 p-8 rounded-[2rem] border border-secondary/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
+                  <Banknote size={80} />
+                </div>
+                <p className="text-xs text-secondary font-black uppercase tracking-widest mb-2">Cycle Revenue</p>
+                <p className="text-5xl font-black text-secondary tracking-tighter">{formatZAR(earnings.total)}</p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30">
-                <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-1">Total Rides</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{rideHistory.length}</p>
+              <div className="bg-navy/5 dark:bg-white/5 p-8 rounded-[2rem] border border-mist dark:border-white/10 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
+                   <Clock size={80} />
+                </div>
+                <p className="text-xs text-steel font-black uppercase tracking-widest mb-2">Total Deployments</p>
+                <p className="text-5xl font-black text-navy dark:text-white tracking-tighter">{rideHistory.length}</p>
               </div>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-navy p-10 rounded-[2.5rem] border border-mist dark:border-white/5 shadow-2xl">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold flex items-center gap-2 dark:text-white">
                   <Banknote size={18} className="text-hail-green" /> Wallet & Payouts

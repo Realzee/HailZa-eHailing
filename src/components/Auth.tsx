@@ -192,169 +192,165 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
   const appLogo = localStorage.getItem('appLogo');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4 transition-colors">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-        <div className="text-center mb-10">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-navy p-6 transition-colors overflow-hidden relative">
+      {/* Abstract Background Decor */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]" />
+
+      <div className="w-full max-w-[440px] glass rounded-[2.5rem] shadow-2xl p-10 border border-white/40 dark:border-white/5 relative z-10">
+        <div className="text-center mb-12">
           {appLogo ? (
             <motion.img 
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               src={appLogo} 
               alt="Logo" 
-              className="h-16 w-auto mx-auto mb-6" 
+              className="h-20 w-auto mx-auto mb-8 drop-shadow-sm" 
             />
           ) : (
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl font-black text-gray-900 dark:text-white mb-2 tracking-tighter font-display"
+              className="text-6xl font-black text-navy dark:text-white mb-3 tracking-tighter font-display"
             >
-              eTaxiDriver
+              eTaxi
             </motion.h1>
           )}
-          <p className="text-gray-400 dark:text-gray-500 font-medium uppercase tracking-[0.2em] text-[10px]">South Africa's Local Ride App</p>
-          {!isSupabaseConfigured && (
-            <div className="mt-2 inline-block px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
-              Demo Mode Active
-            </div>
-          )}
-          {isSupabaseConfigured && (
-            <div className="mt-2 inline-block px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
-              Live Backend Connected
-            </div>
-          )}
+          <p className="text-steel font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">Premium Mobility Solutions</p>
+          
+          <div className="mt-6 flex justify-center gap-2">
+            {!isSupabaseConfigured && (
+              <div className="px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-black rounded-full uppercase tracking-wider border border-orange-500/20">
+                Demo Platform
+              </div>
+            )}
+            {isSupabaseConfigured && (
+              <div className="px-3 py-1 bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-black rounded-full uppercase tracking-wider border border-sky-500/20">
+                Live Secure
+              </div>
+            )}
+          </div>
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg flex items-center gap-2 mb-4 text-sm">
-            <AlertCircle size={16} />
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-4 rounded-2xl flex items-center gap-3 mb-6 text-sm font-medium"
+          >
+            <AlertCircle size={18} />
             {error}
-          </div>
+          </motion.div>
         )}
 
         {step === 'profile' ? (
-          <form onSubmit={handleSaveProfile} className="space-y-4 animate-in fade-in slide-in-from-right-4">
-            <h2 className="text-xl font-semibold text-center mb-4 dark:text-white">Complete your Profile</h2>
+          <form onSubmit={handleSaveProfile} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+            <h2 className="text-2xl font-black text-center mb-6 dark:text-white tracking-tight">Create Identity</h2>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Full Name</label>
               <input
                 type="text"
                 required
-                className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
+                className="w-full px-5 py-4 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none dark:text-white transition-all font-medium"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="e.g. Thabo Molefe"
+                placeholder="Thabo Molefe"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">I am a</label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRole('rider')}
-                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
-                    role === 'rider' 
-                      ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  Rider
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('driver')}
-                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
-                    role === 'driver' 
-                      ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  Driver
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('owner')}
-                  className={`py-3 rounded-lg border dark:border-gray-600 font-medium transition-all text-sm ${
-                    role === 'owner' 
-                      ? 'bg-hail-green text-white border-hail-green shadow-md' 
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  Owner
-                </button>
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Account Type</label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: 'rider', label: 'Rider' },
+                  { id: 'driver', label: 'Driver' },
+                  { id: 'owner', label: 'Owner' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setRole(item.id as any)}
+                    className={`py-4 rounded-2xl border transition-all text-xs font-black uppercase tracking-tight ${
+                      role === item.id 
+                        ? 'bg-secondary text-white border-secondary shadow-lg shadow-secondary/30 scale-105' 
+                        : 'bg-white/50 dark:bg-navy/50 border-mist dark:border-ocean-deep text-steel hover:bg-mist dark:hover:bg-ocean'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-hail-green text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors flex justify-center items-center gap-2"
+              className="w-full btn-primary mt-4 flex justify-center items-center gap-3 text-lg py-4"
             >
-              {loading ? <Loader2 className="animate-spin" /> : <>Get Started <ArrowRight size={18} /></>}
+              {loading ? <Loader2 className="animate-spin" /> : <>Initialize App <ArrowRight size={20} /></>}
             </button>
           </form>
         ) : (
-          <>
-            {/* Auth Method Tabs */}
-            <div className="flex mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+          <div className="space-y-8">
+            <div className="flex bg-mist/50 dark:bg-ocean-deep/50 p-1.5 rounded-2xl">
               <button
                 onClick={() => { setAuthMethod('phone'); setStep('input'); setError(null); }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  authMethod === 'phone' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  authMethod === 'phone' ? 'bg-white dark:bg-navy text-navy dark:text-white shadow-sm scale-[1.02]' : 'text-steel hover:text-navy dark:hover:text-white'
                 }`}
               >
-                <Phone size={16} /> Phone
+                <Phone size={14} /> SMS
               </button>
               <button
                 onClick={() => { setAuthMethod('email'); setStep('input'); setError(null); }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all ${
-                  authMethod === 'email' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  authMethod === 'email' ? 'bg-white dark:bg-navy text-navy dark:text-white shadow-sm scale-[1.02]' : 'text-steel hover:text-navy dark:hover:text-white'
                 }`}
               >
-                <Mail size={16} /> Email
+                <Mail size={14} /> Email
               </button>
             </div>
 
             {authMethod === 'phone' && (
-              <form onSubmit={step === 'input' ? handlePhoneLogin : handleVerifyOtp} className="space-y-4">
+              <form onSubmit={step === 'input' ? handlePhoneLogin : handleVerifyOtp} className="space-y-6">
                 {step === 'input' ? (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Phone Access</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium border-r dark:border-gray-600 pr-2">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-steel font-black border-r border-mist dark:border-ocean-deep pr-3">
                         +27
                       </span>
                       <input
                         type="tel"
                         required
-                        className="w-full pl-14 pr-4 py-3 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-lg tracking-wide dark:bg-gray-700 dark:text-white"
+                        className="w-full pl-20 pr-6 py-4 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none text-xl font-bold tracking-wider dark:text-white transition-all shadow-inner"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="82 123 4567"
+                        autoFocus
                       />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">We'll send you a code to verify.</p>
                   </div>
                 ) : (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Enter OTP Code</label>
+                  <div className="space-y-4">
+                    <label className="block text-xs font-black text-steel uppercase tracking-widest text-center">Security Code</label>
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none text-center text-2xl tracking-[0.5em] font-mono dark:bg-gray-700 dark:text-white"
+                      className="w-full px-6 py-5 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none text-center text-3xl tracking-[0.6em] font-mono font-black dark:text-white transition-all shadow-inner"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="••••••"
                       maxLength={6}
+                      autoFocus
                     />
                     <button 
                       type="button" 
                       onClick={() => setStep('input')}
-                      className="text-sm text-hail-green hover:underline mt-2 w-full text-center"
+                      className="text-[10px] text-secondary font-black uppercase tracking-widest hover:underline w-full text-center py-2"
                     >
-                      Change phone number
+                      Wrong number? Edit phone
                     </button>
                   </div>
                 )}
@@ -362,59 +358,67 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-hail-green text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors flex justify-center items-center"
+                  className="w-full btn-primary py-4 text-lg"
                 >
-                  {loading ? <Loader2 className="animate-spin" /> : step === 'input' ? 'Send Code' : 'Verify Code'}
+                  {loading ? <Loader2 className="animate-spin" /> : step === 'input' ? 'Secure Access' : 'Authenticate'}
                 </button>
               </form>
             )}
 
             {authMethod === 'email' && (
-              <form onSubmit={handleEmailAuth} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                  <input
-                    type="email"
-                    required
-                    className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
+              <form onSubmit={handleEmailAuth} className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full px-5 py-4 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none dark:text-white transition-all font-medium"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="driver@etaxi.com"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                  <input
-                    type="password"
-                    required
-                    className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-hail-green outline-none dark:bg-gray-700 dark:text-white"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="space-y-2">
+                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Security Key</label>
+                    <input
+                      type="password"
+                      required
+                      className="w-full px-5 py-4 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none dark:text-white transition-all font-medium"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-hail-green text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors flex justify-center items-center"
+                  className="w-full btn-primary py-4 text-lg"
                 >
                   {loading ? <Loader2 className="animate-spin" /> : emailMode === 'login' ? 'Sign In' : 'Sign Up'}
                 </button>
 
-                <div className="mt-4 text-center">
+                <div className="text-center pt-2">
                   <button
                     type="button"
                     onClick={() => setEmailMode(emailMode === 'login' ? 'signup' : 'login')}
-                    className="text-hail-green hover:underline text-sm"
+                    className="text-[10px] text-steel font-black uppercase tracking-widest hover:text-secondary transition-colors"
                   >
-                    {emailMode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                    {emailMode === 'login' ? "New member? Create account" : 'Existing member? Sign in'}
                   </button>
                 </div>
               </form>
             )}
-          </>
+          </div>
         )}
       </div>
+      
+      <p className="mt-8 text-steel/50 text-[10px] font-black uppercase tracking-[0.4em] relative z-10">
+        © {new Date().getFullYear()} eTaxi Premium Mobility
+      </p>
     </div>
   );
 }

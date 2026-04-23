@@ -459,34 +459,34 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         </button>
       </div>
 
-      {/* UI Overlay */}
-      <div className="absolute top-0 left-0 w-full p-4 z-10 pointer-events-none flex justify-between items-start">
-        <div className="flex items-start gap-2">
+      <div className="absolute top-0 left-0 w-full p-6 z-10 pointer-events-none flex justify-between items-start">
+        <div className="flex items-start gap-3">
           {appLogo && (
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-2 pointer-events-auto border border-gray-100 dark:border-gray-700 transition-colors"
+              className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5"
             >
-              <img src={appLogo} alt="Logo" className="h-8 w-auto" />
+              <img src={appLogo} alt="Logo" className="h-9 w-auto" />
             </motion.div>
           )}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-3 flex items-center gap-3 pointer-events-auto max-w-md border border-gray-100 dark:border-gray-700 transition-colors"
+            className="glass p-4 flex items-center gap-4 pointer-events-auto max-w-sm rounded-[1.5rem] shadow-2xl border-white/40 dark:border-white/5"
           >
-            <div className="bg-hail-green/10 p-2 rounded-xl">
-              <MapPin size={20} className="text-hail-green" />
+            <div className="bg-secondary/15 p-3 rounded-2xl">
+              <MapPin size={22} className="text-secondary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Current Location</p>
-              <p className="font-bold text-sm truncate text-gray-900 dark:text-white">{pickupAddress}</p>
+              <p className="text-[10px] text-secondary font-black uppercase tracking-[0.2em] leading-none mb-1.5 px-0.5">Your Location</p>
+              <p className="font-bold text-sm font-sans truncate text-navy dark:text-white">{pickupAddress}</p>
             </div>
           </motion.div>
         </div>
-        <div className="flex flex-col gap-2 pointer-events-auto">
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-3 pointer-events-auto p-2 items-end">
+          <ThemeToggle />
+          <div className="flex gap-3">
             {(destination || activeRide) && (
               <button 
                 onClick={() => {
