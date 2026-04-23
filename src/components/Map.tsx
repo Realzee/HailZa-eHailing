@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { Layers, Navigation, MapPin, User, TriangleAlert } from 'lucide-react';
 
 // Premium SVGs with higher detail and professional geometry
-const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.09-.34.14-.57.14s-.41-.05-.57-.14l-7.9-4.44c-.32-.17-.53-.5-.53-.88v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.09.34-.14.57-.14s.41.05.57.14l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L5.04 8.05l6.96 3.91 6.96-3.91L12 4.15zM4 9.65v6.23l7 3.93v-6.23l-7-3.93zm9 10.16l7-3.93V9.65l-7 3.93v6.23z"/></svg>`;
+const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.15-3.42C6.35 7.21 6.69 7 7.07 7h9.86c.38 0 .72.21.87.58L19 11H5z"/></svg>`;
 const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`;
 const destinationSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
 const hazardSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
@@ -22,15 +22,15 @@ const createPremiumIcon = (svg: string, color: string, variant: 'pin' | 'dot' | 
           <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background-color: ${color}"></div>
           <div class="relative w-4 h-4 rounded-full border-2 border-white shadow-lg" style="background-color: ${color}"></div>
         ` : isVehicle ? `
-          <div class="relative" style="transform: rotate(${rotation}deg); transition: transform 0.5s ease-out">
-            <div class="absolute -inset-1 bg-${color} opacity-20 blur-sm rounded-full"></div>
-            <div class="relative bg-white dark:bg-navy p-2.5 rounded-2xl shadow-2xl border border-mist dark:border-white/10 flex items-center justify-center transform active:scale-95 transition-transform">
-              <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent pointer-events-none"></div>
+          <div class="relative" style="transform: rotate(${rotation}deg); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)">
+            <div class="absolute -inset-1 blur-md rounded-full opacity-30" style="background-color: ${color}"></div>
+            <div class="relative bg-white dark:bg-navy p-2.5 rounded-2xl shadow-2xl border-2 flex items-center justify-center transform active:scale-90 transition-transform" style="border-color: ${color}20">
+              <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-black/5 dark:from-white/10 dark:to-transparent pointer-events-none"></div>
               <div class="relative flex items-center justify-center w-6 h-6" style="color: ${color}">
                 ${svg}
               </div>
             </div>
-            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white dark:bg-navy border-b border-r border-mist dark:border-white/10"></div>
+            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white dark:bg-navy border-b-2 border-r-2" style="border-color: ${color}20"></div>
           </div>
         ` : `
           <div class="relative flex flex-col items-center group-hover:scale-110 transition-transform duration-500">
