@@ -4,54 +4,63 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Layers, Navigation, MapPin, User, TriangleAlert } from 'lucide-react';
 
-// Premium SVGs with higher detail
-const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h1c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg>`;
-const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>`;
+// Premium SVGs with higher detail and professional geometry
+const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.09-.34.14-.57.14s-.41-.05-.57-.14l-7.9-4.44c-.32-.17-.53-.5-.53-.88v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.09.34-.14.57-.14s.41.05.57.14l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L5.04 8.05l6.96 3.91 6.96-3.91L12 4.15zM4 9.65v6.23l7 3.93v-6.23l-7-3.93zm9 10.16l7-3.93V9.65l-7 3.93v6.23z"/></svg>`;
+const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`;
 const destinationSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
-const hazardSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`;
+const hazardSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
 
-const createPremiumIcon = (svg: string, color: string, variant: 'pin' | 'dot' | 'vehicle' = 'pin') => {
+const createPremiumIcon = (svg: string, color: string, variant: 'pin' | 'dot' | 'vehicle' = 'pin', rotation: number = 0) => {
   const isDot = variant === 'dot';
   const isVehicle = variant === 'vehicle';
   
   return L.divIcon({
     html: `
-      <div class="relative flex items-center justify-center p-2 group">
+      <div class="relative flex items-center justify-center p-3 group">
         ${isDot ? `
-          <div class="absolute inset-0 bg-white/40 dark:bg-navy/40 backdrop-blur-md rounded-full border-2 shadow-2xl transition-all duration-500 group-hover:scale-110" style="border-color: ${color}"></div>
+          <div class="absolute inset-0 bg-white/60 dark:bg-navy/60 backdrop-blur-md rounded-full border shadow-2xl scale-75" style="border-color: ${color}40"></div>
           <div class="absolute inset-0 rounded-full animate-ping opacity-20" style="background-color: ${color}"></div>
-          <div class="relative flex items-center justify-center w-6 h-6" style="color: ${color}">
-            ${svg}
-          </div>
+          <div class="relative w-4 h-4 rounded-full border-2 border-white shadow-lg" style="background-color: ${color}"></div>
         ` : isVehicle ? `
-          <div class="absolute inset-0 bg-white dark:bg-navy backdrop-blur-lg rounded-[1.25rem] border-2 shadow-2xl transition-all duration-300 group-hover:scale-110 group-active:scale-95 flex items-center justify-center" style="border-color: ${color}">
-            <div class="absolute inset-0 opacity-10 bg-gradient-to-br from-white to-transparent dark:from-white/20 dark:to-transparent rounded-[1.25rem]"></div>
-            <div class="relative flex items-center justify-center w-6 h-6" style="color: ${color}">
-              ${svg}
+          <div class="relative" style="transform: rotate(${rotation}deg); transition: transform 0.5s ease-out">
+            <div class="absolute -inset-1 bg-${color} opacity-20 blur-sm rounded-full"></div>
+            <div class="relative bg-white dark:bg-navy p-2.5 rounded-2xl shadow-2xl border border-mist dark:border-white/10 flex items-center justify-center transform active:scale-95 transition-transform">
+              <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent pointer-events-none"></div>
+              <div class="relative flex items-center justify-center w-6 h-6" style="color: ${color}">
+                ${svg}
+              </div>
             </div>
+            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white dark:bg-navy border-b border-r border-mist dark:border-white/10"></div>
           </div>
-          <div class="absolute -bottom-1 w-2.5 h-2.5 rotate-45 border-b-2 border-r-2 bg-white dark:bg-navy" style="border-color: ${color}"></div>
         ` : `
-          <div class="absolute inset-0 bg-white dark:bg-navy backdrop-blur-lg rounded-full border-2 shadow-2xl transition-all duration-500 group-hover:scale-110 group-active:scale-95" style="border-color: ${color}; box-shadow: 0 10px 25px -5px ${color}40"></div>
-          <div class="relative flex items-center justify-center w-7 h-7" style="color: ${color}">
-            ${svg}
+          <div class="relative flex flex-col items-center group-hover:scale-110 transition-transform duration-500">
+            <div class="relative flex items-center justify-center w-14 h-14 bg-white dark:bg-navy rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border-2 transition-all p-3" style="border-color: ${color}">
+              <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-black/5 to-white/20 dark:from-white/5 dark:to-transparent"></div>
+              <div class="relative flex items-center justify-center w-full h-full" style="color: ${color}">
+                ${svg}
+              </div>
+            </div>
+            <div class="w-1.5 h-6 bg-gradient-to-b from-${color} to-transparent mt-[-6px] rounded-full" style="background: linear-gradient(to bottom, ${color}, transparent)"></div>
+            <div class="w-1.5 h-1.5 bg-black/20 dark:bg-white/20 blur-[1px] mt-0.5 rounded-full"></div>
           </div>
-          <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border-b-2 border-r-2 bg-white dark:bg-navy" style="border-color: ${color}"></div>
         `}
       </div>
     `,
     className: 'premium-map-icon',
-    iconSize: isDot ? [36, 36] : [48, 52],
-    iconAnchor: isDot ? [18, 18] : [24, 52],
-    popupAnchor: isDot ? [0, -18] : [0, -52],
+    iconSize: isDot ? [40, 40] : [56, 72],
+    iconAnchor: isDot ? [20, 20] : [28, 72],
+    popupAnchor: isDot ? [0, -20] : [0, -72],
   });
 };
 
 // Colors and refined icon variants
-const carIcon = createPremiumIcon(carSvg, '#0f172a', 'vehicle'); // Navy Vehicle
-const userIcon = createPremiumIcon(userSvg, '#0ea5e9', 'dot'); // Pulsing Sky Dot
-const destinationIcon = createPremiumIcon(destinationSvg, '#0ea5e9', 'pin'); // Sky Pin
-const hazardIcon = createPremiumIcon(hazardSvg, '#ef4444', 'pin'); // Red Pin
+const getIcon = (type: string, rotation: number = 0) => {
+  if (type === 'driver') return createPremiumIcon(carSvg, '#0f172a', 'vehicle', rotation);
+  if (type === 'user') return createPremiumIcon(userSvg, '#0ea5e9', 'dot');
+  if (type === 'destination') return createPremiumIcon(destinationSvg, '#0ea5e9', 'pin');
+  if (type === 'hazard') return createPremiumIcon(hazardSvg, '#ef4444', 'pin');
+  return createPremiumIcon(userSvg, '#0ea5e9', 'dot');
+};
 
 function MapController({ center, route }: { center: [number, number], route?: [number, number][] }) {
   const map = useMap();
@@ -130,10 +139,7 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
 
         {/* Markers */}
         {markers.map((marker, idx) => {
-          let icon = userIcon;
-          if (marker.type === 'driver') icon = carIcon;
-          if (marker.type === 'destination') icon = destinationIcon;
-          if (marker.type === 'hazard') icon = hazardIcon;
+          const icon = getIcon(marker.type || 'user', marker.rotation);
 
           return (
             <Marker
@@ -198,6 +204,10 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
+        .premium-map-icon {
+          background: transparent !important;
+          border: none !important;
+        }
         .premium-popup .leaflet-popup-content-wrapper {
           background: rgba(255, 255, 255, 0.95);
           border-radius: 1.5rem;

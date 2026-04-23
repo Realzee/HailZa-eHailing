@@ -2,22 +2,11 @@ import { useState, useEffect } from 'react';
 import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
 import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import Map from './Map';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import BrandingSettings from './BrandingSettings';
-
-// Fix Leaflet marker icon issue
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
 
 export default function AdminView({ user }: { user: any }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -325,31 +314,22 @@ export default function AdminView({ user }: { user: any }) {
           )}
 
           {activeTab === 'map' && (
-            <div className="h-[600px] w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
-              <MapContainer center={[-26.2041, 28.0473]} zoom={12} style={{ height: '100%', width: '100%' }}>
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {drivers.filter(d => d.is_online && d.is_approved).map(driver => {
-                  const loc = getDriverLocation(driver);
-                  if (!loc) return null;
-                  return (
-                    <Marker 
-                      key={driver.id} 
-                      position={[loc.lat, loc.lng]}
-                      eventHandlers={{ click: () => setSelectedDriver(driver) }}
-                    >
-                      <Popup>
-                        <div className="text-sm">
-                          <p className="font-bold">{driver.profiles.full_name}</p>
-                          <p className="text-gray-500">{driver.vehicle_model} ({driver.vehicle_plate})</p>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  );
-                })}
-              </MapContainer>
+            <div className="h-[600px] w-full rounded-3xl overflow-hidden shadow-2xl border border-mist dark:border-white/5 transition-colors relative">
+              <Map
+                center={[-26.2041, 28.0473]}
+                markers={drivers
+                  .filter(d => d.is_online && d.is_approved)
+                  .map(driver => {
+                    const loc = getDriverLocation(driver);
+                    return loc ? {
+                      position: [loc.lat, loc.lng] as [number, number],
+                      type: 'driver' as const,
+                      title: `${driver.profiles.full_name} (${driver.vehicle_model})`
+                    } : null;
+                  })
+                  .filter((m): m is any => m !== null)
+                }
+              />
             </div>
           )}
 
