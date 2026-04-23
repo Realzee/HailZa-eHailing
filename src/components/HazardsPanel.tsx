@@ -116,11 +116,11 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
-        className="bg-white dark:bg-gray-800 w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 dark:border-gray-700"
+        className="bg-white dark:bg-navy w-full max-w-xl rounded-t-[3rem] sm:rounded-[3rem] p-8 max-h-[90vh] flex flex-col shadow-2xl border border-mist dark:border-white/5"
       >
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
+            <h2 className="text-2xl font-black text-navy dark:text-white tracking-tight flex items-center gap-2">
               <TriangleAlert className="text-red-600" />
               Report Hazard
             </h2>
@@ -153,8 +153,8 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
                     onClick={() => setSelectedType(h.type)}
                     className={`p-4 rounded-2xl border-2 transition-all text-left flex flex-col gap-3 group ${
                       selectedType === h.type
-                        ? 'border-red-600 bg-red-50 dark:bg-red-900/20 shadow-md scale-[1.02]'
-                        : 'border-gray-100 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-900/40 bg-gray-50 dark:bg-gray-700/50 hover:bg-white dark:hover:bg-gray-700'
+                        ? 'border-secondary bg-secondary/5 shadow-md scale-[1.02]'
+                        : 'border-mist dark:border-white/5 bg-ice dark:bg-ocean-deep/50 hover:bg-white dark:hover:bg-ocean'
                     }`}
                   >
                     <div className={`${h.color} w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-110`}>

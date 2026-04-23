@@ -88,8 +88,8 @@ export default function OwnerView({ user }: { user: any }) {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
-        <Loader2 className="animate-spin text-hail-green" size={48} />
+      <div className="h-screen flex items-center justify-center bg-ice dark:bg-navy transition-colors">
+        <Loader2 className="animate-spin text-secondary" size={48} />
       </div>
     );
   }
@@ -98,94 +98,123 @@ export default function OwnerView({ user }: { user: any }) {
   const approvedDrivers = drivers.filter(d => d.is_approved && d.owner_id === user.id);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 transition-colors">
+    <div className="min-h-screen bg-ice dark:bg-navy pb-20 transition-colors relative overflow-x-hidden custom-scrollbar overflow-y-auto">
+      {/* Abstract Background Decor */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
+
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4 flex justify-between items-center sticky top-0 z-10 transition-colors">
-        <div className="flex items-center gap-3">
-          {appLogo ? (
-            <img src={appLogo} alt="Logo" className="h-10 w-auto" />
-          ) : (
-            <div className="w-10 h-10 bg-hail-green rounded-xl flex items-center justify-center text-white">
-              <ShieldCheck size={24} />
-            </div>
-          )}
+      <header className="bg-white/80 dark:bg-navy/80 backdrop-blur-md border-b border-mist dark:border-white/5 px-8 py-6 flex justify-between items-center sticky top-0 z-20 transition-all">
+        <div className="flex items-center gap-4">
+          <div className="bg-mist dark:bg-ocean-deep p-2.5 rounded-2xl shadow-sm border border-mist dark:border-white/5">
+            {appLogo ? (
+              <img src={appLogo} alt="Logo" className="h-8 w-auto" />
+            ) : (
+              <ShieldCheck size={28} className="text-secondary" />
+            )}
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-hail-green">Owner Dashboard</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Fleet Management & Onboarding</p>
+            <h1 className="text-2xl font-black text-navy dark:text-white tracking-tight font-display">Owner Dashboard</h1>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-steel font-bold">Fleet Command Center</p>
           </div>
         </div>
-        <button 
-          onClick={handleSignOut}
-          className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-          title="Sign Out"
-        >
-          <LogOut size={24} />
-        </button>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <button 
+            onClick={handleSignOut}
+            className="p-3 bg-red-600/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+            title="Sign Out"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-6 space-y-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
-            <div className="flex items-center gap-3 text-hail-green mb-2">
-              <Users size={20} />
-              <span className="font-semibold">Pending</span>
+      <main className="max-w-5xl mx-auto p-8 space-y-12 relative z-10">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="card-premium p-8 border-l-4 border-l-orange-500 flex justify-between items-center"
+          >
+            <div>
+              <span className="text-[10px] uppercase font-black tracking-widest text-steel mb-2 block">Pending Approval</span>
+              <p className="text-5xl font-black tracking-tighter dark:text-white font-display leading-none">{pendingDrivers.length}</p>
             </div>
-            <p className="text-3xl font-bold dark:text-white">{pendingDrivers.length}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
-            <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400 mb-2">
-              <ShieldCheck size={20} />
-              <span className="font-semibold">My Fleet</span>
+            <div className="bg-orange-500/10 p-4 rounded-2xl">
+              <Users size={32} className="text-orange-500" />
             </div>
-            <p className="text-3xl font-bold dark:text-white">{approvedDrivers.length}</p>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="card-premium p-8 border-l-4 border-l-secondary flex justify-between items-center"
+          >
+            <div>
+              <span className="text-[10px] uppercase font-black tracking-widest text-steel mb-2 block">My Active Fleet</span>
+              <p className="text-5xl font-black tracking-tighter dark:text-white font-display leading-none">{approvedDrivers.length}</p>
+            </div>
+            <div className="bg-secondary/10 p-4 rounded-2xl">
+              <Car size={32} className="text-secondary" />
+            </div>
+          </motion.div>
         </div>
 
         {/* Pending Onboarding */}
         <section>
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 dark:text-white">
-            <Car size={20} className="text-orange-500" />
-            Pending Onboarding
-          </h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
+            <h2 className="text-xl font-black tracking-tight text-navy dark:text-white">Pending Onboarding</h2>
+          </div>
+          
           {pendingDrivers.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-600 transition-colors">
-              <p className="text-gray-500 dark:text-gray-400">No drivers waiting for approval</p>
+            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-colors">
+              <p className="text-steel font-bold italic">Clear for now. No drivers are currently waiting for validation.</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {pendingDrivers.map((driver) => (
-                <div key={driver.id} className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">
+            <div className="grid grid-cols-1 gap-4">
+              {pendingDrivers.map((driver, idx) => (
+                <motion.div 
+                  key={driver.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="card-premium p-6 flex flex-col sm:flex-row items-center justify-between gap-6"
+                >
+                  <div className="flex items-center gap-6 w-full">
+                    <div className="w-16 h-16 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-navy dark:text-white font-black text-2xl border border-mist dark:border-white/5 shadow-inner">
                       {driver.profiles.full_name.charAt(0)}
                     </div>
-                    <div>
-                      <h3 className="font-bold dark:text-white">{driver.profiles.full_name}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {driver.vehicle_make} {driver.vehicle_model} • {driver.vehicle_plate}
-                      </p>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-black text-navy dark:text-white tracking-tight leading-tight mb-1">{driver.profiles.full_name}</h3>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <span className="text-xs text-steel font-bold uppercase tracking-wider">{driver.vehicle_make} {driver.vehicle_model}</span>
+                        <span className="text-[10px] bg-navy dark:bg-white/10 text-white px-2 py-0.5 rounded font-mono tracking-wider">{driver.vehicle_plate}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3 w-full sm:w-auto">
                     <button
                       onClick={() => handleApprove(driver.id)}
                       disabled={!!actionLoading}
-                      className="p-2 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
-                      title="Approve"
+                      className="flex-1 sm:flex-none py-3 px-6 bg-secondary text-white rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-secondary/20"
                     >
-                      {actionLoading === driver.id ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle size={20} />}
+                      {actionLoading === driver.id ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
+                      Approve
                     </button>
                     <button
                       onClick={() => handleDecline(driver.id)}
                       disabled={!!actionLoading}
-                      className="p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                      title="Decline"
+                      className="flex-1 sm:flex-none py-3 px-6 bg-red-600/10 text-red-600 rounded-xl font-bold text-sm hover:bg-red-600 hover:text-white active:scale-95 transition-all flex items-center justify-center gap-2 border border-red-600/20"
                     >
-                      {actionLoading === driver.id ? <Loader2 className="animate-spin" size={20} /> : <XCircle size={20} />}
+                      {actionLoading === driver.id ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
+                      Decline
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
@@ -193,34 +222,41 @@ export default function OwnerView({ user }: { user: any }) {
 
         {/* My Fleet */}
         <section>
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 dark:text-white">
-            <ShieldCheck size={20} className="text-blue-500" />
-            My Approved Fleet
-          </h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-2 w-2 rounded-full bg-secondary" />
+            <h2 className="text-xl font-black tracking-tight text-navy dark:text-white">Active Fleet Inventory</h2>
+          </div>
+
           {approvedDrivers.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center border border-dashed border-gray-300 dark:border-gray-600 transition-colors">
-              <p className="text-gray-500 dark:text-gray-400">You haven't approved any drivers yet</p>
+            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-all">
+              <p className="text-steel font-bold italic">Your inventory is empty. Start onboarding drivers to build your fleet.</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {approvedDrivers.map((driver) => (
-                <div key={driver.id} className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-colors">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {approvedDrivers.map((driver, idx) => (
+                <motion.div 
+                  key={driver.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="card-premium p-6 flex items-center justify-between group"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
+                    <div className="w-14 h-14 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-secondary font-black text-xl border border-mist dark:border-white/5 transition-transform group-hover:scale-110">
                       {driver.profiles.full_name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-bold dark:text-white">{driver.profiles.full_name}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {driver.vehicle_make} {driver.vehicle_model} • {driver.vehicle_plate}
+                      <h3 className="font-black text-navy dark:text-white leading-tight mb-1">{driver.profiles.full_name}</h3>
+                      <p className="text-[10px] text-steel font-bold uppercase tracking-widest">
+                        {driver.vehicle_make} {driver.vehicle_model}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-3 py-1 rounded-full text-xs font-bold transition-colors">
+                  <div className="flex items-center gap-2 text-secondary bg-secondary/10 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-secondary/20 transition-all group-hover:bg-secondary group-hover:text-white">
                     <ShieldCheck size={14} />
-                    Approved
+                    Verified
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
