@@ -551,7 +551,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       {/* Payment Modal */}
       {showPayment && activeRide && (
         <div className="absolute inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6 animate-in slide-in-from-bottom duration-300 border border-gray-100 dark:border-gray-700">
+          <div className="bg-ice dark:bg-navy w-full max-w-md rounded-2xl p-6 animate-in slide-in-from-bottom duration-300 border border-mist dark:border-ocean-deep shadow-2xl">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-hail-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={32} />
@@ -566,9 +566,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               ))}
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl mb-6 flex justify-between items-center border border-gray-100 dark:border-gray-600">
-              <span className="font-medium text-gray-700 dark:text-gray-300">Total Fare</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{formatZAR(activeRide.fare_amount)}</span>
+            <div className="bg-mist dark:bg-ocean-deep/30 p-4 rounded-xl mb-6 flex justify-between items-center border border-mist dark:border-ocean-deep">
+              <span className="font-medium text-ocean dark:text-steel">Total Fare</span>
+              <span className="text-2xl font-bold text-navy dark:text-white">{formatZAR(activeRide.fare_amount)}</span>
             </div>
 
             <div className="space-y-3">

@@ -20,9 +20,9 @@ const createModernIcon = (svg: string, bgClass: string) => {
   });
 };
 
-const carIcon = createModernIcon(carSvg, 'bg-gray-900');
-const userIcon = createModernIcon(userSvg, 'bg-blue-600');
-const destinationIcon = createModernIcon(destinationSvg, 'bg-hail-green');
+const carIcon = createModernIcon(carSvg, 'bg-navy');
+const userIcon = createModernIcon(userSvg, 'bg-sky-bright');
+const destinationIcon = createModernIcon(destinationSvg, 'bg-secondary');
 const hazardIcon = createModernIcon(hazardSvg, 'bg-red-600');
 
 function MapController({ center, route }: { center: [number, number], route?: [number, number][] }) {

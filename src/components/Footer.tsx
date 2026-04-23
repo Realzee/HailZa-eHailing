@@ -9,11 +9,11 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-gray-900 text-white p-8 mt-auto border-t border-gray-800">
+    <footer className="bg-navy text-white p-8 mt-auto border-t border-ocean-deep">
       <div className="max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 text-center">
         <div className="flex items-center gap-3">
           <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full shadow-lg" />
-          <p className="text-sm text-gray-400 font-medium tracking-wide">
+          <p className="text-sm text-steel font-medium tracking-wide">
             © {new Date().getFullYear()} eTaxiDriver. All rights reserved.
           </p>
         </div>
