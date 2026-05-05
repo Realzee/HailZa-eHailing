@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Map from '@/components/Map';
-import { supabase, type Ride, type Driver, type Hazard } from '@/lib/supabase';
+import { supabase, type Ride, type Driver, type Hazard, type Profile } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
 import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet, Users, Info, ShieldCheck, AlertTriangle, TriangleAlert } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
@@ -22,7 +22,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const [dropoffAddress, setDropoffAddress] = useState('');
   const [route, setRoute] = useState<[number, number][] | undefined>(undefined);
   const [rideStats, setRideStats] = useState<{ distance: number; duration: number; price: number } | null>(null);
-  const [activeRide, setActiveRide] = useState<Ride | null>(null);
+  const [activeRide, setActiveRide] = useState<(Ride & { driver_profile?: Profile; driver_info?: Driver }) | null>(null);
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [searching, setSearching] = useState(false);
@@ -94,7 +94,11 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     const fetchActiveRide = async () => {
       const { data } = await supabase
         .from('rides')
-        .select('*')
+        .select(`
+          *,
+          driver_profile:driver_id(full_name, verification_status),
+          driver_info:driver_id(vehicle_make, vehicle_model, vehicle_plate, vehicle_color)
+        `)
         .eq('rider_id', user.id)
         .in('status', ['requested', 'accepted', 'in_progress', 'completed'])
         .order('created_at', { ascending: false })
@@ -102,8 +106,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         
       if (data && data.length > 0) {
         const ride = data[0];
-        // If completed but not paid (logic could be added), or just show last status
-        setActiveRide(ride);
+        setActiveRide(ride as any);
         if (ride.status === 'completed') {
            setShowPayment(true);
         }
@@ -129,9 +132,23 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'rides', filter: `rider_id=eq.${user.id}` },
-        (payload) => {
+        async (payload) => {
           const newRide = payload.new as Ride;
-          setActiveRide(newRide);
+          
+          if (newRide.driver_id) {
+            // Fetch driver details if they joined
+            const { data: driverProfile } = await supabase.from('profiles').select('full_name, verification_status').eq('id', newRide.driver_id).single();
+            const { data: driverInfo } = await supabase.from('drivers').select('vehicle_make, vehicle_model, vehicle_plate, vehicle_color').eq('id', newRide.driver_id).single();
+            
+            setActiveRide({
+              ...newRide,
+              driver_profile: driverProfile as any,
+              driver_info: driverInfo as any
+            });
+          } else {
+            setActiveRide(newRide as any);
+          }
+          
           if (newRide.status === 'completed') {
             setShowPayment(true);
           }
@@ -1071,7 +1088,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
           /* Active Ride Status */
           <div className="w-full">
             {isSheetMinimized ? (
-              <div className="flex items-center justify-between py-4">
+                <div className="flex items-center justify-between py-4">
                 <div className="flex items-center gap-4">
                   <div className="bg-gray-900 dark:bg-gray-700 p-2 rounded-xl text-white">
                     <Car size={20} />
@@ -1079,11 +1096,11 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                   <div>
                     <h3 className="font-black text-gray-900 dark:text-white">
                       {activeRide.status === 'requested' ? 'Finding Driver...' : 
-                       activeRide.status === 'accepted' ? 'Driver Arriving' :
+                       activeRide.status === 'accepted' ? (activeRide.driver_profile?.full_name ? `Driver ${activeRide.driver_profile.full_name} Arriving` : 'Driver Arriving') :
                        activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
                     </h3>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tighter">
-                      {activeRide.dropoff_address}
+                      {activeRide.driver_info ? `${activeRide.driver_info.vehicle_make} ${activeRide.driver_info.vehicle_model} • ${activeRide.driver_info.vehicle_plate}` : activeRide.dropoff_address}
                     </p>
                   </div>
                 </div>
@@ -1095,12 +1112,12 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                   <div>
                     <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                       {activeRide.status === 'requested' ? 'Finding Driver' : 
-                       activeRide.status === 'accepted' ? 'On the Way' :
+                       activeRide.status === 'accepted' ? 'Driver on the Way' :
                        activeRide.status === 'in_progress' ? 'En Route' : 'Arrived'}
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 font-medium">
                       {activeRide.status === 'requested' ? 'Searching for nearby drivers...' : 
-                       activeRide.status === 'accepted' ? 'Your driver is heading to you' :
+                       activeRide.status === 'accepted' ? `${activeRide.driver_profile?.full_name || 'Your driver'} is heading to you` :
                        activeRide.status === 'in_progress' ? 'You are on your way' : 'Your ride is complete'}
                     </p>
                   </div>
@@ -1130,8 +1147,13 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                       <Car size={32} className="text-hail-green" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-black text-xl">Toyota Corolla</p>
-                      <p className="text-sm text-gray-400 font-bold tracking-widest uppercase">GP 123 ZA • White</p>
+                      <p className="font-black text-xl">{activeRide.driver_profile?.full_name || 'Driver'}</p>
+                      <p className="text-sm text-gray-400 font-bold tracking-widest uppercase">
+                        {activeRide.driver_info ? `${activeRide.driver_info.vehicle_make} ${activeRide.driver_info.vehicle_model}` : 'Toyota Corolla'}
+                      </p>
+                      <p className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">
+                        {activeRide.driver_info ? `${activeRide.driver_info.vehicle_plate} • ${activeRide.driver_info.vehicle_color}` : 'GP 123 ZA • White'}
+                      </p>
                     </div>
                     <div className="text-right">
                       <div className="flex items-center justify-end gap-1 font-black text-xl">

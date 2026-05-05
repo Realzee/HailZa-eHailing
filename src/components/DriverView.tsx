@@ -211,23 +211,35 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
     };
     checkActive();
 
-    // Subscribe to NEW requests
+    // Subscribe to rides related to this driver or new requests
     const channel = supabase
       .channel('driver_rides')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'rides' },
         (payload) => {
-          console.log('New ride payload:', payload);
           const newRide = payload.new as Ride;
           if (newRide.status === 'requested' && !activeRide && !incomingRide) {
             setIncomingRide(newRide);
           }
         }
       )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'rides', filter: `driver_id=eq.${user.id}` },
+        async (payload) => {
+          const updatedRide = payload.new as Ride;
+          if (updatedRide.status === 'cancelled') {
+            setActiveRide(null);
+            setRoute(undefined);
+            alert('The rider has cancelled the ride.');
+          } else if (activeRide && activeRide.id === updatedRide.id) {
+            // Keep rider details when updating status from other sources (if any)
+            setActiveRide({ ...activeRide, ...updatedRide });
+          }
+        }
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
