@@ -5,10 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import { Layers, Navigation, MapPin, User, TriangleAlert } from 'lucide-react';
 
 // Premium SVGs with higher detail and professional geometry
-const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.15-3.42C6.35 7.21 6.69 7 7.07 7h9.86c.38 0 .72.21.87.58L19 11H5z"/></svg>`;
-const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`;
-const destinationSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
-const hazardSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
+const carSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.2-1.4.7l-1 1.7C2.2 10.1 2 10.5 2 11v5c0 .6.4 1 1 1h2m0 0c0 1.1.9 2 2 2s2-.9 2-2M5 17c0-1.1.9-2 2-2s2 .9 2 2m-2 0h5m4 0h2m0 0c0 1.1.9 2 2 2s2-.9 2-2m-4 0c0-1.1.9-2 2-2s2 .9 2 2" /></svg>`;
+const userSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`;
+const destinationSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+const hazardSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
 
 const createPremiumIcon = (svg: string, color: string, variant: 'pin' | 'dot' | 'vehicle' = 'pin', rotation: number = 0) => {
   const isDot = variant === 'dot';
@@ -55,7 +55,7 @@ const createPremiumIcon = (svg: string, color: string, variant: 'pin' | 'dot' | 
 
 // Colors and refined icon variants
 const getIcon = (type: string, rotation: number = 0) => {
-  if (type === 'driver') return createPremiumIcon(carSvg, '#0f172a', 'vehicle', rotation);
+  if (type === 'driver') return createPremiumIcon(carSvg, '#10b981', 'vehicle', rotation);
   if (type === 'user') return createPremiumIcon(userSvg, '#0ea5e9', 'dot');
   if (type === 'destination') return createPremiumIcon(destinationSvg, '#0ea5e9', 'pin');
   if (type === 'hazard') return createPremiumIcon(hazardSvg, '#ef4444', 'pin');

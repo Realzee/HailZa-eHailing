@@ -506,6 +506,19 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               <p className="font-bold text-sm font-sans truncate text-navy dark:text-white">{pickupAddress}</p>
             </div>
           </motion.div>
+
+          {drivers.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass px-4 py-2 rounded-full flex items-center gap-2 pointer-events-auto border-white/40 dark:border-white/5 shadow-xl"
+            >
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-navy dark:text-white">
+                {drivers.length} Driver{drivers.length > 1 ? 's' : ''} Online
+              </span>
+            </motion.div>
+          )}
         </div>
         <div className="flex flex-col gap-3 pointer-events-auto p-2 items-end">
           <ThemeToggle />
