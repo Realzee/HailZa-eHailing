@@ -33,6 +33,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   const [earnings, setEarnings] = useState({ daily: 0, weekly: 0, total: 0 });
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSheetMinimized, setIsSheetMinimized] = useState(false);
   const [modal, setModal] = useState<{
     isOpen: boolean;
     type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
@@ -786,129 +787,154 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       </AnimatePresence>
 
       {/* Active Ride Controls */}
-      {activeRide && (
-        <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 space-y-6 border border-gray-100 dark:border-gray-700">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 text-xl">
-                    {activeRide.rider?.full_name?.charAt(0) || 'R'}
-                  </div>
-                  {(activeRide.rider?.is_verified || true) && (
-                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5">
-                      <ShieldCheck size={16} className="text-blue-500 fill-current bg-white rounded-full" />
+      <AnimatePresence>
+        {activeRide && (
+          <motion.div 
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-3xl z-20 flex flex-col"
+          >
+            <div className="bg-white dark:bg-navy rounded-3xl shadow-2xl border border-mist dark:border-ocean-deep overflow-hidden">
+              {/* Header / Clickable area */}
+              <div 
+                onClick={() => setIsSheetMinimized(!isSheetMinimized)}
+                className="p-4 flex justify-between items-center bg-gray-50 dark:bg-ocean/30 hover:bg-gray-100 dark:hover:bg-ocean/50 transition-colors cursor-pointer border-b border-mist dark:border-ocean-deep"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-ocean rounded-full flex items-center justify-center font-semibold text-gray-700 dark:text-white">
+                      {activeRide.rider?.full_name?.charAt(0) || 'R'}
                     </div>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg dark:text-white flex items-center gap-2">
-                    {activeRide.rider?.full_name || 'Rider'}
-                    {activeRide.passenger_count && activeRide.passenger_count > 1 && (
-                      <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full flex items-center gap-1 text-gray-500">
-                        <Users size={12} /> {activeRide.passenger_count}
-                      </span>
+                    {(activeRide.rider?.is_verified || true) && (
+                      <div className="absolute -bottom-1 -right-1 bg-white dark:bg-navy rounded-full p-0.5">
+                        <ShieldCheck size={14} className="text-blue-500 fill-current bg-white rounded-full" />
+                      </div>
                     )}
-                  </h3>
-                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                    <MapPin size={12} />
-                    {activeRide.status === 'accepted' ? 'Heading to Pickup' : 'Heading to Dropoff'}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      {activeRide.rider?.full_name || 'Rider'}
+                      {activeRide.passenger_count && activeRide.passenger_count > 1 && (
+                        <span className="text-xs bg-gray-200 dark:bg-ocean px-2 py-0.5 rounded-full flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                          <Users size={10} /> {activeRide.passenger_count}
+                        </span>
+                      )}
+                    </h3>
+                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <MapPin size={12} />
+                      {activeRide.status === 'accepted' ? 'Heading to Pickup' : 'Heading to Dropoff'}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-col items-end">
-                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-bold  mb-1">
-                  {activeRide.status.replace('_', ' ')}
-                </span>
-                <p className="font-bold text-secondary">{formatZAR(activeRide.fare_amount)}</p>
-              </div>
-            </div>
-
-            <div className="space-y-3 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-              <div className="flex items-start gap-3">
-                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'accepted' ? 'bg-green-500 ring-4 ring-green-100 dark:ring-green-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400  font-bold">Pickup</p>
-                  <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.pickup_address}</p>
+                <div className="flex flex-col items-end">
+                  <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1">
+                    {activeRide.status.replace('_', ' ')}
+                  </span>
+                  <p className="font-semibold text-secondary">{formatZAR(activeRide.fare_amount)}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'in_progress' ? 'bg-red-500 ring-4 ring-red-100 dark:ring-red-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400  font-bold">Dropoff</p>
-                  <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.dropoff_address}</p>
-                </div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <button
-                onClick={() => openNavigation(
-                  activeRide.status === 'accepted' ? activeRide.pickup_lat : activeRide.dropoff_lat,
-                  activeRide.status === 'accepted' ? activeRide.pickup_lng : activeRide.dropoff_lng
+              <AnimatePresence>
+                {!isSheetMinimized && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden bg-white dark:bg-navy"
+                  >
+                    <div className="p-5 space-y-6">
+                      <div className="space-y-4 bg-gray-50 dark:bg-ocean p-4 rounded-xl border border-mist dark:border-ocean-deep">
+                        <div className="flex items-start gap-3">
+                          <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${activeRide.status === 'accepted' ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                          <div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-0.5">Pickup</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-200">{activeRide.pickup_address}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${activeRide.status === 'in_progress' ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                          <div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-0.5">Dropoff</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-200">{activeRide.dropoff_address}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <button
+                          onClick={() => openNavigation(
+                            activeRide.status === 'accepted' ? activeRide.pickup_lat : activeRide.dropoff_lat,
+                            activeRide.status === 'accepted' ? activeRide.pickup_lng : activeRide.dropoff_lng
+                          )}
+                          className="bg-gray-100 dark:bg-ocean text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <ExternalLink size={16} />
+                          <span className="hidden md:inline text-sm">Navigate</span>
+                        </button>
+                        <button
+                          onClick={() => showModal('info', 'Connecting...', `Calling ${activeRide.rider?.full_name}...`)}
+                          className="bg-gray-100 dark:bg-ocean text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <Phone size={16} />
+                          <span className="hidden md:inline text-sm">Call</span>
+                        </button>
+                        <button
+                          onClick={sendEmergencyAlert}
+                          className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/30"
+                        >
+                          <ShieldAlert size={16} />
+                          <span className="hidden md:inline text-sm">SOS</span>
+                        </button>
+                      </div>
+
+                      {activeRide.status === 'accepted' && (
+                        <button
+                          onClick={() => updateRideStatus('in_progress')}
+                          className="w-full bg-secondary text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-secondary/20 hover:bg-sky-500 transition-colors"
+                        >
+                          <Navigation size={18} />
+                          Start Trip
+                        </button>
+                      )}
+
+                      {activeRide.status === 'in_progress' && (
+                        <button
+                          onClick={() => updateRideStatus('completed')}
+                          className="w-full bg-red-500 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-red-500/20 hover:bg-red-600 transition-colors"
+                        >
+                          <CheckCircle size={18} />
+                          Complete Trip
+                        </button>
+                      )}
+
+                      <button 
+                        onClick={() => {
+                          const reason = window.prompt('Report an issue with this trip:');
+                          if (reason) {
+                            supabase.from('disputes').insert({
+                              ride_id: activeRide.id,
+                              reported_by: user.id,
+                              target_user_id: activeRide.rider_id,
+                              reason: 'General Report',
+                              description: reason,
+                              status: 'pending'
+                            }).then(() => showModal('success', 'Report Submitted', 'Report submitted to our investigation team.'));
+                          }
+                        }}
+                        className="w-full text-center text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors pt-2"
+                      >
+                        Report Issue with Trip
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <ExternalLink size={18} />
-                <span className="hidden md:inline">Navigate</span>
-              </button>
-              <button
-                onClick={() => showModal('info', 'Connecting...', `Calling ${activeRide.rider?.full_name}...`)}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                <Phone size={18} />
-                <span className="hidden md:inline">Call</span>
-              </button>
-              <button
-                onClick={sendEmergencyAlert}
-                className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/30"
-              >
-                <ShieldAlert size={18} />
-                <span className="hidden md:inline">SOS</span>
-              </button>
+              </AnimatePresence>
             </div>
-
-            {activeRide.status === 'accepted' && (
-              <button
-                onClick={() => updateRideStatus('in_progress')}
-                className="w-full bg-secondary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20 hover:bg-secondary/90 transition-colors"
-              >
-                <Navigation size={20} />
-                Start Trip
-              </button>
-            )}
-
-            {activeRide.status === 'in_progress' && (
-              <button
-                onClick={() => updateRideStatus('completed')}
-                className="w-full bg-red-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 hover:bg-red-700 transition-colors"
-              >
-                <CheckCircle size={20} />
-                Complete Trip
-              </button>
-            )}
-
-            <button 
-              onClick={() => {
-                const reason = window.prompt('Report an issue with this trip:');
-                if (reason) {
-                  supabase.from('disputes').insert({
-                    ride_id: activeRide.id,
-                    reported_by: user.id,
-                    target_user_id: activeRide.rider_id,
-                    reason: 'General Report',
-                    description: reason,
-                    status: 'pending'
-                  }).then(() => showModal('success', 'Report Submitted', 'Report submitted to our investigation team.'));
-                }
-              }}
-              className="w-full text-center text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors  tracking-normal pt-2"
-            >
-              Report Issue with Trip
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Footer />
 
       <AnimatePresence>
