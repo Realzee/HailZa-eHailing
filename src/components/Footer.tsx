@@ -9,22 +9,23 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-white dark:bg-navy p-12 mt-auto border-t border-mist dark:border-white/5 relative overflow-hidden transition-colors">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+    <footer className="bg-white dark:bg-navy py-4 px-6 mt-auto border-t border-mist dark:border-white/5 relative overflow-hidden transition-colors shrink-0">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-px bg-gradient-to-r from-transparent via-secondary/10 to-transparent" />
       
-      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 text-center relative z-10">
-        <div className="flex items-center gap-4 group">
-          <div className="bg-mist p-2 rounded-xl transition-transform group-hover:scale-110">
-            <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+      <div className="max-w-5xl mx-auto flex flex-row items-center justify-between gap-4 relative z-10 w-full">
+        <div className="flex items-center gap-2 group">
+          <div className="bg-mist/50 dark:bg-ocean-deep p-1 rounded-md transition-transform group-hover:scale-105">
+            <img src={logoUrl} alt="Logo" className="w-5 h-5 rounded shadow-xs" />
           </div>
-          <p className="text-sm text-steel font-black uppercase tracking-widest">
-            © {new Date().getFullYear()} eTaxi Premium Mobility
+          <p className="text-[10px] text-steel font-black uppercase tracking-widest opacity-80">
+            © {new Date().getFullYear()} eTaxi Premium
           </p>
         </div>
-        <div className="flex gap-4 opacity-40 hover:opacity-100 transition-opacity">
-          <div className="h-1.5 w-1.5 rounded-full bg-secondary" />
-          <div className="h-1.5 w-1.5 rounded-full bg-steel" />
-          <div className="h-1.5 w-1.5 rounded-full bg-secondary" />
+        
+        <div className="flex gap-2 opacity-20 hover:opacity-100 transition-opacity">
+          <div className="h-1 w-1 rounded-full bg-secondary" />
+          <div className="h-1 w-1 rounded-full bg-steel" />
+          <div className="h-1 w-1 rounded-full bg-secondary" />
         </div>
       </div>
     </footer>
