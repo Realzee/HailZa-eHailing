@@ -74,8 +74,21 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   ];
 
   // 1. Get User Location
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
+  const getCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      showModal('error', 'Browser Incompatible', 'Your browser does not support geolocation.');
+      return;
+    }
+
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+      
+      if (permissionStatus.state === 'denied') {
+        showModal('error', 'Location Access Denied', 'Please enable location access in your browser settings to continue.');
+        setPickupAddress('Permission Denied');
+        return;
+      }
+
       setPickupAddress('Locating...');
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -101,6 +114,28 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         (err) => {
           console.error(err);
           setPickupAddress('Location Error');
+          if (err.code === err.PERMISSION_DENIED) {
+            showModal('error', 'Location Access Denied', 'Please enable location access in your browser settings.');
+          } else {
+            showModal('error', 'Location Error', 'Unable to retrieve your location.');
+          }
+        },
+        { enableHighAccuracy: true }
+      );
+    } catch (e) {
+      // Some browsers might not support permissions API
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setLocation([lat, lng]);
+          const addr = await reverseGeocode(lat, lng);
+          setPickupAddress(addr);
+        },
+        (err) => {
+          console.error(err);
+          setPickupAddress('Location Error');
+          showModal('error', 'Location Error', 'Unable to retrieve your location. Please check your settings.');
         },
         { enableHighAccuracy: true }
       );
