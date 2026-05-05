@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -36,6 +36,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
   const [resendTimer, setResendTimer] = useState(0);
   const [showResendSuccess, setShowResendSuccess] = useState(false);
   const [correctOtp] = useState('1234'); // Simulated OTP for demo
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Modal state
   const [modal, setModal] = useState<{
@@ -112,6 +113,24 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
     }
 
     updateVerificationStatus('pending', { phone });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      // Simulate/perform file upload logic
+      console.log('Uploading file:', file.name);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      showModal('success', 'Upload Successful', 'Your identity document has been uploaded.');
+    } catch (err) {
+      console.error('Upload error:', err);
+      showModal('error', 'Upload Failed', 'Failed to upload document. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const updateVerificationStatus = async (status: string, data = {}) => {
@@ -245,12 +264,25 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                   <h3 className="text-xl font-semibold mb-2 dark:text-white">Identity Document</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Upload a clear photo of your ID, Driver's License or Passport.</p>
                 </div>
-                <div className="aspect-[3/2] bg-gray-50 dark:bg-gray-700 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-600 flex flex-col items-center justify-center gap-4 hover:border-secondary dark:hover:border-secondary transition-colors cursor-pointer group">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full aspect-[3/2] bg-gray-50 dark:bg-gray-700 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-600 flex flex-col items-center justify-center gap-4 hover:border-secondary dark:hover:border-secondary transition-colors cursor-pointer group"
+                >
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-full shadow-lg group-hover:scale-110 transition-transform border dark:border-gray-600">
                     <IdCard size={32} className="text-gray-400 dark:text-gray-500 group-hover:text-secondary transition-colors" />
                   </div>
-                  <p className="font-bold text-sm text-gray-400 dark:text-gray-500  tracking-normal">Click to Upload</p>
-                </div>
+                  <p className="font-bold text-sm text-gray-400 dark:text-gray-500  tracking-normal">
+                    {isUploading ? 'Uploading...' : 'Click to Upload'}
+                  </p>
+                </button>
                 <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-2xl flex gap-3 border border-orange-100 dark:border-orange-800">
                   <AlertCircle size={20} className="text-orange-600 dark:text-orange-400 mt-0.5 shrink-0" />
                   <p className="text-xs text-orange-700 dark:text-orange-300 font-medium leading-relaxed">
