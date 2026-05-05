@@ -17,7 +17,7 @@ interface DriverViewProps {
 }
 
 export default function DriverView({ user, profile, onShowVerification }: DriverViewProps) {
-  const { logoUrl: appLogo } = useBranding();
+  const { logoUrl: appLogo, iconUrl: appIcon } = useBranding();
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
@@ -486,8 +486,9 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
         <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
             {appLogo && (
-              <div className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5">
+              <div className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5 flex items-center gap-2">
                 <img src={appLogo} alt="Logo" className="h-9 w-auto" />
+                {appIcon && <img src={appIcon} alt="Icon" className="h-9 w-auto" />}
               </div>
             )}
             {geoError && (

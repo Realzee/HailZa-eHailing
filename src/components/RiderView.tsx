@@ -18,7 +18,7 @@ interface RiderViewProps {
 }
 
 export default function RiderView({ user, profile, onShowVerification }: RiderViewProps) {
-  const { logoUrl: appLogo } = useBranding();
+  const { logoUrl: appLogo, iconUrl: appIcon } = useBranding();
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]); // JHB Default
   const [destination, setDestination] = useState<[number, number] | null>(null);
   const [pickupAddress, setPickupAddress] = useState('Locating...');
@@ -608,9 +608,10 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5"
+              className="glass p-2.5 rounded-2xl pointer-events-auto shadow-2xl border-white/40 dark:border-white/5 flex items-center gap-2"
             >
               <img src={appLogo} alt="Logo" className="h-9 w-auto" />
+              {appIcon && <img src={appIcon} alt="Icon" className="h-9 w-auto" />}
             </motion.div>
           )}
           <motion.div 
