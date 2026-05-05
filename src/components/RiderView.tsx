@@ -993,7 +993,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6 pb-20"
+                className="space-y-6 pb-24 max-h-[60vh] overflow-y-auto custom-scrollbar -mx-2 px-2"
               >
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-2xl flex items-start gap-3">
                   <Info className="text-blue-600 dark:text-blue-400 mt-0.5" size={18} />
