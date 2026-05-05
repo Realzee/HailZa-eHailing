@@ -654,7 +654,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       </div>
 
       {/* Bottom Menu Bar */}
-      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-t-3xl border-t border-mist dark:border-gray-700 pointer-events-auto z-10 shadow-lg">
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-navy/90 backdrop-blur-xl rounded-t-3xl border-t border-mist dark:border-ocean-deep pointer-events-auto z-20 shadow-lg">
         <div className="flex justify-around items-center">
           <button 
             onClick={() => {
@@ -665,7 +665,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               setSearchResults([]);
               setIsSheetMinimized(false);
             }}
-            className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95"
+            className="flex flex-col items-center gap-1 p-2 text-steel hover:text-secondary transition-all hover:scale-105 active:scale-95"
             title="Home"
           >
             <Home size={22} />
@@ -673,19 +673,19 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
           </button>
           <button 
             onClick={() => setShowHistoryModal(true)}
-            className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95"
+            className="flex flex-col items-center gap-1 p-2 text-steel hover:text-secondary transition-all hover:scale-105 active:scale-95"
             title="Trip History"
           >
             <History size={22} />
             <span className="text-[10px] font-semibold tracking-wider uppercase">History</span>
           </button>
-          <div className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col items-center gap-1 p-2 text-steel">
              <ThemeToggle />
              <span className="text-[10px] font-semibold tracking-wider uppercase">Theme</span>
           </div>
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-all hover:scale-105 active:scale-95"
+            className="flex flex-col items-center gap-1 p-2 text-steel hover:text-red-500 transition-all hover:scale-105 active:scale-95"
             title="Sign Out"
           >
             <LogOut size={22} />
