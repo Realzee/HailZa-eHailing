@@ -118,8 +118,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         .from('rides')
         .select(`
           *,
-          driver_profile:driver_id(full_name, verification_status),
-          driver_info:driver_id(vehicle_make, vehicle_model, vehicle_plate, vehicle_color)
+          driver_profile:driver_id(full_name, verification_status, drivers(vehicle_make, vehicle_model, vehicle_plate, vehicle_color))
         `)
         .eq('rider_id', user.id)
         .in('status', ['requested', 'accepted', 'in_progress', 'completed'])
@@ -128,7 +127,11 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         
       if (data && data.length > 0) {
         const ride = data[0];
-        setActiveRide(ride as any);
+        const driverInfo = ride.driver_profile?.drivers?.[0];
+        setActiveRide({
+          ...ride,
+          driver_info: driverInfo
+        } as any);
         if (ride.status === 'completed') {
            setShowPayment(true);
         }
