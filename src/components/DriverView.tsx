@@ -518,33 +518,37 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       </div>
 
       {/* Bottom Menu Bar */}
-      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/80 dark:bg-navy/80 backdrop-blur-md rounded-t-3xl border-t border-mist dark:border-ocean-deep pointer-events-auto z-20">
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-navy/90 backdrop-blur-xl rounded-t-3xl border-t border-mist dark:border-ocean-deep pointer-events-auto z-20 shadow-lg">
         <div className="flex justify-around items-center">
           {profile?.verification_status !== 'verified' && (
             <button 
               onClick={onShowVerification}
-              className="bg-orange-500 text-white p-3 rounded-2xl hover:bg-orange-600 transition-all flex items-center gap-2 animate-pulse"
+              className="flex flex-col items-center gap-1 p-2 bg-orange-500/10 text-orange-600 rounded-2xl hover:bg-orange-500/20 transition-all p-2 animate-pulse"
               title="Account Verification Required"
             >
-              <AlertTriangle size={20} />
+              <AlertTriangle size={22} />
+              <span className="text-[10px] font-semibold tracking-wider uppercase">Verify</span>
             </button>
           )}
           <button
             onClick={() => setShowDashboard(!showDashboard)}
-            className="p-3 text-steel hover:text-secondary transition-all"
+            className="flex flex-col items-center gap-1 p-2 text-steel hover:text-secondary transition-all hover:scale-105 active:scale-95"
             title="Operational Overview"
           >
-            <Car size={24} />
+            <Car size={22} />
+            <span className="text-[10px] font-semibold tracking-wider uppercase">Dash</span>
           </button>
-          <div className="p-3">
+          <div className="flex flex-col items-center gap-1 p-2 text-steel">
             <ThemeToggle />
+            <span className="text-[10px] font-semibold tracking-wider uppercase">Theme</span>
           </div>
           <button 
             onClick={handleSignOut}
-            className="p-3 text-red-500 hover:text-red-600 transition-all"
+            className="flex flex-col items-center gap-1 p-2 text-steel hover:text-red-500 transition-all hover:scale-105 active:scale-95"
             title="Terminate Session"
           >
-            <LogOut size={24} />
+            <LogOut size={22} />
+            <span className="text-[10px] font-semibold tracking-wider uppercase">Exit</span>
           </button>
         </div>
       </div>
