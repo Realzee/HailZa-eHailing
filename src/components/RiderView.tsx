@@ -152,8 +152,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       const { data } = await supabase
         .from('rides')
         .select(`
-          *,
-          driver_profile:driver_id(full_name, verification_status, drivers(vehicle_make, vehicle_model, vehicle_plate, vehicle_color))
+          *
         `)
         .eq('rider_id', user.id)
         .in('status', ['requested', 'accepted', 'in_progress', 'completed'])
@@ -162,10 +161,20 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         
       if (data && data.length > 0) {
         const ride = data[0];
-        const driverInfo = ride.driver_profile?.drivers?.[0];
+        let driver_profile = null;
+        let driver_info = null;
+        
+        if (ride.driver_id) {
+            const { data: profile } = await supabase.from('profiles').select('full_name, verification_status').eq('id', ride.driver_id).single();
+            const { data: info } = await supabase.from('drivers').select('vehicle_make, vehicle_model, vehicle_plate, vehicle_color').eq('id', ride.driver_id).single();
+            driver_profile = profile;
+            driver_info = info;
+        }
+
         setActiveRide({
           ...ride,
-          driver_info: driverInfo
+          driver_profile,
+          driver_info
         } as any);
         if (ride.status === 'completed') {
            setShowPayment(true);
