@@ -17,6 +17,7 @@ import {
   Send,
   Check
 } from 'lucide-react';
+import { StatusModal } from './StatusModal';
 
 interface VerificationFlowProps {
   user: any;
@@ -36,6 +37,33 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
   const [showResendSuccess, setShowResendSuccess] = useState(false);
   const [correctOtp] = useState('1234'); // Simulated OTP for demo
 
+  // Modal state
+  const [modal, setModal] = useState<{
+    show: boolean;
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({
+    show: false,
+    type: 'info',
+    title: '',
+    message: '',
+  });
+
+  const showModal = (
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning',
+    title: string,
+    message: string,
+    onConfirm?: () => void
+  ) => {
+    setModal({ show: true, type, title, message, onConfirm });
+  };
+
+  const closeModal = () => {
+    setModal((prev) => ({ ...prev, show: false }));
+  };
+
   // Timer logic for resend button
   useEffect(() => {
     let interval: any;
@@ -48,7 +76,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
   }, [resendTimer]);
 
   const sendOtp = async () => {
-    if (!phone) return alert('Please enter a valid phone number');
+    if (!phone) return showModal('warning', 'Phone Required', 'Please enter a valid phone number');
     setIsUploading(true);
     // Simulate API call to SMS provider
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -74,10 +102,10 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
 
   const verifyOtp = async () => {
     const enteredOtp = otp.join('');
-    if (enteredOtp.length < 4) return alert('Please enter the full 4-digit code');
+    if (enteredOtp.length < 4) return showModal('warning', 'Invalid Code', 'Please enter the full 4-digit code');
     
     if (enteredOtp !== correctOtp) {
-      alert('Invalid verification code. Please try again.');
+      showModal('error', 'Verification Failed', 'Invalid verification code. Please try again.');
       setOtp(['', '', '', '']);
       document.getElementById('otp-0')?.focus();
       return;
@@ -384,6 +412,15 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
           )}
         </div>
       </div>
+
+      <StatusModal
+        isOpen={modal.show}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+      />
     </motion.div>
   );
 }

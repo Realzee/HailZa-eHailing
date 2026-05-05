@@ -1,9 +1,37 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { StatusModal } from './StatusModal';
 
 export default function BrandingSettings() {
   const [logo, setLogo] = useState(localStorage.getItem('appLogo') || '');
   const [icon, setIcon] = useState(localStorage.getItem('appIcon') || '');
+
+  // Modal state
+  const [modal, setModal] = useState<{
+    show: boolean;
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({
+    show: false,
+    type: 'info',
+    title: '',
+    message: '',
+  });
+
+  const showModal = (
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning',
+    title: string,
+    message: string,
+    onConfirm?: () => void
+  ) => {
+    setModal({ show: true, type, title, message, onConfirm });
+  };
+
+  const closeModal = () => {
+    setModal((prev) => ({ ...prev, show: false }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const file = e.target.files?.[0];
@@ -31,7 +59,7 @@ export default function BrandingSettings() {
       link.href = icon;
     }
     
-    alert('Branding updated! Changes applied.');
+    showModal('success', 'Branding Synchronized', 'Your visual identity has been updated successfully.');
   };
 
   return (
@@ -71,6 +99,15 @@ export default function BrandingSettings() {
           Synchronize Branding
         </button>
       </div>
+
+      <StatusModal
+        isOpen={modal.show}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+      />
     </div>
   );
 }

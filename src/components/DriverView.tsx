@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Profile, type Hazard } from '@/lib/supabase';
 import { getRoute, formatZAR } from '@/lib/utils';
+import { StatusModal } from './StatusModal';
 import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, ExternalLink, ShieldAlert, Bell, X, Users, ShieldCheck, Banknote, Clock, AlertTriangle, TriangleAlert } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
@@ -30,6 +31,33 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   const [earnings, setEarnings] = useState({ daily: 0, weekly: 0, total: 0 });
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  });
+
+  const showModal = (
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning', 
+    title: string, 
+    message: string, 
+    onConfirm?: () => void,
+    confirmLabel?: string,
+    cancelLabel?: string
+  ) => {
+    setModal({ isOpen: true, type, title, message, onConfirm, confirmLabel, cancelLabel });
+  };
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
   const [vehicleForm, setVehicleForm] = useState({
     make: '',
     model: '',
@@ -232,7 +260,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
           if (updatedRide.status === 'cancelled') {
             setActiveRide(null);
             setRoute(undefined);
-            alert('The rider has cancelled the ride.');
+            showModal('info', 'Ride Cancelled', 'The rider has cancelled the ride.');
           } else if (activeRide && activeRide.id === updatedRide.id) {
             // Keep rider details when updating status from other sources (if any)
             setActiveRide({ ...activeRide, ...updatedRide });
@@ -302,9 +330,16 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   };
 
   const sendEmergencyAlert = () => {
-    if (!window.confirm('SEND EMERGENCY ALERT? This will notify dispatch and emergency services of your current location.')) return;
-    alert('Emergency alert sent! Stay calm, help is on the way.');
-    // In a real app, this would send a notification to a backend/dispatch
+    showModal(
+      'confirm',
+      'SEND EMERGENCY ALERT?',
+      'This will notify dispatch and emergency services of your current location. Please use only in genuine emergencies.',
+      () => {
+        showModal('success', 'Alert Sent', 'Emergency alert has been broadcast. Help is on the way. Please stay calm.');
+        // In a real app, this would send a notification to a backend/dispatch
+      },
+      'Send Alert'
+    );
   };
 
   const updateVehicle = async () => {
@@ -321,10 +356,10 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       
       if (error) throw error;
       setIsEditingProfile(false);
-      alert('Vehicle details updated successfully!');
+      showModal('success', 'Details Updated', 'Your vehicle information has been successfully updated.');
     } catch (error) {
       console.error('Error updating vehicle:', error);
-      alert('Failed to update vehicle details.');
+      showModal('error', 'Update Failed', 'We couldn\'t update your vehicle details. Please check your connection.');
     }
   };
 
@@ -383,6 +418,16 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
 
   return (
     <div className="relative w-full h-screen flex flex-col">
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+        confirmLabel={modal.confirmLabel}
+        cancelLabel={modal.cancelLabel}
+      />
       {/* Visual Notification Banner */}
       {showNotification && incomingRide && !activeRide && (
         <div className="absolute top-20 left-4 right-4 z-50 animate-in slide-in-from-top duration-300 pointer-events-auto">
@@ -538,29 +583,35 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                   <Banknote size={18} className="text-hail-green" /> Wallet & Payouts
                 </h3>
               </div>
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Available for payout</p>
-                  <p className="text-2xl font-black dark:text-white">{formatZAR(earnings.total)}</p>
-                </div>
-                <button 
-                  onClick={async () => {
-                    if (earnings.total <= 0) return alert('No earnings to withdraw.');
-                    if (window.confirm(`Request instant payout of ${formatZAR(earnings.total)}?`)) {
-                      const { error } = await supabase.from('payout_requests').insert({
-                        driver_id: user.id,
-                        amount: earnings.total,
-                        status: 'pending',
-                        payout_method: 'Instant'
-                      });
-                      if (!error) alert('Payout request sent! You will receive your funds shortly.');
-                    }
-                  }}
-                  className="bg-hail-green text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-md"
-                >
-                  Request Payout
-                </button>
-              </div>
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Available for payout</p>
+                      <p className="text-2xl font-black dark:text-white">{formatZAR(earnings.total)}</p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (earnings.total <= 0) return showModal('warning', 'Empty Balance', 'No earnings to withdraw.');
+                        showModal(
+                          'confirm',
+                          'Request Payout',
+                          `Request instant payout of ${formatZAR(earnings.total)}?`,
+                          async () => {
+                            const { error } = await supabase.from('payout_requests').insert({
+                              driver_id: user.id,
+                              amount: earnings.total,
+                              status: 'pending',
+                              payout_method: 'Instant'
+                            });
+                            if (!error) showModal('success', 'Payout Requested', 'Payout request sent! You will receive your funds shortly.');
+                            else showModal('error', 'Payout Failed', 'Failed to submit payout request. Please try again.');
+                          }
+                        );
+                      }}
+                      className="bg-hail-green text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-md"
+                    >
+                      Request Payout
+                    </button>
+                  </div>
               <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase leading-relaxed uppercase tracking-tighter">
                 * Same-day withdrawals available. Transaction fees may apply depending on your bank.
               </p>
@@ -789,7 +840,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                 <span className="hidden md:inline">Navigate</span>
               </button>
               <button
-                onClick={() => alert(`Calling ${activeRide.rider?.full_name}...`)}
+                onClick={() => showModal('info', 'Connecting...', `Calling ${activeRide.rider?.full_name}...`)}
                 className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 <Phone size={18} />
@@ -835,7 +886,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                     reason: 'General Report',
                     description: reason,
                     status: 'pending'
-                  }).then(() => alert('Report submitted to our investigation team.'));
+                  }).then(() => showModal('success', 'Report Submitted', 'Report submitted to our investigation team.'));
                 }
               }}
               className="w-full text-center text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors uppercase tracking-widest pt-2"

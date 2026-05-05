@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Map from '@/components/Map';
 import { supabase, type Ride, type Driver, type Hazard, type Profile } from '@/lib/supabase';
 import { getRoute, reverseGeocode, formatZAR, searchAddress } from '@/lib/utils';
+import StatusModal from './StatusModal';
 import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut, Navigation, Clock, ChevronRight, History, Settings, Home, Banknote, Wallet, Users, Info, ShieldCheck, AlertTriangle, TriangleAlert } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
@@ -42,6 +43,24 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const [passengerCount, setPassengerCount] = useState(1);
   const [showHazardsPanel, setShowHazardsPanel] = useState(false);
   const [hazards, setHazards] = useState<Hazard[]>([]);
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  });
+
+  const showModal = (type: any, title: string, message: string, onConfirm?: () => void) => {
+    setModal({ isOpen: true, type, title, message, onConfirm });
+  };
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
   const cancellationReasons = ['Driver too far', 'Changed mind', 'Unsafe', 'Other'];
 
   const RIDE_TYPES = [
@@ -341,21 +360,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     }
 
     setSearching(true);
+    showModal('loading', 'Requesting Ride', 'Finding the nearest driver for you...');
     
     try {
-      console.log('Requesting ride:', {
-        rider_id: user.id,
-        pickup_lat: location[0],
-        pickup_lng: location[1],
-        dropoff_lat: destination[0],
-        dropoff_lng: destination[1],
-        pickup_address: pickupAddress,
-        dropoff_address: dropoffAddress,
-        fare_amount: calculateTotalFare(rideStats.price * (RIDE_TYPES.find(t => t.id === selectedRideType)?.multiplier || 1), passengerCount),
-        distance_km: rideStats.distance,
-        passenger_count: passengerCount,
-        status: 'requested'
-      });
       const { error } = await supabase.from('rides').insert({
         rider_id: user.id,
         pickup_lat: location[0],
@@ -371,9 +378,11 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       });
       
       if (error) throw error;
+      closeModal();
     } catch (err) {
       console.error('Error requesting ride:', err);
       setSearching(false);
+      showModal('error', 'Request Failed', 'We couldn\'t process your ride request. Please try again.');
     }
   };
 
@@ -449,6 +458,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const handlePayment = async (method: string) => {
     if (!activeRide) return;
     setProcessingPayment(true);
+    showModal('loading', 'Processing Payment', `Securely processing your ${method} payment...`);
     
     try {
       // Update ride status to paid
@@ -467,12 +477,12 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         setDestination(null);
         setRoute(undefined);
         setRideStats(null);
-        alert(`Payment via ${method} Successful!`);
+        showModal('success', 'Payment Successful', `Your payment via ${method} has been processed. Thank you for riding with eTaxi!`);
       }, 1500);
     } catch (err) {
       console.error('Payment error:', err);
       setProcessingPayment(false);
-      alert('Payment failed. Please try again.');
+      showModal('error', 'Payment Failed', 'Transaction could not be completed. Please try again.');
     }
   };
 
@@ -484,22 +494,30 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const confirmCancel = async () => {
     if (!activeRide || !cancelReason) return;
     
-    const { error } = await supabase
-      .from('rides')
-      .update({ status: 'cancelled' })
-      .eq('id', activeRide.id);
-      
-    if (error) {
-      console.error('Error cancelling ride:', error);
-      alert('Failed to cancel ride.');
-    } else {
-      setActiveRide(null);
-      setDestination(null);
-      setRoute(undefined);
-      setRideStats(null);
-      setShowCancelModal(false);
-      setCancelReason('');
-    }
+    showModal(
+      'confirm',
+      'Cancel Ride?',
+      'Are you sure you want to cancel? Frequent cancellations may affect your account status.',
+      async () => {
+        const { error } = await supabase
+          .from('rides')
+          .update({ status: 'cancelled' })
+          .eq('id', activeRide.id);
+          
+        if (error) {
+          console.error('Error cancelling ride:', error);
+          showModal('error', 'Cancellation Failed', 'We couldn\'t cancel your ride at this time.');
+        } else {
+          setActiveRide(null);
+          setDestination(null);
+          setRoute(undefined);
+          setRideStats(null);
+          setShowCancelModal(false);
+          setCancelReason('');
+          showModal('success', 'Ride Cancelled', 'Your ride has been successfully cancelled.');
+        }
+      }
+    );
   };
 
   const selectPredefinedRoute = (routeId: string) => {
@@ -543,6 +561,14 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+      />
       {/* Map Layer - Full Screen Background */}
       <div className="absolute inset-0 z-0">
         <Map

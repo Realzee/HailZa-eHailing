@@ -14,6 +14,7 @@ import {
   Zap
 } from 'lucide-react';
 import { HazardType, supabase } from '../lib/supabase';
+import { StatusModal } from './StatusModal';
 
 interface HazardsPanelProps {
   onClose: () => void;
@@ -73,6 +74,33 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Modal state
+  const [modal, setModal] = useState<{
+    show: boolean;
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({
+    show: false,
+    type: 'info',
+    title: '',
+    message: '',
+  });
+
+  const showModal = (
+    type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning',
+    title: string,
+    message: string,
+    onConfirm?: () => void
+  ) => {
+    setModal({ show: true, type, title, message, onConfirm });
+  };
+
+  const closeModal = () => {
+    setModal((prev) => ({ ...prev, show: false }));
+  };
+
   const handleSubmit = async () => {
     if (!selectedType) return;
     
@@ -99,7 +127,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
       }, 2000);
     } catch (err) {
       console.error('Error reporting hazard:', err);
-      alert('Failed to report hazard. Please try again.');
+      showModal('error', 'Hazard Report Error', 'Failed to report hazard. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -202,6 +230,15 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
           </div>
         )}
       </motion.div>
+
+      <StatusModal
+        isOpen={modal.show}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+      />
     </motion.div>
   );
 };

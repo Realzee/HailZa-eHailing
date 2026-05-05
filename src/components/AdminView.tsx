@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
-import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X } from 'lucide-react';
+import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X, CheckCircle2 } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
 import Map from './Map';
+import StatusModal from './StatusModal';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import BrandingSettings from './BrandingSettings';
+
+// Define Modal State type
+interface ModalState {
+  isOpen: boolean;
+  type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  confirmLabel?: string;
+}
 
 export default function AdminView({ user }: { user: any }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -16,6 +27,20 @@ export default function AdminView({ user }: { user: any }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'users' | 'drivers' | 'rides' | 'earnings' | 'map' | 'branding'>('users');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Modal state
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  });
+
+  const showModal = (type: ModalState['type'], title: string, message: string, onConfirm?: () => void, confirmLabel?: string) => {
+    setModal({ isOpen: true, type, title, message, onConfirm, confirmLabel });
+  };
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
   const [selectedDriver, setSelectedDriver] = useState<(Driver & { profiles: Profile }) | null>(null);
   const [isEditingVehicle, setIsEditingVehicle] = useState(false);
   const [editVehicleForm, setEditVehicleForm] = useState({
@@ -73,65 +98,107 @@ export default function AdminView({ user }: { user: any }) {
   };
 
   const promoteToAdmin = async (profileId: string) => {
-    if (!window.confirm('Are you sure you want to promote this user to Admin?')) return;
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: 'admin' })
-        .eq('id', profileId);
-      
-      if (error) throw error;
-      fetchAllData();
-    } catch (error) {
-      console.error('Error promoting user:', error);
-      alert('Failed to promote user. Check console for details.');
-    }
+    showModal(
+      'confirm',
+      'Promote to Admin',
+      'Are you sure you want to promote this user to an administrator? They will have full access to system management.',
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .update({ role: 'admin' })
+            .eq('id', profileId);
+          
+          if (error) throw error;
+          fetchAllData();
+          showModal('success', 'Promotion Successful', 'User has been promoted to administrator.');
+        } catch (error) {
+          console.error('Error promoting user:', error);
+          showModal('error', 'Error', 'Failed to promote user to administrator.');
+        }
+      }
+    );
   };
 
   const updateVerificationStatus = async (profileId: string, status: Profile['verification_status']) => {
     if (!status) return;
-    if (!window.confirm(`Are you sure you want to change this user's verification status to ${status}?`)) return;
+    
+    showModal(
+      'confirm',
+      status === 'verified' ? 'Verify User' : 'Reject Verification',
+      `Are you sure you want to change this user's verification status to ${status}?`,
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .update({ verification_status: status })
+            .eq('id', profileId);
 
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ verification_status: status })
-        .eq('id', profileId);
-
-      if (error) throw error;
-      fetchAllData();
-    } catch (error) {
-      console.error('Error updating verification status:', error);
-      alert('Failed to update verification status.');
-    }
+          if (error) throw error;
+          fetchAllData();
+          showModal('success', 'Status Updated', `User verification status set to ${status}.`);
+        } catch (error) {
+          console.error('Error updating verification status:', error);
+          showModal('error', 'Update Failed', 'Failed to update verification status.');
+        }
+      }
+    );
   };
 
   const updateDriverStatus = async (driverId: string, status: 'pending' | 'approved' | 'declined') => {
-    if (!window.confirm(`Are you sure you want to mark this driver as ${status}?`)) return;
-
-    try {
-      const { error } = await supabase
-        .from('drivers')
-        .update({ 
-          onboarding_status: status,
-          is_approved: status === 'approved' 
-        })
-        .eq('id', driverId);
-      
-      if (error) throw error;
-      fetchAllData();
-      if (selectedDriver && selectedDriver.id === driverId) {
-        setSelectedDriver({
-          ...selectedDriver,
-          onboarding_status: status,
-          is_approved: status === 'approved'
-        });
+    showModal(
+      'confirm',
+      status === 'approved' ? 'Approve Driver' : 'Decline Driver',
+      `Are you sure you want to mark this driver as ${status}?`,
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('drivers')
+            .update({ 
+              onboarding_status: status,
+              is_approved: status === 'approved' 
+            })
+            .eq('id', driverId);
+          
+          if (error) throw error;
+          fetchAllData();
+          if (selectedDriver && selectedDriver.id === driverId) {
+            setSelectedDriver({
+              ...selectedDriver,
+              onboarding_status: status,
+              is_approved: status === 'approved'
+            });
+          }
+          showModal('success', 'Driver Updated', `Driver status has been set to ${status}.`);
+        } catch (error) {
+          console.error('Error updating driver status:', error);
+          showModal('error', 'Update Failed', 'Failed to update driver status.');
+        }
       }
-    } catch (error) {
-      console.error('Error updating driver status:', error);
-      alert('Failed to update driver status.');
-    }
+    );
+  };
+
+  const deleteUser = async (profileId: string) => {
+    showModal(
+      'confirm',
+      'Delete User',
+      'Are you sure you want to delete this user? This action cannot be undone and will remove all their data.',
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', profileId);
+
+          if (error) throw error;
+          fetchAllData();
+          showModal('success', 'User Deleted', 'The user account has been permanently removed.');
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          showModal('error', 'Deletion Failed', 'Failed to delete user. They might have active rides or other dependencies.');
+        }
+      }
+    );
   };
 
   const updateDriverVehicleDetails = async () => {
@@ -147,9 +214,10 @@ export default function AdminView({ user }: { user: any }) {
       fetchAllData();
       setSelectedDriver({ ...selectedDriver, ...editVehicleForm });
       setIsEditingVehicle(false);
+      showModal('success', 'Vehicle Updated', 'Driver vehicle details have been synchronized.');
     } catch (error) {
       console.error('Error updating vehicle details:', error);
-      alert('Failed to update vehicle details.');
+      showModal('error', 'Update Failed', 'Failed to update vehicle details. Please ensure all data is correct.');
     }
   };
 
@@ -430,7 +498,11 @@ export default function AdminView({ user }: { user: any }) {
                               <Shield size={16} />
                             </button>
                           )}
-                          <button className="hover:opacity-50 transition-opacity p-1">
+                          <button 
+                            onClick={() => deleteUser(profile.id)}
+                            className="hover:text-red-500 transition-colors p-1"
+                            title="Delete User"
+                          >
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -834,6 +906,16 @@ export default function AdminView({ user }: { user: any }) {
         </div>
       )}
       <Footer />
+
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={modal.onConfirm}
+        confirmLabel={modal.confirmLabel}
+      />
     </div>
   );
 }
