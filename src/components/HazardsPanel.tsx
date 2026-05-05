@@ -148,7 +148,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
       >
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-black text-navy dark:text-white tracking-tight flex items-center gap-2">
+            <h2 className="text-2xl font-semibold text-navy dark:text-white tracking-tight flex items-center gap-2">
               <TriangleAlert className="text-red-600" />
               Report Hazard
             </h2>
@@ -167,7 +167,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
               <TriangleAlert className="text-green-600" size={40} />
             </div>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Hazard Reported!</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2 tracking-tight">Hazard Reported!</h3>
             <p className="text-gray-500 dark:text-gray-400 font-medium">Thank you for alerting other drivers.</p>
           </div>
         ) : (
@@ -189,10 +189,10 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
                       <Icon size={20} />
                     </div>
                     <div>
-                      <p className={`font-black text-xs uppercase tracking-widest ${selectedType === h.type ? 'text-red-700 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <p className={`font-semibold text-xs  tracking-normal ${selectedType === h.type ? 'text-red-700 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
                         {h.label}
                       </p>
-                      <p className="text-[10px] text-gray-400 font-bold mt-0.5 line-clamp-1">{h.description}</p>
+                      <p className="text-xs text-gray-400 font-bold mt-0.5 line-clamp-1">{h.description}</p>
                     </div>
                   </button>
                 );
@@ -200,7 +200,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
             </div>
 
             <div className="space-y-4 mb-8">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Details (Optional)</label>
+              <label className="text-xs font-semibold text-gray-400  tracking-normal px-1">Details (Optional)</label>
               <textarea
                 placeholder="Briefly describe the hazard..."
                 value={description}
@@ -211,7 +211,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
 
             <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-2xl border border-red-100 dark:border-red-900/30 flex items-start gap-3 mb-8">
               <Info className="text-red-600 dark:text-red-400 shrink-0 mt-0.5" size={18} />
-              <p className="text-[10px] text-red-700 dark:text-red-300 font-bold leading-tight">
+              <p className="text-xs text-red-700 dark:text-red-300 font-bold leading-tight">
                 Reporting false hazards or using this tool to disrupt operations will result in account suspension. Please report accurately based on your current location.
               </p>
             </div>
@@ -219,7 +219,7 @@ export const HazardsPanel: React.FC<HazardsPanelProps> = ({ onClose, currentLat,
             <button
               onClick={handleSubmit}
               disabled={!selectedType || submitting}
-              className="w-full bg-red-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-red-700 transition-all active:scale-[0.98] shadow-xl disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 flex items-center justify-center gap-3"
+              className="w-full bg-red-600 text-white py-5 rounded-2xl font-semibold text-xl hover:bg-red-700 transition-all active:scale-[0.98] shadow-xl disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 flex items-center justify-center gap-3"
             >
               {submitting ? (
                 <Loader2 className="animate-spin" />

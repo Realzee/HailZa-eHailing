@@ -170,7 +170,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
       exit="exit"
       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     >
-      <div className="bg-white dark:bg-navy w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl relative border border-mist dark:border-white/5 transition-all flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-navy w-full max-w-md rounded-3xl overflow-hidden shadow-2xl relative border border-mist dark:border-white/5 transition-all flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 flex justify-between items-center border-b border-mist/20 dark:border-white/5 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                 <ArrowLeft size={20} className="text-steel" />
               </button>
             )}
-            <h2 className="font-black text-xl tracking-tight text-navy dark:text-white">Account Registry</h2>
+            <h2 className="font-semibold text-xl tracking-tight text-navy dark:text-white">Account Registry</h2>
           </div>
           <button 
             onClick={onClose}
@@ -213,11 +213,11 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
           <AnimatePresence mode="wait">
             {step === 'intro' && (
               <motion.div key="intro" variants={stepVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
-                <div className="w-20 h-20 bg-hail-green/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <ShieldCheck size={40} className="text-hail-green" />
+                <div className="w-20 h-20 bg-secondary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                  <ShieldCheck size={40} className="text-secondary" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-2xl font-black mb-2 dark:text-white">Security First</h3>
+                  <h3 className="text-2xl font-semibold mb-2 dark:text-white">Security First</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     To keep our community safe, all users must verify their identity before they can book or complete trips.
                   </p>
@@ -230,9 +230,9 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-100 dark:border-gray-700">
                       <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-600">
-                        <item.icon size={18} className="text-hail-green" />
+                        <item.icon size={18} className="text-secondary" />
                       </div>
-                      <span className="font-bold text-sm text-gray-700 dark:text-gray-200 uppercase tracking-widest">{item.text}</span>
+                      <span className="font-bold text-sm text-gray-700 dark:text-gray-200  tracking-normal">{item.text}</span>
                     </div>
                   ))}
                 </div>
@@ -242,14 +242,14 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
             {step === 'id_upload' && (
               <motion.div key="id" variants={stepVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
                 <div className="text-center">
-                  <h3 className="text-xl font-black mb-2 dark:text-white">Identity Document</h3>
+                  <h3 className="text-xl font-semibold mb-2 dark:text-white">Identity Document</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Upload a clear photo of your ID, Driver's License or Passport.</p>
                 </div>
-                <div className="aspect-[3/2] bg-gray-50 dark:bg-gray-700 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-600 flex flex-col items-center justify-center gap-4 hover:border-hail-green dark:hover:border-hail-green transition-colors cursor-pointer group">
+                <div className="aspect-[3/2] bg-gray-50 dark:bg-gray-700 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-600 flex flex-col items-center justify-center gap-4 hover:border-secondary dark:hover:border-secondary transition-colors cursor-pointer group">
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-full shadow-lg group-hover:scale-110 transition-transform border dark:border-gray-600">
-                    <IdCard size={32} className="text-gray-400 dark:text-gray-500 group-hover:text-hail-green transition-colors" />
+                    <IdCard size={32} className="text-gray-400 dark:text-gray-500 group-hover:text-secondary transition-colors" />
                   </div>
-                  <p className="font-bold text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest">Click to Upload</p>
+                  <p className="font-bold text-sm text-gray-400 dark:text-gray-500  tracking-normal">Click to Upload</p>
                 </div>
                 <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-2xl flex gap-3 border border-orange-100 dark:border-orange-800">
                   <AlertCircle size={20} className="text-orange-600 dark:text-orange-400 mt-0.5 shrink-0" />
@@ -262,20 +262,20 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
 
             {step === 'selfie' && (
               <motion.div key="selfie" variants={stepVariants} initial="initial" animate="animate" exit="exit" className="space-y-6 text-center">
-                <h3 className="text-xl font-black dark:text-white">Live Selfie</h3>
+                <h3 className="text-xl font-semibold dark:text-white">Live Selfie</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Position your face within the circle and look directly at the camera.</p>
                 <div className="relative w-64 h-64 mx-auto">
-                  <div className="absolute inset-0 rounded-full border-4 border-hail-green border-dashed animate-[spin_10s_linear_infinite]" />
+                  <div className="absolute inset-0 rounded-full border-4 border-secondary border-dashed animate-[spin_10s_linear_infinite]" />
                   <div className="absolute inset-2 rounded-full border-4 border-gray-100 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-700">
                      <div className="absolute inset-0 flex items-center justify-center">
                         <Camera size={48} className="text-gray-300 dark:text-gray-500" />
                      </div>
                   </div>
                 </div>
-                <ul className="text-left space-y-2 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-4">
-                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-hail-green" /> Good lighting</li>
-                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-hail-green" /> No glasses or hats</li>
-                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-hail-green" /> Neutral expression</li>
+                <ul className="text-left space-y-2 text-xs font-bold text-gray-400 dark:text-gray-500  tracking-normal px-4">
+                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-secondary" /> Good lighting</li>
+                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-secondary" /> No glasses or hats</li>
+                  <li className="flex items-center gap-2"><CheckCircle size={14} className="text-secondary" /> Neutral expression</li>
                 </ul>
               </motion.div>
             )}
@@ -283,7 +283,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
             {step === 'phone' && (
               <motion.div key="phone" variants={stepVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
                 <div className="text-center">
-                  <h3 className="text-xl font-black mb-2 dark:text-white">Phone Verification</h3>
+                  <h3 className="text-xl font-semibold mb-2 dark:text-white">Phone Verification</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {isOtpSent 
                       ? `We've sent a code to ${phone}` 
@@ -298,11 +298,11 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                        className="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg flex items-center justify-center gap-2 border border-green-100 dark:border-green-800"
                      >
                        <Check size={14} className="text-green-600 dark:text-green-400" />
-                       <span className="text-[10px] font-bold text-green-700 dark:text-green-300 uppercase tracking-widest">Code sent successfully</span>
+                       <span className="text-xs font-bold text-green-700 dark:text-green-300  tracking-normal">Code sent successfully</span>
                      </motion.div>
                   )}
                   <div className="relative">
-                    <Smartphone className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isOtpSent ? 'text-hail-green' : 'text-gray-400'}`} size={20} />
+                    <Smartphone className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isOtpSent ? 'text-secondary' : 'text-gray-400'}`} size={20} />
                     <input 
                       type="tel"
                       disabled={isOtpSent || isUploading}
@@ -314,7 +314,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                     {isOtpSent && !isUploading && (
                        <button 
                          onClick={() => setIsOtpSent(false)}
-                         className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-hail-green uppercase"
+                         className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-secondary "
                        >
                          Change
                        </button>
@@ -340,7 +340,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                               document.getElementById(`otp-${i - 1}`)?.focus();
                             }
                           }}
-                          className="w-12 h-16 text-center text-2xl font-black bg-white dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-xl focus:border-hail-green outline-none dark:text-white transition-all focus:scale-105"
+                          className="w-12 h-16 text-center text-2xl font-semibold bg-white dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 rounded-xl focus:border-secondary outline-none dark:text-white transition-all focus:scale-105"
                           placeholder="-"
                         />
                       ))}
@@ -349,11 +349,11 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                 </div>
                 
                 {isOtpSent && (
-                  <p className="text-center text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">
+                  <p className="text-center text-xs text-gray-400 dark:text-gray-500 font-bold  tracking-normal">
                     Didn't get a code? {resendTimer > 0 ? (
                       <span className="text-gray-400">Resend in {resendTimer}s</span>
                     ) : (
-                      <button onClick={sendOtp} className="text-hail-green hover:underline">Resend OTP</button>
+                      <button onClick={sendOtp} className="text-secondary hover:underline">Resend OTP</button>
                     )}
                   </p>
                 )}
@@ -369,15 +369,15 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                    </div>
                 </div>
                 <div className="space-y-4 px-2">
-                  <h3 className="text-2xl font-black dark:text-white leading-tight">Documents Under Review</h3>
+                  <h3 className="text-2xl font-semibold dark:text-white leading-tight">Documents Under Review</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                     Our safety team is verifying your details. This usually takes less than 24 hours. We will notify you once approved.
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-2xl flex items-center gap-3 border dark:border-gray-700">
                     <UserCheck className="text-gray-400 dark:text-gray-500" size={20} />
                     <div className="text-left">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Current Status</p>
-                      <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-tighter">Review In Progress</p>
+                      <p className="text-xs font-bold text-gray-400  tracking-normal">Current Status</p>
+                      <p className="text-sm font-bold text-blue-600 dark:text-blue-400  tracking-tighter">Review In Progress</p>
                     </div>
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
               <button 
                 onClick={handleNext}
                 disabled={isUploading || (step === 'phone' && isOtpSent && otp.join('').length < 4)}
-                className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-5 rounded-2xl font-black text-lg shadow-xl shadow-gray-200 dark:shadow-black/20 flex items-center justify-center gap-2 hover:bg-black dark:hover:bg-gray-100 transition-all active:scale-95 disabled:opacity-50"
+                className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-5 rounded-2xl font-semibold text-lg shadow-xl shadow-gray-200 dark:shadow-black/20 flex items-center justify-center gap-2 hover:bg-black dark:hover:bg-gray-100 transition-all active:scale-95 disabled:opacity-50"
               >
                 {isUploading ? <Loader2 className="animate-spin" /> : (
                   <>
@@ -405,8 +405,8 @@ export default function VerificationFlow({ user, onComplete, onClose }: Verifica
                   </>
                 )}
               </button>
-              <p className="text-center text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mt-6 flex items-center justify-center gap-1">
-                 <ShieldCheck size={12} className="text-hail-green" /> Secure 256-bit Encryption
+              <p className="text-center text-xs text-gray-400 dark:text-gray-500 font-bold  tracking-normal mt-6 flex items-center justify-center gap-1">
+                 <ShieldCheck size={12} className="text-secondary" /> Secure 256-bit Encryption
               </p>
             </div>
           )}

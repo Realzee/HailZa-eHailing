@@ -160,7 +160,7 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
               {marker.title && (
                 <Popup className="premium-popup">
                   <div className="p-1 text-center">
-                    <p className="font-display font-black text-sm tracking-tight text-navy dark:text-white mb-0 uppercase">{marker.title}</p>
+                    <p className="font-display font-semibold text-sm tracking-tight text-navy dark:text-white mb-0 ">{marker.title}</p>
                   </div>
                 </Popup>
               )}

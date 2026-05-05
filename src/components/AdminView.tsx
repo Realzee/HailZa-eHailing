@@ -279,14 +279,14 @@ export default function AdminView({ user }: { user: any }) {
             )}
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-tight font-display">eTaxi Admin</h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] opacity-60 font-bold">System Management</p>
+            <h1 className="text-xl font-semibold tracking-tight font-display">eTaxi Admin</h1>
+            <p className="text-xs  tracking-wide opacity-60 font-bold">System Management</p>
           </div>
         </div>
         <div className="flex items-center gap-4 group">
           <div className="hidden sm:flex flex-col items-end opacity-60 group-hover:opacity-100 transition-opacity">
-            <span className="text-[10px] font-black uppercase tracking-widest text-mist">{user.email}</span>
-            <span className="text-[9px] font-bold uppercase tracking-tighter text-sky-bright">Authenticated System Admin</span>
+            <span className="text-xs font-semibold  tracking-normal text-mist">{user.email}</span>
+            <span className="text-xs font-bold  tracking-tighter text-sky-bright">Authenticated System Admin</span>
           </div>
           <div className="h-8 w-px bg-ocean-deep mx-2" />
           <ThemeToggle />
@@ -303,16 +303,16 @@ export default function AdminView({ user }: { user: any }) {
       {/* Stats Bar */}
       <div className="bg-white dark:bg-ocean-deep/30 border-b border-mist dark:border-white/5 px-8 py-6 grid grid-cols-3 gap-8 transition-colors flex-shrink-0 shadow-sm">
         <div className="flex flex-col border-l-4 border-secondary pl-6">
-          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Total Users</span>
-          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{profiles.length}</span>
+          <span className="text-xs  font-semibold tracking-wide opacity-50 dark:text-steel mb-1">Total Users</span>
+          <span className="text-4xl font-semibold tracking-tighter dark:text-white font-display">{profiles.length}</span>
         </div>
         <div className="flex flex-col border-l-4 border-sky-bright pl-6">
-          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Active Fleet</span>
-          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{drivers.filter(d => d.is_online).length}</span>
+          <span className="text-xs  font-semibold tracking-wide opacity-50 dark:text-steel mb-1">Active Fleet</span>
+          <span className="text-4xl font-semibold tracking-tighter dark:text-white font-display">{drivers.filter(d => d.is_online).length}</span>
         </div>
         <div className="flex flex-col border-l-4 border-steel pl-6">
-          <span className="text-[10px] uppercase font-black tracking-[0.2em] opacity-50 dark:text-steel mb-1">Total Operations</span>
-          <span className="text-4xl font-black tracking-tighter dark:text-white font-display">{rides.length}</span>
+          <span className="text-xs  font-semibold tracking-wide opacity-50 dark:text-steel mb-1">Total Operations</span>
+          <span className="text-4xl font-semibold tracking-tighter dark:text-white font-display">{rides.length}</span>
         </div>
       </div>
 
@@ -325,7 +325,7 @@ export default function AdminView({ user }: { user: any }) {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`flex-1 md:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl ${
+                className={`flex-1 md:flex-none px-6 py-2.5 text-xs font-semibold  tracking-normal transition-all rounded-xl ${
                   activeTab === tab 
                     ? 'bg-secondary text-white shadow-lg shadow-secondary/20' 
                     : 'text-steel hover:text-navy dark:hover:text-white'
@@ -430,11 +430,11 @@ export default function AdminView({ user }: { user: any }) {
               <table className="w-full text-left border-collapse">
                 <thead className="border-b border-[#141414] dark:border-gray-700 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">User</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Role</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Verification</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Joined</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Actions</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">User</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Role</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Verification</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Joined</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
@@ -451,12 +451,12 @@ export default function AdminView({ user }: { user: any }) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                      <td className="px-6 py-4 font-mono text-xs  tracking-wider">
                         {profile.role}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold  tracking-tighter ${
                             profile.verification_status === 'verified' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
                             profile.verification_status === 'pending' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' :
                             profile.verification_status === 'rejected' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
@@ -519,10 +519,10 @@ export default function AdminView({ user }: { user: any }) {
               <table className="w-full text-left border-collapse">
                 <thead className="border-b border-[#141414] dark:border-gray-700 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Driver</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Vehicle</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Status</th>
-                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Approval</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Driver</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Vehicle</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Status</th>
+                    <th className="px-6 py-4 font-serif italic text-sm  tracking-wider dark:text-gray-400">Approval</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
@@ -547,10 +547,10 @@ export default function AdminView({ user }: { user: any }) {
                         <p>{driver.vehicle_make} {driver.vehicle_model}</p>
                         <p className="opacity-60">{driver.vehicle_plate}</p>
                       </td>
-                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                      <td className="px-6 py-4 font-mono text-xs  tracking-wider">
                         {driver.is_online ? 'Online' : 'Offline'}
                       </td>
-                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
+                      <td className="px-6 py-4 font-mono text-xs  tracking-wider">
                         {driver.onboarding_status || 'pending'}
                       </td>
                     </tr>
@@ -565,10 +565,10 @@ export default function AdminView({ user }: { user: any }) {
               <table className="w-full text-left">
                 <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Route</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Rider/Driver</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Fare</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Route</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Rider/Driver</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Fare</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#141414] dark:divide-gray-700 transition-colors">
@@ -583,7 +583,7 @@ export default function AdminView({ user }: { user: any }) {
                         <p className="opacity-60">D: {ride.driver?.full_name || 'Unassigned'}</p>
                       </td>
                       <td className="px-6 py-4 font-mono text-xs">{formatZAR(ride.fare_amount)}</td>
-                      <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">{ride.status}</td>
+                      <td className="px-6 py-4 font-mono text-xs  tracking-wider">{ride.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -596,10 +596,10 @@ export default function AdminView({ user }: { user: any }) {
               <table className="w-full text-left">
                 <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 transition-colors">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Date</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Driver</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Rider</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Fare</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Date</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Driver</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Rider</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 ">Fare</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y dark:divide-gray-700 transition-colors">
@@ -613,7 +613,7 @@ export default function AdminView({ user }: { user: any }) {
                         <td className="px-6 py-4 text-sm">{new Date(ride.created_at).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-sm font-medium">{ride.driver?.full_name || 'N/A'}</td>
                         <td className="px-6 py-4 text-sm">{ride.rider?.full_name}</td>
-                        <td className="px-6 py-4 text-sm font-bold text-hail-green">{formatZAR(ride.fare_amount)}</td>
+                        <td className="px-6 py-4 text-sm font-bold text-secondary">{formatZAR(ride.fare_amount)}</td>
                       </tr>
                     ))}
                 </tbody>
@@ -629,7 +629,7 @@ export default function AdminView({ user }: { user: any }) {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[95vh] transition-colors border border-gray-100 dark:border-gray-700">
             <div className="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-900 text-white transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-hail-green rounded-full flex items-center justify-center font-bold">
+                <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center font-bold">
                   {selectedDriver.profiles.full_name?.charAt(0)}
                 </div>
                 <div>
@@ -651,7 +651,7 @@ export default function AdminView({ user }: { user: any }) {
                 <div className="p-6 space-y-8 border-r border-gray-100 dark:border-gray-700 transition-colors">
                   {/* Profile Section */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500  tracking-wider mb-4 flex items-center gap-2">
                       <Users size={16} /> Profile Information
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -676,7 +676,7 @@ export default function AdminView({ user }: { user: any }) {
 
                   {/* Vehicle Section */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500  tracking-wider mb-4 flex items-center gap-2">
                       <Car size={16} /> Vehicle Details
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl transition-colors">
@@ -686,7 +686,7 @@ export default function AdminView({ user }: { user: any }) {
                       </div>
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">License Plate</p>
-                        <p className="font-bold uppercase dark:text-white">{selectedDriver.vehicle_plate}</p>
+                        <p className="font-bold  dark:text-white">{selectedDriver.vehicle_plate}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Color</p>
@@ -695,7 +695,7 @@ export default function AdminView({ user }: { user: any }) {
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Onboarding Status</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold  ${
                             selectedDriver.onboarding_status === 'approved' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
                             selectedDriver.onboarding_status === 'declined' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
                             'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
@@ -724,7 +724,7 @@ export default function AdminView({ user }: { user: any }) {
 
                   {/* Quick Actions */}
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h4>
+                    <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500  tracking-wider mb-4">Quick Actions</h4>
                     <div className="flex flex-wrap gap-3">
                       {selectedDriver.onboarding_status !== 'approved' && (
                         <button 
@@ -761,7 +761,7 @@ export default function AdminView({ user }: { user: any }) {
                 <div className="relative min-h-[400px] lg:min-h-0 bg-gray-100 dark:bg-gray-900 transition-colors">
                   <div className="absolute top-4 left-4 z-[1000] bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg shadow-md border dark:border-gray-700 flex items-center gap-2 transition-colors">
                     <div className={`w-2.5 h-2.5 rounded-full ${selectedDriver.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-300 dark:bg-gray-600'}`} />
-                    <span className="text-xs font-bold uppercase tracking-wide dark:text-white">
+                    <span className="text-xs font-bold  tracking-wide dark:text-white">
                       {selectedDriver.is_online ? 'Live Tracking' : 'Last Known Location'}
                     </span>
                   </div>
@@ -798,12 +798,12 @@ export default function AdminView({ user }: { user: any }) {
 
               {/* Ride History Section */}
               <div className="p-6 border-t border-gray-100 dark:border-gray-700 transition-colors">
-                <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h4 className="text-sm font-bold text-gray-400 dark:text-gray-500  tracking-wider mb-4 flex items-center gap-2">
                   <Car size={16} /> Ride History
                 </h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 uppercase text-xs transition-colors">
+                    <thead className="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300  text-xs transition-colors">
                       <tr>
                         <th className="px-4 py-2">Date</th>
                         <th className="px-4 py-2">Pickup</th>
@@ -820,7 +820,7 @@ export default function AdminView({ user }: { user: any }) {
                           <td className="px-4 py-2 truncate max-w-[150px]">{ride.dropoff_address}</td>
                           <td className="px-4 py-2 font-bold">{formatZAR(ride.fare_amount)}</td>
                           <td className="px-4 py-2">
-                            <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                            <span className={`px-2 py-1 rounded-full text-xs font-bold  ${
                               (ride.status === 'completed' || ride.status === 'paid') ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                             }`}>
                               {ride.status}
@@ -900,7 +900,7 @@ export default function AdminView({ user }: { user: any }) {
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setIsEditingVehicle(false)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
-              <button onClick={updateDriverVehicleDetails} className="px-4 py-2 bg-hail-green text-white rounded-lg font-bold hover:bg-green-600 transition-colors">Save</button>
+              <button onClick={updateDriverVehicleDetails} className="px-4 py-2 bg-secondary text-white rounded-lg font-bold hover:bg-green-600 transition-colors">Save</button>
             </div>
           </div>
         </div>

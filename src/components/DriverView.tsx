@@ -7,7 +7,7 @@ import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, 
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { HazardsPanel } from './HazardsPanel';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface DriverViewProps {
   user: any;
@@ -368,7 +368,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   if (isApproved === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
-        <Loader2 className="animate-spin text-hail-green" size={48} />
+        <Loader2 className="animate-spin text-secondary" size={48} />
       </div>
     );
   }
@@ -431,14 +431,14 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       {/* Visual Notification Banner */}
       {showNotification && incomingRide && !activeRide && (
         <div className="absolute top-20 left-4 right-4 z-50 animate-in slide-in-from-top duration-300 pointer-events-auto">
-          <div className="bg-hail-green text-white p-4 rounded-xl shadow-2xl flex items-center justify-between gap-3 border border-white/20">
+          <div className="bg-secondary text-white p-4 rounded-xl shadow-2xl flex items-center justify-between gap-3 border border-white/20">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-full">
                 <Bell size={20} className="animate-bounce" />
               </div>
               <div>
                 <p className="font-bold text-sm">New Ride Request!</p>
-                <p className="text-[10px] opacity-90 line-clamp-1">{incomingRide.pickup_address}</p>
+                <p className="text-xs opacity-90 line-clamp-1">{incomingRide.pickup_address}</p>
               </div>
             </div>
             <button 
@@ -490,7 +490,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               </div>
             )}
             {geoError && (
-              <div className="bg-red-600 text-white text-[10px] px-4 py-1.5 rounded-full font-black shadow-2xl pointer-events-auto flex items-center gap-1 w-fit uppercase tracking-wider border border-red-500/50">
+              <div className="bg-red-600 text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow-2xl pointer-events-auto flex items-center gap-1 w-fit  tracking-wider border border-red-500/50">
                 <ShieldAlert size={14} /> GPS SIGNAL LOST
               </div>
             )}
@@ -504,7 +504,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               }
               setIsOnline(!isOnline);
             }}
-            className={`px-8 py-3 rounded-2xl font-black shadow-2xl transition-all pointer-events-auto uppercase tracking-widest text-sm border-2 ${
+            className={`px-8 py-3 rounded-2xl font-semibold shadow-2xl transition-all pointer-events-auto  tracking-normal text-sm border-2 ${
               isOnline 
                 ? 'bg-secondary text-white border-secondary shadow-secondary/20 scale-105' 
                 : 'bg-navy dark:bg-navy text-steel border-mist/20 dark:border-white/5'
@@ -548,8 +548,8 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
           <div className="max-w-4xl mx-auto p-10 space-y-12">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-5xl font-black text-navy dark:text-white tracking-tighter font-display leading-none">Fleet Dashboard</h2>
-                <p className="text-steel font-black uppercase tracking-[0.4em] text-[10px] mt-3">Live Performance Metrics</p>
+                <h2 className="text-5xl font-semibold text-navy dark:text-white tracking-tighter font-display leading-none">Fleet Dashboard</h2>
+                <p className="text-steel font-semibold  tracking-[0.4em] text-xs mt-3">Live Performance Metrics</p>
               </div>
               <button 
                 onClick={() => setShowDashboard(false)}
@@ -565,28 +565,28 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                 <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
                   <Banknote size={80} />
                 </div>
-                <p className="text-xs text-secondary font-black uppercase tracking-widest mb-2">Cycle Revenue</p>
-                <p className="text-5xl font-black text-secondary tracking-tighter">{formatZAR(earnings.total)}</p>
+                <p className="text-xs text-secondary font-semibold  tracking-normal mb-2">Cycle Revenue</p>
+                <p className="text-5xl font-semibold text-secondary tracking-tighter">{formatZAR(earnings.total)}</p>
               </div>
               <div className="bg-navy/5 dark:bg-white/5 p-8 rounded-[2rem] border border-mist dark:border-white/10 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
                    <Clock size={80} />
                 </div>
-                <p className="text-xs text-steel font-black uppercase tracking-widest mb-2">Total Deployments</p>
-                <p className="text-5xl font-black text-navy dark:text-white tracking-tighter">{rideHistory.length}</p>
+                <p className="text-xs text-steel font-semibold  tracking-normal mb-2">Total Deployments</p>
+                <p className="text-5xl font-semibold text-navy dark:text-white tracking-tighter">{rideHistory.length}</p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-navy p-10 rounded-[2.5rem] border border-mist dark:border-white/5 shadow-2xl">
+            <div className="bg-white dark:bg-navy p-10 rounded-3xl border border-mist dark:border-white/5 shadow-2xl">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold flex items-center gap-2 dark:text-white">
-                  <Banknote size={18} className="text-hail-green" /> Wallet & Payouts
+                  <Banknote size={18} className="text-secondary" /> Wallet & Payouts
                 </h3>
               </div>
                   <div className="flex justify-between items-center mb-6">
                     <div>
-                      <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Available for payout</p>
-                      <p className="text-2xl font-black dark:text-white">{formatZAR(earnings.total)}</p>
+                      <p className="text-xs text-gray-500 font-bold  tracking-normal">Available for payout</p>
+                      <p className="text-2xl font-semibold dark:text-white">{formatZAR(earnings.total)}</p>
                     </div>
                     <button 
                       onClick={() => {
@@ -607,12 +607,12 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                           }
                         );
                       }}
-                      className="bg-hail-green text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-md"
+                      className="bg-secondary text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-md"
                     >
                       Request Payout
                     </button>
                   </div>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase leading-relaxed uppercase tracking-tighter">
+              <p className="text-xs text-gray-400 dark:text-gray-500 font-bold  leading-relaxed  tracking-tighter">
                 * Same-day withdrawals available. Transaction fees may apply depending on your bank.
               </p>
             </div>
@@ -633,7 +633,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                 </h3>
                 <button 
                   onClick={() => setIsEditingProfile(!isEditingProfile)}
-                  className="text-xs font-bold text-hail-green uppercase"
+                  className="text-xs font-bold text-secondary "
                 >
                   {isEditingProfile ? 'Cancel' : 'Edit'}
                 </button>
@@ -675,7 +675,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                   </div>
                   <button 
                     onClick={updateVehicle}
-                    className="w-full bg-hail-green text-white py-2 rounded-lg font-bold text-sm"
+                    className="w-full bg-secondary text-white py-2 rounded-lg font-bold text-sm"
                   >
                     Save Changes
                   </button>
@@ -683,12 +683,12 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               ) : (
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-[10px] uppercase font-bold">Make & Model</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs  font-bold">Make & Model</p>
                     <p className="font-medium dark:text-gray-200">{vehicleForm.make} {vehicleForm.model}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-[10px] uppercase font-bold">License Plate</p>
-                    <p className="font-medium uppercase dark:text-gray-200">{vehicleForm.plate}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs  font-bold">License Plate</p>
+                    <p className="font-medium  dark:text-gray-200">{vehicleForm.plate}</p>
                   </div>
                 </div>
               )}
@@ -706,7 +706,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                       <p className="text-xs font-bold text-gray-400 dark:text-gray-500">{new Date(ride.created_at).toLocaleDateString()}</p>
                       <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{ride.dropoff_address}</p>
                     </div>
-                    <p className="font-bold text-hail-green">{formatZAR(ride.fare_amount)}</p>
+                    <p className="font-bold text-secondary">{formatZAR(ride.fare_amount)}</p>
                   </div>
                 ))}
                 {rideHistory.length === 0 && (
@@ -719,58 +719,71 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       )}
 
       {/* Incoming Request Modal */}
-      {incomingRide && !activeRide && (
-        <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300 border border-gray-100 dark:border-gray-700">
-            <h3 className="text-xl font-bold mb-4 text-center dark:text-white">New Ride Request!</h3>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-full dark:text-white">
-                <Car size={24} />
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-lg dark:text-white">{formatZAR(incomingRide.fare_amount || 0)}</p>
-                <div className="flex items-center gap-2">
-                   <p className="text-gray-500 dark:text-gray-400 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
-                   <span className="text-gray-300">•</span>
-                   <div className="flex items-center gap-1 text-hail-green text-sm font-bold">
-                     <Users size={14} />
-                     <span>{incomingRide.passenger_count || 1}</span>
-                   </div>
+      <AnimatePresence>
+        {incomingRide && !activeRide && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-navy w-full max-w-sm rounded-[2rem] shadow-2xl p-6 border border-mist dark:border-ocean-deep relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-secondary" />
+              <h3 className="text-xl font-semibold mb-6 text-center text-navy dark:text-white">New Ride Request</h3>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="bg-gray-50 dark:bg-ocean p-3.5 rounded-2xl text-secondary">
+                  <Car size={24} />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-2xl text-navy dark:text-white">{formatZAR(incomingRide.fare_amount || 0)}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                     <p className="text-gray-500 text-sm">{incomingRide.distance_km.toFixed(1)} km trip</p>
+                     <span className="text-gray-300">•</span>
+                     <div className="flex items-center gap-1.5 text-secondary text-sm font-medium">
+                       <Users size={14} />
+                       <span>{incomingRide.passenger_count || 1}</span>
+                     </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 w-2 h-2 bg-green-500 rounded-full" />
-                <p className="text-sm dark:text-gray-200">{incomingRide.pickup_address}</p>
+              
+              <div className="space-y-4 mb-8 bg-gray-50 dark:bg-ocean rounded-2xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1.5 w-2 h-2 bg-secondary rounded-full shrink-0" />
+                  <p className="text-sm font-medium text-navy dark:text-gray-200">{incomingRide.pickup_address}</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1.5 w-2 h-2 bg-red-500 rounded-full shrink-0" />
+                  <p className="text-sm font-medium text-navy dark:text-gray-200">{incomingRide.dropoff_address}</p>
+                </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="mt-1 w-2 h-2 bg-red-500 rounded-full" />
-                <p className="text-sm dark:text-gray-200">{incomingRide.dropoff_address}</p>
-              </div>
-            </div>
 
-            <div className="flex gap-3">
-              <button 
-                onClick={() => {
-                  setIncomingRide(null);
-                  setShowNotification(false);
-                }}
-                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                Decline
-              </button>
-              <button 
-                onClick={acceptRide}
-                className="flex-1 py-3 bg-hail-green text-white rounded-xl font-bold hover:bg-hail-green/90 transition-colors"
-              >
-                Accept Ride
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => {
+                    setIncomingRide(null);
+                    setShowNotification(false);
+                  }}
+                  className="flex-1 py-3.5 bg-gray-100 dark:bg-ocean rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Decline
+                </button>
+                <button 
+                  onClick={acceptRide}
+                  className="flex-1 py-3.5 bg-secondary text-white rounded-xl font-semibold hover:bg-sky-600 transition-colors shadow-lg shadow-secondary/20"
+                >
+                  Accept Ride
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Active Ride Controls */}
       {activeRide && (
@@ -804,10 +817,10 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase mb-1">
+                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-bold  mb-1">
                   {activeRide.status.replace('_', ' ')}
                 </span>
-                <p className="font-bold text-hail-green">{formatZAR(activeRide.fare_amount)}</p>
+                <p className="font-bold text-secondary">{formatZAR(activeRide.fare_amount)}</p>
               </div>
             </div>
 
@@ -815,14 +828,14 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               <div className="flex items-start gap-3">
                 <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'accepted' ? 'bg-green-500 ring-4 ring-green-100 dark:ring-green-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
                 <div>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold">Pickup</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400  font-bold">Pickup</p>
                   <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.pickup_address}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className={`mt-1 w-2.5 h-2.5 rounded-full ${activeRide.status === 'in_progress' ? 'bg-red-500 ring-4 ring-red-100 dark:ring-red-900/30' : 'bg-gray-300 dark:bg-gray-600'}`} />
                 <div>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold">Dropoff</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400  font-bold">Dropoff</p>
                   <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{activeRide.dropoff_address}</p>
                 </div>
               </div>
@@ -858,7 +871,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
             {activeRide.status === 'accepted' && (
               <button
                 onClick={() => updateRideStatus('in_progress')}
-                className="w-full bg-hail-green text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20 hover:bg-hail-green/90 transition-colors"
+                className="w-full bg-secondary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-hail-green/20 hover:bg-secondary/90 transition-colors"
               >
                 <Navigation size={20} />
                 Start Trip
@@ -889,7 +902,7 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
                   }).then(() => showModal('success', 'Report Submitted', 'Report submitted to our investigation team.'));
                 }
               }}
-              className="w-full text-center text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors uppercase tracking-widest pt-2"
+              className="w-full text-center text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors  tracking-normal pt-2"
             >
               Report Issue with Trip
             </button>

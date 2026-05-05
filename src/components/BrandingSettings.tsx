@@ -63,12 +63,12 @@ export default function BrandingSettings() {
   };
 
   return (
-    <div className="bg-white dark:bg-navy p-8 rounded-[2.5rem] shadow-2xl border border-mist dark:border-white/5 transition-colors">
-      <h3 className="text-2xl font-black mb-8 dark:text-white tracking-tight uppercase font-display leading-none">Branding & Identity</h3>
+    <div className="bg-white dark:bg-navy p-8 rounded-3xl shadow-2xl border border-mist dark:border-white/5 transition-colors">
+      <h3 className="text-2xl font-semibold mb-8 dark:text-white tracking-tight  font-display leading-none">Branding & Identity</h3>
       <div className="space-y-8">
         <div className="bg-mist/20 dark:bg-ocean-deep/30 p-6 rounded-[2rem] border border-mist dark:border-white/5 transition-all">
-          <label className="block text-[10px] font-black text-steel uppercase tracking-[0.2em] mb-4">Master Application Logo</label>
-          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setLogo)} className="w-full text-sm text-navy dark:text-steel file:mr-6 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-secondary file:text-white hover:file:bg-sky-bright file:uppercase file:tracking-widest transition-all cursor-pointer" />
+          <label className="block text-xs font-semibold text-steel  tracking-wide mb-4">Master Application Logo</label>
+          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setLogo)} className="w-full text-sm text-navy dark:text-steel file:mr-6 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-secondary file:text-white hover:file:bg-sky-bright file: file:tracking-normal transition-all cursor-pointer" />
           {logo && (
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
@@ -80,8 +80,8 @@ export default function BrandingSettings() {
           )}
         </div>
         <div className="bg-mist/20 dark:bg-ocean-deep/30 p-6 rounded-[2rem] border border-mist dark:border-white/5 transition-all">
-          <label className="block text-[10px] font-black text-steel uppercase tracking-[0.2em] mb-4">Browser Interface Icon (Favicon)</label>
-          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setIcon)} className="w-full text-sm text-navy dark:text-steel file:mr-6 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-secondary file:text-white hover:file:bg-sky-bright file:uppercase file:tracking-widest transition-all cursor-pointer" />
+          <label className="block text-xs font-semibold text-steel  tracking-wide mb-4">Browser Interface Icon (Favicon)</label>
+          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setIcon)} className="w-full text-sm text-navy dark:text-steel file:mr-6 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-secondary file:text-white hover:file:bg-sky-bright file: file:tracking-normal transition-all cursor-pointer" />
           {icon && (
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
@@ -94,7 +94,7 @@ export default function BrandingSettings() {
         </div>
         <button
           onClick={handleSave}
-          className="w-full bg-navy dark:bg-secondary text-white dark:text-navy py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-navy/10 dark:shadow-secondary/10"
+          className="w-full bg-navy dark:bg-secondary text-white dark:text-navy py-5 rounded-2xl font-semibold  tracking-wide text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-navy/10 dark:shadow-secondary/10"
         >
           Synchronize Branding
         </button>

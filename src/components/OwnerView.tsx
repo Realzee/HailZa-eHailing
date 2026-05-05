@@ -123,8 +123,8 @@ export default function OwnerView({ user }: { user: any }) {
             )}
           </div>
           <div>
-            <h1 className="text-2xl font-black text-navy dark:text-white tracking-tight font-display">Owner Dashboard</h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-steel font-bold">Fleet Command Center</p>
+            <h1 className="text-2xl font-semibold text-navy dark:text-white tracking-tight font-display">Owner Dashboard</h1>
+            <p className="text-xs  tracking-wide text-steel font-bold">Fleet Command Center</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -148,8 +148,8 @@ export default function OwnerView({ user }: { user: any }) {
             className="card-premium p-8 border-l-4 border-l-orange-500 flex justify-between items-center"
           >
             <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-steel mb-2 block">Pending Approval</span>
-              <p className="text-5xl font-black tracking-tighter dark:text-white font-display leading-none">{pendingDrivers.length}</p>
+              <span className="text-xs  font-semibold tracking-normal text-steel mb-2 block">Pending Approval</span>
+              <p className="text-5xl font-semibold tracking-tighter dark:text-white font-display leading-none">{pendingDrivers.length}</p>
             </div>
             <div className="bg-orange-500/10 p-4 rounded-2xl">
               <Users size={32} className="text-orange-500" />
@@ -163,8 +163,8 @@ export default function OwnerView({ user }: { user: any }) {
             className="card-premium p-8 border-l-4 border-l-secondary flex justify-between items-center"
           >
             <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-steel mb-2 block">My Active Fleet</span>
-              <p className="text-5xl font-black tracking-tighter dark:text-white font-display leading-none">{approvedDrivers.length}</p>
+              <span className="text-xs  font-semibold tracking-normal text-steel mb-2 block">My Active Fleet</span>
+              <p className="text-5xl font-semibold tracking-tighter dark:text-white font-display leading-none">{approvedDrivers.length}</p>
             </div>
             <div className="bg-secondary/10 p-4 rounded-2xl">
               <Car size={32} className="text-secondary" />
@@ -176,11 +176,11 @@ export default function OwnerView({ user }: { user: any }) {
         <section>
           <div className="flex items-center gap-3 mb-6">
             <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-            <h2 className="text-xl font-black tracking-tight text-navy dark:text-white">Pending Onboarding</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-navy dark:text-white">Pending Onboarding</h2>
           </div>
           
           {pendingDrivers.length === 0 ? (
-            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-colors">
+            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-3xl text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-colors">
               <p className="text-steel font-bold italic">Clear for now. No drivers are currently waiting for validation.</p>
             </div>
           ) : (
@@ -194,14 +194,14 @@ export default function OwnerView({ user }: { user: any }) {
                   className="card-premium p-6 flex flex-col sm:flex-row items-center justify-between gap-6"
                 >
                   <div className="flex items-center gap-6 w-full">
-                    <div className="w-16 h-16 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-navy dark:text-white font-black text-2xl border border-mist dark:border-white/5 shadow-inner">
+                    <div className="w-16 h-16 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-navy dark:text-white font-semibold text-2xl border border-mist dark:border-white/5 shadow-inner">
                       {driver.profiles.full_name.charAt(0)}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-black text-navy dark:text-white tracking-tight leading-tight mb-1">{driver.profiles.full_name}</h3>
+                      <h3 className="text-lg font-semibold text-navy dark:text-white tracking-tight leading-tight mb-1">{driver.profiles.full_name}</h3>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <span className="text-xs text-steel font-bold uppercase tracking-wider">{driver.vehicle_make} {driver.vehicle_model}</span>
-                        <span className="text-[10px] bg-navy dark:bg-white/10 text-white px-2 py-0.5 rounded font-mono tracking-wider">{driver.vehicle_plate}</span>
+                        <span className="text-xs text-steel font-bold  tracking-wider">{driver.vehicle_make} {driver.vehicle_model}</span>
+                        <span className="text-xs bg-navy dark:bg-white/10 text-white px-2 py-0.5 rounded font-mono tracking-wider">{driver.vehicle_plate}</span>
                       </div>
                     </div>
                   </div>
@@ -233,11 +233,11 @@ export default function OwnerView({ user }: { user: any }) {
         <section>
           <div className="flex items-center gap-3 mb-6">
             <div className="h-2 w-2 rounded-full bg-secondary" />
-            <h2 className="text-xl font-black tracking-tight text-navy dark:text-white">Active Fleet Inventory</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-navy dark:text-white">Active Fleet Inventory</h2>
           </div>
 
           {approvedDrivers.length === 0 ? (
-            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-all">
+            <div className="bg-mist/20 dark:bg-ocean-deep/20 p-12 rounded-3xl text-center border-2 border-dashed border-mist/50 dark:border-white/5 transition-all">
               <p className="text-steel font-bold italic">Your inventory is empty. Start onboarding drivers to build your fleet.</p>
             </div>
           ) : (
@@ -251,17 +251,17 @@ export default function OwnerView({ user }: { user: any }) {
                   className="card-premium p-6 flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-secondary font-black text-xl border border-mist dark:border-white/5 transition-transform group-hover:scale-110">
+                    <div className="w-14 h-14 bg-mist dark:bg-ocean-deep rounded-2xl flex items-center justify-center text-secondary font-semibold text-xl border border-mist dark:border-white/5 transition-transform group-hover:scale-110">
                       {driver.profiles.full_name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-black text-navy dark:text-white leading-tight mb-1">{driver.profiles.full_name}</h3>
-                      <p className="text-[10px] text-steel font-bold uppercase tracking-widest">
+                      <h3 className="font-semibold text-navy dark:text-white leading-tight mb-1">{driver.profiles.full_name}</h3>
+                      <p className="text-xs text-steel font-bold  tracking-normal">
                         {driver.vehicle_make} {driver.vehicle_model}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-secondary bg-secondary/10 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-secondary/20 transition-all group-hover:bg-secondary group-hover:text-white">
+                  <div className="flex items-center gap-2 text-secondary bg-secondary/10 px-3 py-1.5 rounded-xl text-xs font-semibold  tracking-normal border border-secondary/20 transition-all group-hover:bg-secondary group-hover:text-white">
                     <ShieldCheck size={14} />
                     Verified
                   </div>

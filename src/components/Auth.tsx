@@ -197,7 +197,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]" />
 
-      <div className="w-full max-w-[440px] glass rounded-[2.5rem] shadow-2xl p-10 border border-white/40 dark:border-white/5 relative z-10">
+      <div className="w-full max-w-[440px] glass rounded-3xl shadow-2xl p-10 border border-white/40 dark:border-white/5 relative z-10">
         <div className="text-center mb-12">
           {appLogo ? (
             <motion.img 
@@ -211,21 +211,21 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-6xl font-black text-navy dark:text-white mb-3 tracking-tighter font-display"
+              className="text-6xl font-semibold text-navy dark:text-white mb-3 tracking-tighter font-display"
             >
               eTaxi
             </motion.h1>
           )}
-          <p className="text-steel font-bold uppercase tracking-[0.3em] text-[10px] opacity-80">Premium Mobility Solutions</p>
+          <p className="text-steel font-bold  tracking-[0.3em] text-xs opacity-80">Premium Mobility Solutions</p>
           
           <div className="mt-6 flex justify-center gap-2">
             {!isSupabaseConfigured && (
-              <div className="px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-black rounded-full uppercase tracking-wider border border-orange-500/20">
+              <div className="px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-semibold rounded-full  tracking-wider border border-orange-500/20">
                 Demo Platform
               </div>
             )}
             {isSupabaseConfigured && (
-              <div className="px-3 py-1 bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-black rounded-full uppercase tracking-wider border border-sky-500/20">
+              <div className="px-3 py-1 bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-semibold rounded-full  tracking-wider border border-sky-500/20">
                 Live Secure
               </div>
             )}
@@ -245,10 +245,10 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
 
         {step === 'profile' ? (
           <form onSubmit={handleSaveProfile} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
-            <h2 className="text-2xl font-black text-center mb-6 dark:text-white tracking-tight">Create Identity</h2>
+            <h2 className="text-2xl font-semibold text-center mb-6 dark:text-white tracking-tight">Create Identity</h2>
             
             <div className="space-y-2">
-              <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Full Name</label>
+              <label className="block text-xs font-semibold text-steel  tracking-normal ml-1">Full Name</label>
               <input
                 type="text"
                 required
@@ -260,7 +260,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Account Type</label>
+              <label className="block text-xs font-semibold text-steel  tracking-normal ml-1">Account Type</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { id: 'rider', label: 'Rider' },
@@ -271,7 +271,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                     key={item.id}
                     type="button"
                     onClick={() => setRole(item.id as any)}
-                    className={`py-4 rounded-2xl border transition-all text-xs font-black uppercase tracking-tight ${
+                    className={`py-4 rounded-2xl border transition-all text-xs font-semibold  tracking-tight ${
                       role === item.id 
                         ? 'bg-secondary text-white border-secondary shadow-lg shadow-secondary/30 scale-105' 
                         : 'bg-white/50 dark:bg-navy/50 border-mist dark:border-ocean-deep text-steel hover:bg-mist dark:hover:bg-ocean'
@@ -296,7 +296,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
             <div className="flex bg-mist/50 dark:bg-ocean-deep/50 p-1.5 rounded-2xl">
               <button
                 onClick={() => { setAuthMethod('phone'); setStep('input'); setError(null); }}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold  tracking-normal transition-all ${
                   authMethod === 'phone' ? 'bg-white dark:bg-navy text-navy dark:text-white shadow-sm scale-[1.02]' : 'text-steel hover:text-navy dark:hover:text-white'
                 }`}
               >
@@ -304,7 +304,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               </button>
               <button
                 onClick={() => { setAuthMethod('email'); setStep('input'); setError(null); }}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold  tracking-normal transition-all ${
                   authMethod === 'email' ? 'bg-white dark:bg-navy text-navy dark:text-white shadow-sm scale-[1.02]' : 'text-steel hover:text-navy dark:hover:text-white'
                 }`}
               >
@@ -316,9 +316,9 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               <form onSubmit={step === 'input' ? handlePhoneLogin : handleVerifyOtp} className="space-y-6">
                 {step === 'input' ? (
                   <div className="space-y-2">
-                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Phone Access</label>
+                    <label className="block text-xs font-semibold text-steel  tracking-normal ml-1">Phone Access</label>
                     <div className="relative">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-steel font-black border-r border-mist dark:border-ocean-deep pr-3">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-steel font-semibold border-r border-mist dark:border-ocean-deep pr-3">
                         +27
                       </span>
                       <input
@@ -334,11 +334,11 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <label className="block text-xs font-black text-steel uppercase tracking-widest text-center">Security Code</label>
+                    <label className="block text-xs font-semibold text-steel  tracking-normal text-center">Security Code</label>
                     <input
                       type="text"
                       required
-                      className="w-full px-6 py-5 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none text-center text-3xl tracking-[0.6em] font-mono font-black dark:text-white transition-all shadow-inner"
+                      className="w-full px-6 py-5 bg-white/50 dark:bg-navy/50 border border-mist dark:border-ocean-deep rounded-2xl focus:ring-2 focus:ring-secondary outline-none text-center text-3xl tracking-[0.6em] font-mono font-semibold dark:text-white transition-all shadow-inner"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="••••••"
@@ -348,7 +348,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                     <button 
                       type="button" 
                       onClick={() => setStep('input')}
-                      className="text-[10px] text-secondary font-black uppercase tracking-widest hover:underline w-full text-center py-2"
+                      className="text-xs text-secondary font-semibold  tracking-normal hover:underline w-full text-center py-2"
                     >
                       Wrong number? Edit phone
                     </button>
@@ -369,7 +369,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
               <form onSubmit={handleEmailAuth} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Email Address</label>
+                    <label className="block text-xs font-semibold text-steel  tracking-normal ml-1">Email Address</label>
                     <input
                       type="email"
                       required
@@ -381,7 +381,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-black text-steel uppercase tracking-widest ml-1">Security Key</label>
+                    <label className="block text-xs font-semibold text-steel  tracking-normal ml-1">Security Key</label>
                     <input
                       type="password"
                       required
@@ -405,7 +405,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
                   <button
                     type="button"
                     onClick={() => setEmailMode(emailMode === 'login' ? 'signup' : 'login')}
-                    className="text-[10px] text-steel font-black uppercase tracking-widest hover:text-secondary transition-colors"
+                    className="text-xs text-steel font-semibold  tracking-normal hover:text-secondary transition-colors"
                   >
                     {emailMode === 'login' ? "New member? Create account" : 'Existing member? Sign in'}
                   </button>
@@ -416,7 +416,7 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
         )}
       </div>
       
-      <p className="mt-8 text-steel/50 text-[10px] font-black uppercase tracking-[0.4em] relative z-10">
+      <p className="mt-8 text-steel/50 text-xs font-semibold  tracking-[0.4em] relative z-10">
         © {new Date().getFullYear()} eTaxi Premium Mobility
       </p>
     </div>

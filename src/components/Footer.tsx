@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="bg-mist/50 dark:bg-ocean-deep p-1 rounded-md transition-transform group-hover:scale-105">
             <img src={logoUrl} alt="Logo" className="w-5 h-5 rounded shadow-xs" />
           </div>
-          <p className="text-[10px] text-steel font-black uppercase tracking-widest opacity-80">
+          <p className="text-xs text-steel font-semibold  tracking-normal opacity-80">
             © {new Date().getFullYear()} eTaxi Premium
           </p>
         </div>
