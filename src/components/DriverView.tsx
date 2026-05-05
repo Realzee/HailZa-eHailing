@@ -514,32 +514,38 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
             {isOnline ? 'Active Online' : 'Go Online'}
           </button>
 
-          <div className="flex gap-3 pointer-events-auto">
-            {profile?.verification_status !== 'verified' && (
-              <button 
-                onClick={onShowVerification}
-                className="bg-orange-500 text-white shadow-2xl p-3.5 rounded-2xl hover:bg-orange-600 transition-all border-none flex items-center gap-2 animate-pulse"
-                title="Account Verification Required"
-              >
-                <AlertTriangle size={22} />
-              </button>
-            )}
-            <button
-              onClick={() => setShowDashboard(!showDashboard)}
-              className="glass p-3.5 rounded-2xl text-steel hover:text-secondary transition-all shadow-2xl border-white/40 dark:border-white/5"
-              title="Operational Overview"
-            >
-              <Car size={22} />
-            </button>
-            <ThemeToggle />
+        </div>
+      </div>
+
+      {/* Bottom Menu Bar */}
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/80 dark:bg-navy/80 backdrop-blur-md rounded-t-3xl border-t border-mist dark:border-ocean-deep pointer-events-auto z-20">
+        <div className="flex justify-around items-center">
+          {profile?.verification_status !== 'verified' && (
             <button 
-              onClick={handleSignOut}
-              className="glass p-3.5 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all shadow-2xl border-white/40 dark:border-white/5"
-              title="Terminate Session"
+              onClick={onShowVerification}
+              className="bg-orange-500 text-white p-3 rounded-2xl hover:bg-orange-600 transition-all flex items-center gap-2 animate-pulse"
+              title="Account Verification Required"
             >
-              <LogOut size={22} />
+              <AlertTriangle size={20} />
             </button>
+          )}
+          <button
+            onClick={() => setShowDashboard(!showDashboard)}
+            className="p-3 text-steel hover:text-secondary transition-all"
+            title="Operational Overview"
+          >
+            <Car size={24} />
+          </button>
+          <div className="p-3">
+            <ThemeToggle />
           </div>
+          <button 
+            onClick={handleSignOut}
+            className="p-3 text-red-500 hover:text-red-600 transition-all"
+            title="Terminate Session"
+          >
+            <LogOut size={24} />
+          </button>
         </div>
       </div>
 

@@ -640,66 +640,52 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
           )}
         </div>
         <div className="flex flex-col gap-3 pointer-events-auto p-2 items-end">
-          <ThemeToggle />
-          <div className="flex gap-3">
-            {(destination || activeRide) && (
-              <button 
-                onClick={() => {
-                  if (activeRide) return; // Don't allow going back if ride is active
-                  setDestination(null);
-                  setRoute(undefined);
-                  setRideStats(null);
-                  setSearchQuery('');
-                  setSearchResults([]);
-                  setIsSheetMinimized(false);
-                }}
-                className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-900 dark:text-white hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
-                title="Back"
-              >
-                <ChevronRight size={24} className="rotate-180" />
-              </button>
-            )}
-            <button 
-              onClick={() => {
-                setDestination(null);
-                setRoute(undefined);
-                setRideStats(null);
-                setSearchQuery('');
-                setSearchResults([]);
-                setIsSheetMinimized(false);
-              }}
-              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
-              title="Home"
-            >
-              <Home size={20} />
-            </button>
-            <button 
-              onClick={() => setShowHistoryModal(true)}
-              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
-              title="Trip History"
-            >
-              <History size={20} />
-            </button>
-            <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700">
-              <ThemeToggle />
-            </div>
-            <button 
-              onClick={() => supabase.auth.signOut()}
-              className="bg-white dark:bg-gray-800 shadow-xl p-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-all hover:scale-105 active:scale-95 border border-gray-100 dark:border-gray-700"
-              title="Sign Out"
-            >
-              <LogOut size={20} />
-            </button>
-          </div>
           {activeRide && (activeRide.status === 'accepted' || activeRide.status === 'in_progress') && (
             <button
               onClick={() => setIsSheetMinimized(!isSheetMinimized)}
-              className="bg-secondary text-white shadow-xl p-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs  tracking-normal transition-all hover:scale-105 active:scale-95"
+              className="bg-secondary text-white shadow-xl p-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs tracking-normal transition-all hover:scale-105 active:scale-95"
             >
               {isSheetMinimized ? <Navigation size={18} /> : <Car size={18} />}
               {isSheetMinimized ? 'Show Details' : 'Show Map'}
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Bottom Menu Bar */}
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-t-3xl border-t border-mist dark:border-gray-700 pointer-events-auto z-10">
+        <div className="flex justify-around items-center">
+          <button 
+            onClick={() => {
+              setDestination(null);
+              setRoute(undefined);
+              setRideStats(null);
+              setSearchQuery('');
+              setSearchResults([]);
+              setIsSheetMinimized(false);
+            }}
+            className="p-3 text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95"
+            title="Home"
+          >
+            <Home size={24} />
+          </button>
+          <button 
+            onClick={() => setShowHistoryModal(true)}
+            className="p-3 text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all hover:scale-105 active:scale-95"
+            title="Trip History"
+          >
+            <History size={24} />
+          </button>
+          <div className="p-3">
+             <ThemeToggle />
+          </div>
+          <button 
+            onClick={() => supabase.auth.signOut()}
+            className="p-3 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-all hover:scale-105 active:scale-95"
+            title="Sign Out"
+          >
+            <LogOut size={24} />
+          </button>
         </div>
       </div>
 
