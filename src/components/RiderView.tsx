@@ -664,24 +664,24 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       <motion.div 
         initial={{ y: '100%' }}
         animate={{ 
-          y: isSheetMinimized ? '85%' : 0 
+          y: isSheetMinimized ? '92%' : 0 
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-[3rem] z-20 h-[85vh] sm:h-auto sm:max-h-[90vh] overflow-hidden border-t border-gray-100 dark:border-gray-700 flex flex-col transition-colors"
+        className="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] z-20 h-[75vh] sm:h-auto sm:max-h-[80vh] overflow-hidden border-t border-gray-100/50 dark:border-white/5 flex flex-col transition-colors"
       >
         <div className="w-full flex-1 max-w-2xl mx-auto flex flex-col overflow-hidden">
           {/* Handle for visual cue / Toggle */}
           <button 
             onClick={() => setIsSheetMinimized(!isSheetMinimized)}
-            className="w-full py-4 flex flex-col items-center cursor-pointer group shrink-0"
+            className="w-full py-3 flex flex-col items-center cursor-pointer group shrink-0"
           >
-            <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500 transition-colors" />
+            <div className="w-12 h-1 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-600 transition-colors" />
           </button>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-32 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-6 pb-20 custom-scrollbar">
             {(!activeRide || activeRide.status === 'cancelled') && (
-              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-2">
-                {destination ? 'Choose a ride, or swipe up for more' : 'Where can we take you?'}
+              <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 mb-2 opacity-70 px-1">
+                {destination ? 'Choose your ride' : 'Where can we take you?'}
               </p>
             )}
 
@@ -693,34 +693,34 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={onShowVerification}
-                  className="w-full mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 rounded-3xl flex items-center gap-3 group transition-all hover:shadow-md"
+                  className="w-full mb-4 p-3 bg-orange-50/50 dark:bg-orange-500/5 border border-orange-100/50 dark:border-orange-500/10 rounded-2xl flex items-center gap-3 group transition-all hover:bg-orange-50 dark:hover:bg-orange-500/10"
                 >
-                  <div className="bg-white dark:bg-gray-800 p-2 rounded-xl text-orange-600 shadow-sm border dark:border-gray-700">
-                    {profile?.verification_status === 'pending' ? <Clock size={20} className="animate-pulse" /> : <AlertTriangle size={20} />}
+                  <div className="bg-white dark:bg-slate-800 p-1.5 rounded-lg text-orange-600 shadow-sm border border-orange-100/30 dark:border-white/5">
+                    {profile?.verification_status === 'pending' ? <Clock size={16} className="animate-pulse" /> : <AlertTriangle size={16} />}
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="text-xs font-black text-orange-900 dark:text-orange-200 uppercase tracking-widest">
+                    <p className="text-[10px] font-black text-orange-900 dark:text-orange-400 uppercase tracking-widest">
                       {profile?.verification_status === 'pending' ? 'Verification Pending' : 'Action Required'}
                     </p>
-                    <p className="text-[10px] text-orange-700 dark:text-orange-300 font-bold leading-tight">
+                    <p className="text-[10px] text-orange-700/80 dark:text-orange-300/60 font-bold leading-tight line-clamp-1">
                       {profile?.verification_status === 'pending' 
-                        ? 'Your documents are being reviewed. Click to check status.' 
-                        : 'Verify your ID and face to unlock all features. Get started now!'}
+                        ? 'Your documents are being reviewed.' 
+                        : 'Verify your ID and face to unlock all features.'}
                     </p>
                   </div>
-                  <ChevronRight size={16} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight size={14} className="text-orange-400 opacity-60 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               )}
 
               {/* Search Destination */}
-            <div className="mb-8 relative">
+            <div className="mb-4 relative">
               <form onSubmit={handleSearch} className="flex gap-3">
                 <div className="relative flex-1 group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-hail-green transition-colors" size={20} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 group-focus-within:text-hail-green transition-colors" size={18} />
                   <input
                     type="text"
                     placeholder="Where to?"
-                    className="w-full bg-gray-50 dark:bg-gray-700 rounded-2xl py-3 pl-12 pr-12 outline-none border border-gray-100 dark:border-gray-600 focus:border-hail-green focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-hail-green/5 transition-all text-base font-medium dark:text-white"
+                    className="w-full bg-gray-50/80 dark:bg-slate-800/40 rounded-xl py-2.5 pl-11 pr-11 outline-none border border-gray-100 dark:border-white/5 focus:border-hail-green focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-hail-green/5 transition-all text-sm font-medium dark:text-white"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -776,14 +776,14 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
 
             {/* Predefined Routes */}
             {!destination && (
-              <div className="mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                    <Navigation size={16} className="text-hail-green" /> Popular Routes
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-black text-[9px] text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80 px-1">
+                    <Navigation size={12} className="text-hail-green" /> Popular Routes
                   </h3>
                   <button 
                     onClick={() => setShowAllRoutes(true)}
-                    className="text-xs font-bold text-hail-green hover:underline uppercase tracking-wider"
+                    className="text-[9px] font-black text-hail-green hover:underline uppercase tracking-wider px-1"
                   >
                     View All
                   </button>
@@ -793,9 +793,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                     <button
                       key={route.id}
                       onClick={() => selectPredefinedRoute(route.id)}
-                      className="whitespace-nowrap bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-2 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 hover:border-hail-green dark:hover:border-hail-green hover:bg-green-50 dark:hover:bg-hail-green/10 transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
+                      className="whitespace-nowrap bg-white/50 dark:bg-slate-800/40 border border-gray-100 dark:border-white/5 px-3 py-2 rounded-xl text-[10px] font-bold text-gray-700 dark:text-gray-300 hover:border-hail-green dark:hover:border-hail-green hover:bg-white dark:hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-1.5 shadow-sm"
                     >
-                      <div className="w-2 h-2 bg-hail-green rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-hail-green/40 rounded-full" />
                       {route.from} → {route.to}
                     </button>
                   ))}
@@ -839,45 +839,45 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">+ R10 per additional passenger</p>
                 </div>
 
-                <div className="text-center mb-4">
-                   <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Choose a ride</h2>
+                <div className="text-center mb-2">
+                   <h2 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest opacity-60">Choose your mobility</h2>
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {['Economy', 'Premium'].map((category) => (
                     <div key={category}>
-                      <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 px-2">{category}</h3>
-                      <div className="space-y-2">
+                      <h3 className="text-sm font-black text-gray-900 dark:text-white mb-3 px-1 tracking-tight">{category}</h3>
+                      <div className="space-y-1.5">
                         {RIDE_TYPES.filter(t => t.category === category).map((type) => (
                           <button
                             key={type.id}
                             onClick={() => setSelectedRideType(type.id)}
-                            className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border-2 ${
+                            className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all border ${
                               selectedRideType === type.id 
-                                ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-700' 
-                                : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-slate-800/80 shadow-sm' 
+                                : 'border-transparent hover:bg-gray-50/50 dark:hover:bg-slate-800/30'
                             }`}
                           >
-                            <div className="flex items-center gap-4">
-                              <div className={`p-3 rounded-xl ${selectedRideType === type.id ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
-                                <type.icon size={28} />
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2.5 rounded-xl transition-colors ${selectedRideType === type.id ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-100/80 dark:bg-slate-800 text-gray-500 dark:text-gray-500'}`}>
+                                <type.icon size={22} />
                               </div>
                               <div className="text-left">
-                                <div className="flex items-center gap-2">
-                                  <p className="font-black text-gray-900 dark:text-white">{type.name}</p>
-                                  <div className="flex items-center gap-1 text-[10px] bg-gray-200 dark:bg-gray-600 px-1.5 py-0.5 rounded font-bold dark:text-gray-300">
-                                    <Star size={8} className="fill-current" />
+                                <div className="flex items-center gap-1.5">
+                                  <p className="font-bold text-sm text-gray-900 dark:text-white leading-none">{type.name}</p>
+                                  <div className="flex items-center gap-0.5 text-[8px] bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded font-black dark:text-gray-400 uppercase">
+                                    <Star size={6} className="fill-current" />
                                     <span>{type.capacity}</span>
                                   </div>
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{type.desc}</p>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold mt-1 uppercase tracking-tighter">
-                                  {Math.round(rideStats.duration / 60)} min dropoff
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-tight mt-0.5 line-clamp-1">{type.desc}</p>
+                                <p className="text-[8px] text-gray-400 dark:text-gray-500 font-black mt-1 uppercase tracking-wider opacity-60">
+                                  {Math.round(rideStats.duration / 60)} min · Reliable
                                 </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-black text-lg text-gray-900 dark:text-white">
+                              <p className="font-black text-base text-gray-900 dark:text-white">
                                 {formatZAR(calculateTotalFare(rideStats.price * type.multiplier, passengerCount))}
                               </p>
                             </div>

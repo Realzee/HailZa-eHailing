@@ -9,10 +9,10 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-white dark:bg-navy py-4 px-6 mt-auto border-t border-mist dark:border-white/5 relative overflow-hidden transition-colors shrink-0">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-px bg-gradient-to-r from-transparent via-secondary/10 to-transparent" />
+    <footer className="bg-transparent py-4 px-6 mt-auto border-t border-mist/20 dark:border-white/5 relative overflow-hidden transition-colors shrink-0">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-px bg-gradient-to-r from-transparent via-secondary/5 to-transparent" />
       
-      <div className="max-w-5xl mx-auto flex flex-row items-center justify-between gap-4 relative z-10 w-full">
+      <div className="max-w-5xl mx-auto flex flex-row items-center justify-between gap-4 relative z-10 w-full opacity-60">
         <div className="flex items-center gap-2 group">
           <div className="bg-mist/50 dark:bg-ocean-deep p-1 rounded-md transition-transform group-hover:scale-105">
             <img src={logoUrl} alt="Logo" className="w-5 h-5 rounded shadow-xs" />
