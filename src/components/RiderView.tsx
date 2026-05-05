@@ -330,7 +330,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       } else {
         setSearchResults([]);
       }
-    }, 500);
+    }, 350);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
@@ -755,17 +755,24 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Search Results</span>
                        <button onClick={() => setSearchResults([])} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"><X size={16} className="dark:text-gray-300" /></button>
                     </div>
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="max-h-64 overflow-y-auto custom-scrollbar">
                       {searchResults.map((res, idx) => (
                         <button
                           key={idx}
                           onClick={() => selectSearchResult(res)}
-                          className="w-full text-left p-4 hover:bg-hail-green/5 dark:hover:bg-hail-green/10 border-b border-gray-50 dark:border-gray-700 last:border-0 transition-colors flex items-center gap-3"
+                          className="w-full text-left p-3 hover:bg-hail-green/5 dark:hover:bg-hail-green/10 border-b border-gray-50 dark:border-white/5 last:border-0 transition-all flex items-center gap-3 active:scale-[0.99]"
                         >
-                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-500 dark:text-gray-400">
-                            <MapPin size={18} />
+                          <div className="p-2 bg-gray-50 dark:bg-slate-800 rounded-lg text-gray-400 group-hover:text-hail-green transition-colors">
+                            <MapPin size={16} />
                           </div>
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200 line-clamp-1">{res.display_name}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-black text-gray-900 dark:text-white truncate uppercase tracking-tight">
+                              {res.title || res.display_name.split(',')[0]}
+                            </p>
+                            <p className="text-[9px] text-gray-500 dark:text-gray-500 font-bold truncate opacity-70">
+                              {res.subtitle || res.display_name}
+                            </p>
+                          </div>
                         </button>
                       ))}
                     </div>

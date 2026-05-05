@@ -36,20 +36,28 @@ export const getRoute = async (start: [number, number], end: [number, number]) =
 
 // Nominatim Geocoder
 export const searchAddress = async (query: string) => {
+  if (!query) return [];
   try {
-    // Bounding box for South Africa roughly
+    // Priority on South Africa with better specificity
     const viewbox = '16.4,-34.8,32.9,-22.1'; 
+    const countrycodes = 'za'; // Restrict to South Africa
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
         query
-      )}&viewbox=${viewbox}&bounded=1&limit=5`,
+      )}&viewbox=${viewbox}&bounded=0&countrycodes=${countrycodes}&addressdetails=1&limit=6`,
       {
         headers: {
-          'User-Agent': 'eTaxiDriver-Web-App/1.0',
+          'User-Agent': 'eTaxiPremium-Mobility/1.1',
         },
       }
     );
-    return await response.json();
+    const data = await response.json();
+    return data.map((item: any) => ({
+      ...item,
+      // Create a better title-subtitle structure
+      title: item.address.name || item.address.road || item.address.suburb || item.display_name.split(',')[0],
+      subtitle: item.display_name.split(',').slice(1).join(',').trim()
+    }));
   } catch (error) {
     console.error('Error searching address:', error);
     return [];
