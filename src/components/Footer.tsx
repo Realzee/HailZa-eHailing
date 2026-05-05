@@ -9,7 +9,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-transparent py-3 px-4 mt-auto border-t border-mist/20 dark:border-white/5 relative overflow-hidden transition-colors shrink-0">
+    <footer className="bg-transparent pt-3 pb-1 px-4 mt-auto border-t border-mist/20 dark:border-white/5 relative overflow-hidden transition-colors shrink-0">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-px bg-gradient-to-r from-transparent via-secondary/5 to-transparent" />
       
       <div className="max-w-5xl mx-auto flex flex-row items-center justify-between gap-4 relative z-10 w-full opacity-60">

@@ -758,7 +758,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,0,0,0.12)] rounded-t-[2.5rem] z-20 h-[70vh] sm:h-auto sm:max-h-[75vh] overflow-hidden border-t border-gray-100/50 dark:border-white/5 flex flex-col transition-colors"
       >
-        <div className="w-full flex-1 max-w-lg mx-auto flex flex-col overflow-hidden">
+        <div className="w-full flex-1 max-w-md mx-auto flex flex-col overflow-hidden">
           {/* Handle for visual cue / Toggle */}
           <button 
             onClick={() => setIsSheetMinimized(!isSheetMinimized)}
@@ -767,7 +767,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             <div className="w-12 h-1 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-600 transition-colors" />
           </button>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-16 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-4 pb-4 custom-scrollbar">
             {(!activeRide || activeRide.status === 'cancelled') && (
               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 mb-2 opacity-70 px-1">
                 {destination ? 'Choose your ride' : 'Where can we take you?'}
@@ -958,7 +958,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6 pb-24"
+                className="space-y-6 pb-20"
               >
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-2xl flex items-start gap-3">
                   <Info className="text-blue-600 dark:text-blue-400 mt-0.5" size={18} />
@@ -1051,7 +1051,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                   </button>
                 </div>
 
-                <div className="fixed bottom-6 left-6 right-6 z-30 max-w-lg mx-auto">
+                <div className="fixed bottom-6 left-6 right-6 z-30 max-w-md mx-auto">
                   <button
                     onClick={requestRide}
                     disabled={searching}
