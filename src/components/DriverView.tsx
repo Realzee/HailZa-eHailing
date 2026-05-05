@@ -556,35 +556,35 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       {/* Dashboard Overlay */}
       {showDashboard && (
         <div className="absolute inset-0 z-40 glass animate-in fade-in slide-in-from-bottom duration-500 overflow-y-auto pointer-events-auto">
-          <div className="max-w-4xl mx-auto p-10 space-y-12">
+          <div className="max-w-4xl mx-auto p-6 space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-5xl font-semibold text-navy dark:text-white tracking-tighter font-display leading-none">Fleet Dashboard</h2>
-                <p className="text-steel font-semibold  tracking-[0.4em] text-xs mt-3">Live Performance Metrics</p>
+                <h2 className="text-3xl font-semibold text-navy dark:text-white tracking-tighter font-display leading-none">Fleet Dashboard</h2>
+                <p className="text-steel font-semibold tracking-[0.2em] text-[10px] mt-1">Live Performance Metrics</p>
               </div>
               <button 
                 onClick={() => setShowDashboard(false)}
-                className="p-4 bg-navy/5 dark:bg-white/5 rounded-3xl hover:scale-110 transition-all text-navy dark:text-white border border-mist dark:border-white/5 shadow-sm"
+                className="p-2 bg-navy/5 dark:bg-white/5 rounded-2xl hover:scale-110 transition-all text-navy dark:text-white border border-mist dark:border-white/5 shadow-sm"
               >
-                <X size={28} />
+                <X size={20} />
               </button>
             </div>
 
             {/* Performance Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-secondary/10 p-8 rounded-[2rem] border border-secondary/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
-                  <Banknote size={80} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-secondary/10 p-6 rounded-[2rem] border border-secondary/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform">
+                  <Banknote size={60} />
                 </div>
-                <p className="text-xs text-secondary font-semibold  tracking-normal mb-2">Cycle Revenue</p>
-                <p className="text-5xl font-semibold text-secondary tracking-tighter">{formatZAR(earnings.total)}</p>
+                <p className="text-[10px] text-secondary font-bold tracking-wider uppercase mb-1">Cycle Revenue</p>
+                <p className="text-3xl font-semibold text-secondary tracking-tighter">{formatZAR(earnings.total)}</p>
               </div>
-              <div className="bg-navy/5 dark:bg-white/5 p-8 rounded-[2rem] border border-mist dark:border-white/10 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform">
-                   <Clock size={80} />
+              <div className="bg-navy/5 dark:bg-white/5 p-6 rounded-[2rem] border border-mist dark:border-white/10 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform">
+                   <Clock size={60} />
                 </div>
-                <p className="text-xs text-steel font-semibold  tracking-normal mb-2">Total Deployments</p>
-                <p className="text-5xl font-semibold text-navy dark:text-white tracking-tighter">{rideHistory.length}</p>
+                <p className="text-[10px] text-steel font-bold tracking-wider uppercase mb-1">Total Deployments</p>
+                <p className="text-3xl font-semibold text-navy dark:text-white tracking-tighter">{rideHistory.length}</p>
               </div>
             </div>
 

@@ -809,9 +809,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             >
               <X size={16} className="text-gray-500" />
             </button>
-            <div className="w-full flex-1 mx-auto flex flex-col pt-5 px-5 pb-5">
+            <div className="w-full flex-1 mx-auto flex flex-col pt-3 px-4 pb-3">
               {(!activeRide || activeRide.status === 'cancelled') && (
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3 px-1">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">
                   {destination ? 'Review route' : 'Where can we take you?'}
                 </p>
               )}
