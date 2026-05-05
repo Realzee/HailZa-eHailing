@@ -45,6 +45,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const [passengerCount, setPassengerCount] = useState(1);
   const [showHazardsPanel, setShowHazardsPanel] = useState(false);
   const [hazards, setHazards] = useState<Hazard[]>([]);
+  const [showControls, setShowControls] = useState(true);
   const [modal, setModal] = useState<{
     isOpen: boolean;
     type: 'success' | 'error' | 'confirm' | 'info' | 'loading' | 'warning';
@@ -782,9 +783,19 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         </div>
       )}
 
+      {/* Controls Container Toggle Button */}
+      {!showControls && (
+        <button 
+          onClick={() => setShowControls(true)}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 bg-white dark:bg-navy p-4 rounded-full shadow-2xl border border-gray-100 dark:border-ocean-deep active:scale-95 transition-all"
+        >
+          <Search size={24} className="text-secondary" />
+        </button>
+      )}
+
       {/* Controls Container */}
       <AnimatePresence>
-        {(!isSheetMinimized || (!activeRide && !destination)) && (
+        {showControls && (!isSheetMinimized || (!activeRide && !destination)) && (
           <motion.div 
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -792,6 +803,12 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-sm bg-white dark:bg-navy shadow-2xl rounded-3xl z-20 border border-gray-100 dark:border-ocean-deep flex flex-col overflow-visible"
           >
+            <button 
+              onClick={() => setShowControls(false)}
+              className="absolute -top-3 -right-3 bg-white dark:bg-gray-700 p-1 rounded-full shadow-lg border border-gray-100 dark:border-gray-600 z-10"
+            >
+              <X size={16} className="text-gray-500" />
+            </button>
             <div className="w-full flex-1 mx-auto flex flex-col pt-5 px-5 pb-5">
               {(!activeRide || activeRide.status === 'cancelled') && (
                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3 px-1">
