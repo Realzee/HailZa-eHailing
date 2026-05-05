@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
-import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X, CheckCircle2 } from 'lucide-react';
+import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X, CheckCircle2, Edit } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
 import Map from './Map';
 import StatusModal from './StatusModal';
@@ -51,6 +51,15 @@ export default function AdminView({ user }: { user: any }) {
     vehicle_plate: '',
     vehicle_color: '',
     vehicle_capacity: 0
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [editProfileForm, setEditProfileForm] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    role: 'rider' as 'rider' | 'driver' | 'owner' | 'admin',
+    verification_status: 'unverified' as 'unverified' | 'pending' | 'verified' | 'rejected'
   });
   const [earningsDriverFilter, setEarningsDriverFilter] = useState<string>('all');
   const [earningsDateStart, setEarningsDateStart] = useState<string>('');
@@ -201,6 +210,31 @@ export default function AdminView({ user }: { user: any }) {
         }
       }
     );
+  };
+
+  const updateUserProfile = async () => {
+    if (!selectedProfile) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: editProfileForm.full_name,
+          email: editProfileForm.email,
+          phone: editProfileForm.phone,
+          role: editProfileForm.role,
+          verification_status: editProfileForm.verification_status
+        })
+        .eq('id', selectedProfile.id);
+      
+      if (error) throw error;
+      
+      fetchAllData();
+      setIsEditingProfile(false);
+      showModal('success', 'User Updated', 'User details have been updated successfully.');
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      showModal('error', 'Update Failed', 'Failed to update user profile. Please try again.');
+    }
   };
 
   const updateDriverVehicleDetails = async () => {
@@ -498,6 +532,23 @@ export default function AdminView({ user }: { user: any }) {
                               <Shield size={16} />
                             </button>
                           )}
+                          <button 
+                            onClick={() => {
+                              setSelectedProfile(profile);
+                              setEditProfileForm({
+                                full_name: profile.full_name || '',
+                                email: profile.email || '',
+                                phone: profile.phone || '',
+                                role: profile.role,
+                                verification_status: profile.verification_status || 'unverified'
+                              });
+                              setIsEditingProfile(true);
+                            }}
+                            className="hover:text-blue-500 transition-colors p-1"
+                            title="Edit User"
+                          >
+                            <Edit size={16} />
+                          </button>
                           <button 
                             onClick={() => deleteUser(profile.id)}
                             className="hover:text-red-500 transition-colors p-1"
@@ -840,6 +891,84 @@ export default function AdminView({ user }: { user: any }) {
                 className="px-8 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {isEditingProfile && selectedProfile && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100 dark:border-gray-700 transition-colors">
+            <h3 className="text-xl font-bold mb-4 dark:text-white">Edit User Profile</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  value={editProfileForm.full_name}
+                  onChange={(e) => setEditProfileForm({...editProfileForm, full_name: e.target.value})}
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={editProfileForm.email}
+                  onChange={(e) => setEditProfileForm({...editProfileForm, email: e.target.value})}
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={editProfileForm.phone}
+                  onChange={(e) => setEditProfileForm({...editProfileForm, phone: e.target.value})}
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                <select
+                  value={editProfileForm.role}
+                  onChange={(e) => setEditProfileForm({...editProfileForm, role: e.target.value as any})}
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
+                >
+                  <option value="rider">Rider</option>
+                  <option value="driver">Driver</option>
+                  <option value="owner">Owner</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Verification Status</label>
+                <select
+                  value={editProfileForm.verification_status}
+                  onChange={(e) => setEditProfileForm({...editProfileForm, verification_status: e.target.value as any})}
+                  className="w-full border dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white transition-colors"
+                >
+                  <option value="unverified">Unverified</option>
+                  <option value="pending">Pending</option>
+                  <option value="verified">Verified</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsEditingProfile(false)}
+                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={updateUserProfile}
+                className="px-4 py-2 bg-secondary text-white rounded-xl hover:bg-opacity-90 transition-colors font-semibold"
+              >
+                Save Changes
               </button>
             </div>
           </div>

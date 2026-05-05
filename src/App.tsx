@@ -7,8 +7,10 @@ import OwnerView from '@/components/OwnerView';
 import AdminView from '@/components/AdminView';
 import VerificationFlow from '@/components/VerificationFlow';
 import { Loader2 } from 'lucide-react';
+import { useBranding } from '@/hooks/useBranding';
 
 export default function App() {
+  const { logoUrl, iconUrl } = useBranding();
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,19 +37,6 @@ export default function App() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const appIcon = localStorage.getItem('appIcon');
-    if (appIcon) {
-      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'icon';
-        document.getElementsByTagName('head')[0].appendChild(link);
-      }
-      link.href = appIcon;
-    }
   }, []);
 
   useEffect(() => {
