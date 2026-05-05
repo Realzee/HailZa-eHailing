@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Layers, Navigation, MapPin, User, TriangleAlert } from 'lucide-react';
@@ -64,12 +64,20 @@ const getIcon = (type: string, rotation: number = 0) => {
 
 function MapController({ center, route }: { center: [number, number], route?: [number, number][] }) {
   const map = useMap();
+  const [lastCenter, setLastCenter] = useState<[number, number] | null>(null);
+
   useEffect(() => {
     if (route && route.length > 0) {
       const bounds = L.latLngBounds(route);
       map.flyToBounds(bounds, { padding: [80, 80], duration: 1.5 });
+      setLastCenter(center);
     } else {
-      map.flyTo(center, map.getZoom(), { duration: 1 });
+      // Only re-center/zoom if center has changed significantly or first time load
+      const dist = lastCenter ? Math.sqrt(Math.pow(lastCenter[0] - center[0], 2) + Math.pow(lastCenter[1] - center[1], 2)) : 100;
+      if (dist > 0.01 || !lastCenter) {
+        map.flyTo(center, map.getZoom(), { duration: 1 });
+        setLastCenter(center);
+      }
     }
   }, [center, route, map]);
   return null;
@@ -168,6 +176,16 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
           );
         })}
 
+        {/* Hazards Circle Overlay */}
+        {markers.filter(m => m.type === 'hazard').map((marker, idx) => (
+          <Circle 
+            key={`circle-${idx}`} 
+            center={marker.position} 
+            radius={200}
+            pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.2, weight: 1 }}
+          />
+        ))}
+
         {/* Route Polyline with Glow Effect */}
         {route && route.length > 0 && (
           <>
@@ -194,6 +212,25 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
 
       {/* Map Control Cluster */}
       <div className="absolute bottom-10 right-6 z-10 flex flex-col gap-3">
+        {/* Navigation Buttons */}
+        {route && route.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${route[route.length - 1][0]},${route[route.length - 1][1]}`, '_blank')}
+              className="glass p-3 rounded-full shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white"
+              title="Navigate with Google Maps"
+            >
+              <Navigation size={20} />
+            </button>
+            <button
+              onClick={() => window.open(`https://waze.com/ul?ll=${route[route.length - 1][0]},${route[route.length - 1][1]}&navigate=yes`, '_blank')}
+              className="glass p-3 rounded-full shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white"
+              title="Navigate with Waze"
+            >
+              <TriangleAlert size={20} />
+            </button>
+          </div>
+        )}
         <button
           onClick={() => setMapStyle(prev => prev === 'streets' ? 'satellite' : 'streets')}
           className="glass p-4 rounded-2xl shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white group"

@@ -7,6 +7,8 @@ import { Car, MapPin, Navigation, CheckCircle, XCircle, LogOut, Loader2, Phone, 
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { HazardsPanel } from './HazardsPanel';
+import { TripCompletionModal } from './TripCompletionModal';
+import { RideDetailsModal } from './RideDetailsModal';
 import { AnimatePresence, motion } from 'motion/react';
 import { useBranding } from '../hooks/useBranding';
 
@@ -21,6 +23,10 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showRideDetailsModal, setShowRideDetailsModal] = useState(false);
+  const [selectedRide, setSelectedRide] = useState<any>(null);
+  const [justCompletedRide, setJustCompletedRide] = useState<any>(null);
   const [onboardingStatus, setOnboardingStatus] = useState<'pending' | 'approved' | 'declined' | null>(null);
   const [incomingRide, setIncomingRide] = useState<Ride | null>(null);
   const [activeRide, setActiveRide] = useState<(Ride & { rider?: Profile }) | null>(null);
@@ -122,12 +128,16 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
     const fetchStats = async () => {
       const { data: ridesData } = await supabase
         .from('rides')
-        .select('*')
+        .select(`
+          *,
+          rider:rider_id(full_name, phone)
+        `)
         .eq('driver_id', user.id)
-        .in('status', ['completed', 'paid']);
+        .in('status', ['completed', 'paid'])
+        .order('created_at', { ascending: false });
       
       if (ridesData) {
-        setRideHistory(ridesData);
+        setRideHistory(ridesData as any);
         const total = ridesData.reduce((acc, r) => acc + (r.fare_amount || 0), 0);
         setEarnings(prev => ({ ...prev, total }));
       }
@@ -313,8 +323,10 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       .eq('id', activeRide.id);
       
     if (status === 'completed') {
+      setJustCompletedRide(activeRide);
       setActiveRide(null);
       setRoute(undefined);
+      setShowCompletionModal(true);
     } else {
       setActiveRide({ ...activeRide, status });
       // Route to dropoff
@@ -428,6 +440,21 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
         onConfirm={modal.onConfirm}
         confirmLabel={modal.confirmLabel}
         cancelLabel={modal.cancelLabel}
+      />
+      <TripCompletionModal 
+        isOpen={showCompletionModal}
+        ride={justCompletedRide}
+        onClose={() => setShowCompletionModal(false)}
+        onComplete={(rating) => {
+          console.log('Trip rated:', rating);
+          setShowCompletionModal(false);
+          setJustCompletedRide(null);
+        }}
+      />
+      <RideDetailsModal
+        isOpen={showRideDetailsModal}
+        ride={selectedRide}
+        onClose={() => setShowRideDetailsModal(false)}
       />
       {/* Visual Notification Banner */}
       {showNotification && incomingRide && !activeRide && (
@@ -713,13 +740,17 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
               </h3>
               <div className="space-y-3">
                 {rideHistory.slice(0, 5).map((ride) => (
-                  <div key={ride.id} className="p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl flex justify-between items-center">
+                  <button 
+                    key={ride.id} 
+                    onClick={() => { setSelectedRide(ride); setShowRideDetailsModal(true); }}
+                    className="w-full p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl flex justify-between items-center hover:border-secondary transition-all"
+                  >
                     <div>
-                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500">{new Date(ride.created_at).toLocaleDateString()}</p>
-                      <p className="text-sm font-medium line-clamp-1 dark:text-gray-200">{ride.dropoff_address}</p>
+                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500 text-left">{new Date(ride.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm font-medium line-clamp-1 dark:text-gray-200 text-left">{ride.dropoff_address}</p>
                     </div>
                     <p className="font-bold text-secondary">{formatZAR(ride.fare_amount)}</p>
-                  </div>
+                  </button>
                 ))}
                 {rideHistory.length === 0 && (
                   <p className="text-center text-gray-400 py-8 italic">No rides completed yet.</p>
