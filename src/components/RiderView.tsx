@@ -8,6 +8,7 @@ import { MapPin, Search, Car, CreditCard, Star, Loader2, X, CheckCircle, LogOut,
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { HazardsPanel } from './HazardsPanel';
+import { useBranding } from '../hooks/useBranding';
 import { PREDEFINED_ROUTES, getPriceForRoute, calculateTotalFare } from '@/constants/pricing';
 
 interface RiderViewProps {
@@ -17,6 +18,7 @@ interface RiderViewProps {
 }
 
 export default function RiderView({ user, profile, onShowVerification }: RiderViewProps) {
+  const { logoUrl: appLogo } = useBranding();
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]); // JHB Default
   const [destination, setDestination] = useState<[number, number] | null>(null);
   const [pickupAddress, setPickupAddress] = useState('Locating...');
@@ -556,8 +558,6 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
       }
     });
   };
-
-  const appLogo = localStorage.getItem('appLogo');
 
   return (
     <div className="relative w-full h-screen overflow-hidden">

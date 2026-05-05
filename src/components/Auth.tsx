@@ -1,9 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { useBranding } from '../hooks/useBranding';
 import { Loader2, AlertCircle, Phone, Mail, ArrowRight, Check } from 'lucide-react';
 
 export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
+  const { logoUrl: appLogo } = useBranding();
   const [authMethod, setAuthMethod] = useState<'phone' | 'email'>('phone');
   const [step, setStep] = useState<'input' | 'otp' | 'profile'>('input');
   
@@ -188,8 +190,6 @@ export default function Auth({ onAuthSuccess }: { onAuthSuccess: () => void }) {
       setLoading(false);
     }
   };
-
-  const appLogo = localStorage.getItem('appLogo');
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-navy p-6 transition-colors overflow-y-auto relative custom-scrollbar">

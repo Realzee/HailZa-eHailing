@@ -9,6 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import BrandingSettings from './BrandingSettings';
+import { useBranding } from '../hooks/useBranding';
 
 // Define Modal State type
 interface ModalState {
@@ -21,6 +22,7 @@ interface ModalState {
 }
 
 export default function AdminView({ user }: { user: any }) {
+  const { logoUrl: appLogo } = useBranding();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
   const [rides, setRides] = useState<(Ride & { rider: Profile; driver?: Profile })[]>([]);
@@ -255,8 +257,6 @@ export default function AdminView({ user }: { user: any }) {
     }
     return null;
   };
-
-  const appLogo = localStorage.getItem('appLogo');
 
   if (loading) {
     return (

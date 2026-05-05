@@ -4,8 +4,10 @@ import { Loader2, Users, CheckCircle, XCircle, Car, ShieldCheck, LogOut } from '
 import { motion } from 'motion/react';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
+import { useBranding } from '../hooks/useBranding';
 
 export default function OwnerView({ user }: { user: any }) {
+  const { logoUrl: appLogo } = useBranding();
   const [drivers, setDrivers] = useState<(Driver & { profiles: Profile })[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -92,8 +94,6 @@ export default function OwnerView({ user }: { user: any }) {
     await supabase.auth.signOut();
     window.location.reload();
   };
-
-  const appLogo = localStorage.getItem('appLogo');
 
   if (loading) {
     return (

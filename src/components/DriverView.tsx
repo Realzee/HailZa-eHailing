@@ -8,6 +8,7 @@ import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
 import { HazardsPanel } from './HazardsPanel';
 import { AnimatePresence, motion } from 'motion/react';
+import { useBranding } from '../hooks/useBranding';
 
 interface DriverViewProps {
   user: any;
@@ -16,6 +17,7 @@ interface DriverViewProps {
 }
 
 export default function DriverView({ user, profile, onShowVerification }: DriverViewProps) {
+  const { logoUrl: appLogo } = useBranding();
   const [location, setLocation] = useState<[number, number]>([-26.2041, 28.0473]);
   const [isOnline, setIsOnline] = useState(false);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
@@ -362,8 +364,6 @@ export default function DriverView({ user, profile, onShowVerification }: Driver
       showModal('error', 'Update Failed', 'We couldn\'t update your vehicle details. Please check your connection.');
     }
   };
-
-  const appLogo = localStorage.getItem('appLogo');
 
   if (isApproved === null) {
     return (
