@@ -3,6 +3,7 @@ import { supabase, type Profile, type Driver, type Ride } from '@/lib/supabase';
 import { Loader2, Users, Car, MapPin, LogOut, Shield, Search, Filter, Trash2, CheckCircle, XCircle, X } from 'lucide-react';
 import { formatZAR } from '@/lib/utils';
 import Map from './Map';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ThemeToggle from './ThemeToggle';
 import Footer from './Footer';
@@ -88,6 +89,24 @@ export default function AdminView({ user }: { user: any }) {
     }
   };
 
+  const updateVerificationStatus = async (profileId: string, status: Profile['verification_status']) => {
+    if (!status) return;
+    if (!window.confirm(`Are you sure you want to change this user's verification status to ${status}?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ verification_status: status })
+        .eq('id', profileId);
+
+      if (error) throw error;
+      fetchAllData();
+    } catch (error) {
+      console.error('Error updating verification status:', error);
+      alert('Failed to update verification status.');
+    }
+  };
+
   const updateDriverStatus = async (driverId: string, status: 'pending' | 'approved' | 'declined') => {
     if (!window.confirm(`Are you sure you want to mark this driver as ${status}?`)) return;
 
@@ -137,7 +156,8 @@ export default function AdminView({ user }: { user: any }) {
   const filteredProfiles = profiles.filter(p => 
     p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.role?.toLowerCase().includes(searchTerm.toLowerCase())
+    p.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.verification_status || 'unverified').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredDrivers = drivers.filter(d => 
@@ -344,6 +364,7 @@ export default function AdminView({ user }: { user: any }) {
                   <tr>
                     <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">User</th>
                     <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Role</th>
+                    <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Verification</th>
                     <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Joined</th>
                     <th className="px-6 py-4 font-serif italic text-[11px] uppercase tracking-wider dark:text-gray-400">Actions</th>
                   </tr>
@@ -365,11 +386,41 @@ export default function AdminView({ user }: { user: any }) {
                       <td className="px-6 py-4 font-mono text-xs uppercase tracking-wider">
                         {profile.role}
                       </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
+                            profile.verification_status === 'verified' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            profile.verification_status === 'pending' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' :
+                            profile.verification_status === 'rejected' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                            'bg-gray-100 dark:bg-gray-700 text-gray-500'
+                          }`}>
+                            {profile.verification_status || 'unverified'}
+                          </span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 font-mono text-xs opacity-60">
                         {new Date(profile.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
+                          {profile.verification_status !== 'verified' && (
+                            <button 
+                              onClick={() => updateVerificationStatus(profile.id, 'verified')}
+                              className="text-green-500 hover:text-green-600 transition-colors p-1"
+                              title="Verify User"
+                            >
+                              <CheckCircle size={16} />
+                            </button>
+                          )}
+                          {profile.verification_status !== 'rejected' && (
+                            <button 
+                              onClick={() => updateVerificationStatus(profile.id, 'rejected')}
+                              className="text-red-500 hover:text-red-600 transition-colors p-1"
+                              title="Reject User"
+                            >
+                              <XCircle size={16} />
+                            </button>
+                          )}
                           {profile.role !== 'admin' && (
                             <button 
                               onClick={() => promoteToAdmin(profile.id)}
