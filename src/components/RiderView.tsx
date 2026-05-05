@@ -26,6 +26,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [searching, setSearching] = useState(false);
+  const [searchingType, setSearchingType] = useState<'pickup' | 'destination'>('destination');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showPayment, setShowPayment] = useState(false);
@@ -51,8 +52,9 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   ];
 
   // 1. Get User Location
-  useEffect(() => {
+  const getCurrentLocation = () => {
     if (navigator.geolocation) {
+      setPickupAddress('Locating...');
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           const lat = pos.coords.latitude;
@@ -60,11 +62,31 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
           setLocation([lat, lng]);
           const addr = await reverseGeocode(lat, lng);
           setPickupAddress(addr);
+          
+          if (destination) {
+            const routeData = await getRoute([lat, lng], destination);
+            if (routeData) {
+              setRoute(routeData.coordinates);
+              const distKm = routeData.distance / 1000;
+              setRideStats(prev => prev ? {
+                ...prev,
+                distance: distKm,
+                duration: routeData.duration
+              } : null);
+            }
+          }
         },
-        (err) => console.error(err),
+        (err) => {
+          console.error(err);
+          setPickupAddress('Location Error');
+        },
         { enableHighAccuracy: true }
       );
     }
+  };
+
+  useEffect(() => {
+    getCurrentLocation();
   }, []);
 
   // 2. Listen for Active Rides
@@ -205,7 +227,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
     return null;
   };
 
-  // 3. Handle Map Click (Set Destination)
+  // 3. Handle Map Click (Set Pickup or Destination)
   const handleMapClick = async (lat: number, lng: number) => {
     if (activeRide && activeRide.status !== 'cancelled') return;
     
@@ -214,22 +236,41 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
         setActiveRide(null);
     }
 
-    setDestination([lat, lng]);
-    const addr = await reverseGeocode(lat, lng);
-    setDropoffAddress(addr);
-    setSelectedRouteId(null); // Reset predefined route if map is clicked
-    
-    // Calculate Route
-    const routeData = await getRoute(location, [lat, lng]);
-    if (routeData) {
-      setRoute(routeData.coordinates);
-      const distKm = routeData.distance / 1000;
-      const price = getPriceForRoute(null, distKm);
-      setRideStats({
-        distance: distKm,
-        duration: routeData.duration,
-        price: price,
-      });
+    if (searchingType === 'pickup') {
+      setLocation([lat, lng]);
+      const addr = await reverseGeocode(lat, lng);
+      setPickupAddress(addr);
+      setSearchingType('destination');
+      
+      if (destination) {
+        const routeData = await getRoute([lat, lng], destination);
+        if (routeData) {
+          setRoute(routeData.coordinates);
+          const distKm = routeData.distance / 1000;
+          setRideStats(prev => prev ? {
+            ...prev,
+            distance: distKm,
+            duration: routeData.duration
+          } : null);
+        }
+      }
+    } else {
+      setDestination([lat, lng]);
+      const addr = await reverseGeocode(lat, lng);
+      setDropoffAddress(addr);
+      setSelectedRouteId(null);
+      
+      const routeData = await getRoute(location, [lat, lng]);
+      if (routeData) {
+        setRoute(routeData.coordinates);
+        const distKm = routeData.distance / 1000;
+        const price = getPriceForRoute(null, distKm);
+        setRideStats({
+          distance: distKm,
+          duration: routeData.duration,
+          price: price,
+        });
+      }
     }
   };
 
@@ -348,9 +389,44 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
   const selectSearchResult = async (result: any) => {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
+    const addr = result.title || result.display_name.split(',')[0];
+    
     setSearchResults([]);
     setSearchQuery('');
-    handleMapClick(lat, lng);
+    
+    if (searchingType === 'pickup') {
+      setLocation([lat, lng]);
+      setPickupAddress(addr);
+      setSearchingType('destination'); // Auto-switch to destination after pickup
+      if (destination) {
+        const routeData = await getRoute([lat, lng], destination);
+        if (routeData) {
+          setRoute(routeData.coordinates);
+          const distKm = routeData.distance / 1000;
+          setRideStats(prev => prev ? {
+            ...prev,
+            distance: distKm,
+            duration: routeData.duration
+          } : null);
+        }
+      }
+    } else {
+      setDestination([lat, lng]);
+      setDropoffAddress(addr);
+      setSelectedRouteId(null);
+      
+      const routeData = await getRoute(location, [lat, lng]);
+      if (routeData) {
+        setRoute(routeData.coordinates);
+        const distKm = routeData.distance / 1000;
+        const price = getPriceForRoute(null, distKm);
+        setRideStats({
+          distance: distKm,
+          duration: routeData.duration,
+          price: price,
+        });
+      }
+    }
   };
 
   const handlePayment = async (method: string) => {
@@ -725,17 +801,71 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
                 </motion.button>
               )}
 
-              {/* Search Destination */}
+              {/* Pickup & Destination Inputs */}
+              <div className="mb-4 space-y-2">
+                {/* Pickup Toggle */}
+                <div 
+                  onClick={() => setSearchingType('pickup')}
+                  className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    searchingType === 'pickup' 
+                      ? 'border-hail-green bg-hail-green/5 ring-2 ring-hail-green/10' 
+                      : 'border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-slate-800/40 hover:bg-gray-100 dark:hover:bg-slate-800/60'
+                  }`}
+                >
+                  <div className="w-6 h-6 flex items-center justify-center rounded-full bg-hail-green/10 text-hail-green">
+                    <div className="w-2 h-2 rounded-full border-2 border-current" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">Pick-up Location</p>
+                    <p className={`text-sm font-bold truncate ${searchingType === 'pickup' ? 'text-navy dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                      {pickupAddress}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      getCurrentLocation();
+                    }}
+                    className="p-1.5 hover:bg-hail-green/10 rounded-lg text-hail-green transition-colors"
+                    title="Use Current Location"
+                  >
+                    <Navigation size={14} />
+                  </button>
+                </div>
+
+                {/* Destination Toggle */}
+                <div 
+                  onClick={() => setSearchingType('destination')}
+                  className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    searchingType === 'destination' 
+                      ? 'border-hail-green bg-hail-green/5 ring-2 ring-hail-green/10' 
+                      : 'border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-slate-800/40 hover:bg-gray-100 dark:hover:bg-slate-800/60'
+                  }`}
+                >
+                  <div className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-500/10 text-blue-500">
+                    <MapPin size={14} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">Where to?</p>
+                    <p className={`text-sm font-bold truncate ${searchingType === 'destination' ? 'text-navy dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                      {dropoffAddress || 'Search destination'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Universal Search Bar */}
             <div className="mb-4 relative">
               <form onSubmit={handleSearch} className="flex gap-3">
                 <div className="relative flex-1 group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 group-focus-within:text-hail-green transition-colors" size={18} />
+                  <Search className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${searchingType === 'pickup' ? 'text-hail-green' : 'text-blue-500'}`} size={18} />
                   <input
                     type="text"
-                    placeholder="Where to?"
+                    placeholder={searchingType === 'pickup' ? "Change pick-up address..." : "Search for destination..."}
                     className="w-full bg-gray-50/80 dark:bg-slate-800/40 rounded-xl py-2.5 pl-11 pr-11 outline-none border border-gray-100 dark:border-white/5 focus:border-hail-green focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-hail-green/5 transition-all text-sm font-medium dark:text-white"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus={!isSheetMinimized}
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {isSearchingAddress && <Loader2 size={16} className="animate-spin text-hail-green" />}
