@@ -217,14 +217,14 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
           <div className="flex flex-col gap-2">
             <button
               onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${route[route.length - 1][0]},${route[route.length - 1][1]}`, '_blank')}
-              className="glass p-3 rounded-full shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white"
+              className="glass bg-white dark:bg-navy p-3.5 rounded-full shadow-lg border border-white/20 dark:border-white/5 hover:scale-110 hover:border-secondary active:scale-95 transition-all text-navy dark:text-white"
               title="Navigate with Google Maps"
             >
               <Navigation size={20} />
             </button>
             <button
               onClick={() => window.open(`https://waze.com/ul?ll=${route[route.length - 1][0]},${route[route.length - 1][1]}&navigate=yes`, '_blank')}
-              className="glass p-3 rounded-full shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white"
+              className="glass bg-white dark:bg-navy p-3.5 rounded-full shadow-lg border border-white/20 dark:border-white/5 hover:scale-110 hover:border-secondary active:scale-95 transition-all text-navy dark:text-white"
               title="Navigate with Waze"
             >
               <TriangleAlert size={20} />
@@ -233,7 +233,7 @@ export default function Map({ center, markers = [], route, onMapClick, interacti
         )}
         <button
           onClick={() => setMapStyle(prev => prev === 'streets' ? 'satellite' : 'streets')}
-          className="glass p-4 rounded-2xl shadow-2xl border-white/40 dark:border-white/5 hover:scale-110 active:scale-95 transition-all text-navy dark:text-white group"
+          className="glass bg-white dark:bg-navy p-4 rounded-2xl shadow-lg border border-white/20 dark:border-white/5 hover:scale-110 hover:border-secondary active:scale-95 transition-all text-navy dark:text-white group"
           title="Toggle Map Style"
         >
           <Layers size={22} className="group-hover:text-secondary transition-colors" />

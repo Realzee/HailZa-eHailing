@@ -769,15 +769,15 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               <button
                 onClick={() => handlePayment('Paystack')}
                 disabled={processingPayment}
-                className="w-full bg-secondary text-white py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-secondary text-white py-4 rounded-2xl font-semibold text-lg hover:bg-green-700 transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
-                {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Card (Paystack) <CreditCard size={20} /></>}
+                {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Card <CreditCard size={20} /></>}
               </button>
               
               <button
                 onClick={() => handlePayment('Cash')}
                 disabled={processingPayment}
-                className="w-full bg-gray-900 dark:bg-gray-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-black dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-navy dark:bg-gray-800 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-black dark:hover:bg-gray-700 transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Cash <Banknote size={20} /></>}
               </button>
@@ -785,7 +785,7 @@ export default function RiderView({ user, profile, onShowVerification }: RiderVi
               <button
                 onClick={() => handlePayment('Wallet')}
                 disabled={processingPayment}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-blue-700 transition-all active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {processingPayment ? <Loader2 className="animate-spin" /> : <>Pay with Wallet <Wallet size={20} /></>}
               </button>

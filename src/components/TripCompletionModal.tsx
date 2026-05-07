@@ -49,7 +49,7 @@ export function TripCompletionModal({ isOpen, ride, onClose, onComplete }: TripC
 
             <button
               onClick={() => onComplete(rating)}
-              className="w-full py-4 bg-secondary text-white font-semibold rounded-2xl hover:brightness-105 active:scale-95 transition-all"
+              className="w-full py-4 bg-secondary text-white font-semibold rounded-2xl hover:bg-green-700 transition-all active:scale-95 shadow-md hover:shadow-lg"
             >
               Finish Trip
             </button>

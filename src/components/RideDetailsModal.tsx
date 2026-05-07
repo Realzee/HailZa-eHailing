@@ -72,7 +72,7 @@ export function RideDetailsModal({ isOpen, ride, onClose }: RideDetailsModalProp
                   <p className="font-semibold dark:text-white">{ride.rider.full_name}</p>
                 </div>
                 {ride.rider.phone && (
-                  <a href={`tel:${ride.rider.phone}`} className="p-3 bg-secondary text-white rounded-full hover:bg-green-700 transition-colors">
+                  <a href={`tel:${ride.rider.phone}`} className="p-3 bg-secondary text-white rounded-full hover:bg-green-700 transition-all active:scale-95 shadow-md hover:shadow-lg">
                     <Phone size={20} />
                   </a>
                 )}
